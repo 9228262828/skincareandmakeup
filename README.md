@@ -48,9 +48,9 @@ dependencies {
 
 1. Create a model folder in `ios/model`.
 2. Drag and drop the model into the project
-![Add model files](images/drag_model_files.png)
+![Add model files](assets/images/drag_model_files.png)
 3. Add the PerfectLib frameworks into the project
-![Add model files](images/frameworks_settings.png)
+![Add model files](assets/images/frameworks_settings.png)
 4. PerfectLib frameworks are static frameworks. Put them into the `Frameworks,Libraries, and Embedded Content` section in your project APP target setting. Select `Do Not Embed` for all frameworks
 5. Drag the config.json file downloaded separately from Perfect Console to the project just like what you did for model files.
 
@@ -63,9 +63,9 @@ dependencies {
 ### iOS
 - Set "Enable Bitcode" to **`No`**
 - Add the linker flags **-ObjC -lc++ -framework CoreMotion**
-![Add linker flags](images/linker_flags.png)
+![Add linker flags](assets/images/linker_flags.png)
 - Project info setting
   - The PerfectLib frameworks requires two permissions: Camera and Microphone. iOS requires the description of the permission usage in APP’s info.plist.
-![permission settings](images/permission_settings.png)
+![permission settings](assets/images/permission_settings.png)
 
 Happy coding! 🚀
