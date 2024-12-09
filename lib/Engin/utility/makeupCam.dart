@@ -2,18 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:Gomla/Engin/utility/styles.dart';
+import 'package:Gomla/Engin/utility/utility.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
-import 'channel/lookhandler_channel.dart';
-import 'channel/makeupCam_channel.dart';
-import 'channel/perfectlib_channel.dart';
-import 'channel/skuhandler_channel.dart';
-import 'utility/styles.dart';
-import 'utility/utility.dart';
+
+import '../channel/lookhandler_channel.dart';
+import '../channel/makeupCam_channel.dart';
+import '../channel/perfectlib_channel.dart';
+import '../channel/skuhandler_channel.dart';
 
 class MakeupCam extends StatefulWidget {
   const MakeupCam({super.key});
@@ -48,12 +49,15 @@ class _MakeupCamState extends State<MakeupCam> {
     // Init perfectLib
     var config = const PerfectLibConfiguration().build(
         PerfectImageSource.imageSourceUrl,
-        false,
-        false,
-        true,
-        "",
-        "android/app/src/main/assets/perfectlib/config.json",
-        "android/app/src/main/assets/model");
+      false,
+      // Developer mode
+      false,
+      // Preview mode
+      true,
+      // Mapping mode
+      "",
+      "android/app/src/main/assets/perfectlib/config.json",
+      "android/app/src/main/assets/model",);
     perfectLibChannel = PerfectLibChannel();
     perfectLibChannel.onError = onError;
     perfectLibChannel.init(config).then((isSuccess) => {
@@ -61,8 +65,8 @@ class _MakeupCamState extends State<MakeupCam> {
             perfectLibInited = isSuccess;
             _isLoading = false;
           }),
-          perfectLibChannel.setCountryCode('us'),
-          perfectLibChannel.setLocaleCode('en_us')
+          perfectLibChannel.setCountryCode('SA'),
+          perfectLibChannel.setLocaleCode('en_US'),
         });
   }
 
@@ -600,7 +604,6 @@ class _MakeupCamState extends State<MakeupCam> {
 
   void _showSuccessSnackbar(String successMessage) {
     ScaffoldMessenger.of(context).showSnackBar(
-
       showSuccessDialog(successMessage),
     );
   }
@@ -766,21 +769,24 @@ class _MakeupCamState extends State<MakeupCam> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: Stack(
-        children: [
-          if (perfectLibInited) Center(child: makeupCamView(context)),
-          controlPanel(context),
-          functionalButtons(),
-          backButton(context),
-          FutureBuilder(
-              future: intensitiesSlider(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<Widget> intensityList) {
-                return Container(child: intensityList.data);
-              }),
-          if (_isLoading) loadingIndicator(),
-          if (_isShowProgress) progressIndicator(_progressValue)
-        ],
+      body: Directionality(
+        textDirection: ui.TextDirection.ltr,
+        child: Stack(
+          children: [
+            if (perfectLibInited) Center(child: makeupCamView(context)),
+            controlPanel(context),
+            functionalButtons(),
+            backButton(context),
+            FutureBuilder(
+                future: intensitiesSlider(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<Widget> intensityList) {
+                  return Container(child: intensityList.data);
+                }),
+            if (_isLoading) loadingIndicator(),
+            if (_isShowProgress) progressIndicator(_progressValue)
+          ],
+        ),
       ),
     );
   }

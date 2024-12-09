@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:skincare/providers/home_screen_provider.dart';
-import 'package:skincare/widgets/app_bar.dart';
-import 'package:skincare/widgets/fade_image.dart';
+
+import '../providers/home_screen_provider.dart';
 import '../services/woocommerce_service.dart';
 import '../models/brand.dart';
 import 'package:provider/provider.dart';
 import '../localization/localization_provider.dart';
+import '../widgets/app_bar.dart';
+import '../widgets/fade_image.dart';
 import 'brand_listing_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class BrandsScreen extends StatefulWidget {
   @override
@@ -55,13 +58,13 @@ class _BrandsScreenState extends State<BrandsScreen> {
   Widget build(BuildContext context) {
     final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
     return Scaffold(
-      appBar: CustomAppBar(title: ''),
+      appBar: CustomAppBar(title: '',home: false,),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemCount: homeScreenProvider.brands.length,
         itemBuilder: (context, index) {
           if (homeScreenProvider.brands.isEmpty) {
-            return Center(child: FadeInOutImage(height: MediaQuery.of(context).size.height));
+            return Center(child: Text(AppLocalizations.of(context)!.noProductsAvailable));
           }
           final brand = homeScreenProvider.brands[index];
           return Column(
@@ -71,9 +74,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BrandListingScreen(
-                        brandId: brand.id,
-                        brandName: brand.name,
+                      builder: (context) => BrandProductsScreen(
+
+                        brandName: brand.name, id: brand.id,
                       ),
                     ),
                   );

@@ -1,5 +1,5 @@
-name: skincare
-description: A new Flutter project.
+name: Gomla
+description: Gomla is a E-commerce app.
 publish_to: 'none'
 version: 5.7.1+86021521
 
@@ -38,6 +38,13 @@ dependencies:
   permission_handler: ^10.2.0
   video_player:
   fl_chart: ^0.40.0
+  flutter_bloc: ^8.1.6
+  shimmer: ^3.0.0
+  flutter_svg: ^2.0.16
+  google_sign_in:
+  flutter_facebook_auth:
+  firebase_auth:
+
 ## open_filex: ^3.2.1
 ##  image_gallery_saver:
  ##  path: ./image_gallery_saver-master

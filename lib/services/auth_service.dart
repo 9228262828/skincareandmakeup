@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:skincare/env.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../env.dart';
 
 class AuthService {
   static const String _baseUrl = '$siteUrl/wp-json/jwt-auth/v1';
   static const String _customBaseUrl = '$siteUrl/wp-json/custom/v1';
   static const String _tokenKey = 'auth_token';
   static const String _userBaseUrl = '$siteUrl/wp-json/custom/v1/user';
+
   static Future<void> login(String username, String password) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/token'),

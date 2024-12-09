@@ -1,24 +1,23 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
-import 'package:skincare/contstants.dart';
-import 'package:skincare/models/cart.dart';
-import 'package:skincare/models/fav.dart';
-import 'package:skincare/models/variation.dart';
-import 'package:skincare/providers/locale_provider.dart';
-import 'package:skincare/screens/product_screen.dart';
-import 'package:skincare/widgets/fade_image.dart';
 import 'package:provider/provider.dart';
+import '../contstants.dart';
+import '../models/cart.dart';
+import '../models/fav.dart';
 import '../models/product.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/variation.dart';
+import '../screens/product_screen.dart';
+
 class ProductCard extends StatefulWidget {
   final Product product;
+  final String fakeProduct;
 
-  const ProductCard({Key? key, required this.product}) : super(key: key);
+  const ProductCard({Key? key, required this.product, required this.fakeProduct}) : super(key: key);
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -35,10 +34,10 @@ class _ProductCardState extends State<ProductCard> {
     super.initState();
     imageUrl = widget.product.imageUrl;
     price = widget.product.price.toString();
-    fetchVariations();
+    //fetchVariations();
   }
 
-  void fetchVariations() async {
+  /*void fetchVariations() async {
     try {
       List<Variation> fetchedVariations =
           await fetchProductVariations(widget.product.id);
@@ -52,11 +51,12 @@ class _ProductCardState extends State<ProductCard> {
       print('Error fetching variations: $e');
     }
   }
-
+*/
+/*
   Future<List<Variation>> fetchProductVariations(int productId) async {
     try {
       final response = await http.get(Uri.parse(
-          'https://mskra.com/wp-json/custom/v1/variations/$productId'));
+          'https://gomla.sa/wp-json/wc/v3/variations/$productId'));
 
       if (response.statusCode == 200) {
         List jsonResponse = json.decode(response.body);
@@ -71,6 +71,7 @@ class _ProductCardState extends State<ProductCard> {
       throw Exception('Failed to load variations');
     }
   }
+*/
 
   int quantity = 1;
   void _toggleFavorite() {
@@ -78,18 +79,18 @@ class _ProductCardState extends State<ProductCard> {
     setState(() {
       if (fav.isFavorite(widget.product)) {
         fav.removeItem(widget.product);
-        ScaffoldMessenger.of(context).showSnackBar(
+       /* ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.removedfromfavorites),
+            content: Text(AppLocalizations.of(context)!.removedFromFavorites),
           ),
-        );
+        );*/
       } else {
         fav.addItem(widget.product);
-        ScaffoldMessenger.of(context).showSnackBar(
+       /* ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.addedtofavorites),
+            content: Text(AppLocalizations.of(context)!.addedToFavorites),
           ),
-        );
+        );*/
       }
     });
   }
@@ -102,14 +103,14 @@ class _ProductCardState extends State<ProductCard> {
   void _addToCart() {
     final cart = Provider.of<Cart>(context, listen: false);
     if (widget.product != null) {
-      cart.addItem(widget.product!, selectedVariation);
-      cart.updateQuantity(widget.product!, quantity);
+      cart.addItem(widget.product, selectedVariation);
+      cart.updateQuantity(widget.product, quantity);
       // show snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
+    /*  ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.addedtoCart),
         ),
-      );
+      );*/
     }
   }
 
@@ -117,7 +118,6 @@ class _ProductCardState extends State<ProductCard> {
   Widget build(BuildContext context) {
     final fav = Provider.of<Fav>(context);
     final cart = Provider.of<Cart>(context);
-    final local = Provider.of<LocaleProvider>(context);
     return Container(
       decoration: BoxDecoration(
         // shadow
@@ -144,7 +144,7 @@ class _ProductCardState extends State<ProductCard> {
             children: [
               Container(
                 width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.23,
+                height: MediaQuery.of(context).size.height * 0.25,
                 decoration: BoxDecoration(
                   color: borderColor,
                   borderRadius: BorderRadius.circular(8.0),
@@ -153,8 +153,9 @@ class _ProductCardState extends State<ProductCard> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
+                    //  fakeProduct == "fake"? SizedBox(height: 10):
                       FadeInImage(
-                        image: CachedNetworkImageProvider(imageUrl),
+                        image:  NetworkImage(imageUrl),
                         placeholder: AssetImage('assets/grey_image.jpeg'),
                         height: MediaQuery.of(context).size.height * 0.18,
                         fit: BoxFit.fitWidth,

@@ -1,5 +1,6 @@
-import 'package:skincare/models/variation.dart';
-import 'package:skincare/models/variation.dart';
+
+
+import 'package:Gomla/models/variation.dart';
 
 import 'product.dart';
 

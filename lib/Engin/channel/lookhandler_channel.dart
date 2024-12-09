@@ -62,6 +62,7 @@ class LookHandler {
     if (list == null) {
       return List.empty();
     }
+    print("list: $list");
     return [...list];
   }
 

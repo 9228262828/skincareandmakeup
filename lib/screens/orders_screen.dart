@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:skincare/widgets/app_bar.dart';
-import 'package:skincare/widgets/fade_image.dart';
 import 'package:provider/provider.dart';
 import '../services/woocommerce_service.dart';
 import '../models/order.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../widgets/app_bar.dart';
+import '../widgets/fade_image.dart';
 
 class OrdersScreen extends StatefulWidget {
   @override
@@ -23,7 +24,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'My Orders'),
+      appBar: CustomAppBar(title: 'My Orders',home: false,),
       body: FutureBuilder<List<Order>>(
         future: futureOrders,
         builder: (context, snapshot) {
@@ -39,7 +40,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               itemBuilder: (context, index) {
                 final order = snapshot.data![index];
                 return ListTile(
-                  title: Text(AppLocalizations.of(context)!.order + ' #${order.id}'),
+                  title: Text('${AppLocalizations.of(context)!.order} #${order.id}'),
                   subtitle: Text('${AppLocalizations.of(context)!.status}: ${order.status}'),
                   trailing: Text('${AppLocalizations.of(context)!.total}: ${order.total}'),
                   onTap: () {

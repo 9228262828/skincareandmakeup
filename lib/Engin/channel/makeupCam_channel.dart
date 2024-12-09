@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:Gomla/Engin/channel/perfectlib_channel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:skincare/channel/perfectlib_channel.dart';
 
 class VtoSetting {
   final String productGuid;

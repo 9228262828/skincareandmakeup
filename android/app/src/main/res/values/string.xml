@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+
+    <string name="app_name">Gomla</string>
+    <string name="facebook_app_id">1737921733600227</string>
+    <string name="fb_login_protocol_scheme">fb1737921733600227</string>
+    <string name="facebook_client_token">884d16983f2fbcc4ab95484fa22ca8f7</string>
+</resources>

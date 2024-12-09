@@ -1,4 +1,4 @@
-const siteUrl = 'https://skincare.sa';
+const siteUrl = 'https://gomla.sa';
 const profileId = "138679";
 
 const serverKey = "SDJNJ69LG9-JJ9HWJHRTK-DNGDZ2DLTN";

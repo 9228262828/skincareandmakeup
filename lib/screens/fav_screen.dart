@@ -1,14 +1,14 @@
+import 'package:Gomla/screens/product_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:skincare/contstants.dart';
-import 'package:skincare/models/cart.dart';
-import 'package:skincare/models/product.dart';
-import 'package:skincare/screens/checkout_screen.dart';
-import 'package:skincare/screens/product_screen.dart';
-import 'package:skincare/widgets/app_bar.dart';
 import 'package:provider/provider.dart';
+import '../contstants.dart';
+import '../models/cart.dart';
 import '../models/fav.dart';
 import '../models/fav_item.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../models/product.dart';
+import '../widgets/app_bar.dart';
 
 class FavScreen extends StatelessWidget {
   @override
@@ -16,7 +16,7 @@ class FavScreen extends StatelessWidget {
     final fav = Provider.of<Fav>(context);
     print(fav.items);
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.favorites),
+      appBar: CustomAppBar(title: AppLocalizations.of(context)!.favorites,home: false,),
       body: fav.items.isEmpty
           ? Center(child: Text(AppLocalizations.of(context)!.yourFavoritesIsEmpty))
           : Column(
@@ -49,8 +49,8 @@ class _FavItemWidgetState extends State<FavItemWidget> {
   void _addToCart() {
     final cart = Provider.of<Cart>(context, listen: false);
     if (widget.favItem != null) {
-      cart.addItem(widget.favItem!, null);
-      cart.updateQuantity(widget.favItem!, widget.quantity);
+      cart.addItem(widget.favItem, null);
+      cart.updateQuantity(widget.favItem, widget.quantity);
       // show snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -65,7 +65,7 @@ class _FavItemWidgetState extends State<FavItemWidget> {
     final fav = Provider.of<Fav>(context, listen: false);
 
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -86,9 +86,9 @@ class _FavItemWidgetState extends State<FavItemWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.favItem.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text('${widget.favItem.price} ${AppLocalizations.of(context)!.egp}', style: TextStyle(fontSize: 16)),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(

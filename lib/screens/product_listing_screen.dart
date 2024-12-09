@@ -1,27 +1,31 @@
+import 'package:Gomla/screens/product_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart';
-import 'package:skincare/contstants.dart';
-import 'package:skincare/widgets/app_bar.dart';
-import 'package:skincare/widgets/fade_image.dart';
-import 'package:provider/provider.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import '../models/fakeProduct.dart';
-import '../services/woocommerce_service.dart';
-import '../models/product.dart';
-import '../models/category.dart';
-import '../models/brand.dart';
-import '../widgets/product_card.dart';
-import 'cart_screen.dart';
-import 'product_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:html/parser.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+import '../contstants.dart';
+import '../models/brand.dart';
+import '../models/category.dart';
+import '../models/fakeProduct.dart';
+import '../models/product.dart';
+import '../services/woocommerce_service.dart';
+import '../shared/utils/app_values.dart';
+import '../widgets/app_bar.dart';
+import '../widgets/product_card.dart';
+import '../widgets/product_home_widget.dart';
+import '../widgets/product_shimmer_widget.dart';
+import 'cart_screen.dart';
 
 class ProductListingScreen extends StatefulWidget {
   final int categoryId;
   final String categoryName;
+  final String? type;
+  final bool isLink;
 
   const ProductListingScreen(
-      {Key? key, required this.categoryId, required this.categoryName})
+      {Key? key, required this.categoryId, required this.categoryName, required this.type, required this.isLink})
       : super(key: key);
 
   @override
@@ -61,8 +65,47 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
     fetchInitialData();
   }
 
+  Future<void> fetchProductsType(BuildContext context, String url) async {
+    print('CategoriesLoading');
+    if (isLoading || isLastPage) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      List<Product> newProducts = await wooCommerceService.fetchProductsBest(
+          context, url);
+
+      print(url);
+      print(newProducts);
+
+      setState(() {
+        products = newProducts;
+
+        if (newProducts.length < 10) {
+          isLastPage = true;
+        }
+      });
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   Future<void> fetchInitialData() async {
-    await fetchProducts();
+    !widget.isLink ? await fetchProducts() : await fetchProductsType(context,
+        widget.type == "bestSellers"
+            ? "https://gomla.sa/wp-json/wc/v3/products?orderby=popularity":
+        widget.type == "nearlyArrived"
+            ? "https://gomla.sa/wp-json/wc/v3/products?orderby=date&order=desc" :
+        "https://gomla.sa/wp-json/wc/v3/products?orderby=popularity&order=asc"
+    );
+    print(widget.type);
+    print("fetchInitialData");
     setState(() {
       isLoading = false;
     });
@@ -95,7 +138,6 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
         products.addAll(newProducts);
 
         if (newProducts.isNotEmpty) {
-          // Initialize the selected min and max prices
           minPrice ??= newProducts
               .map((p) => p.price ?? 0)
               .reduce((a, b) => a < b ? a : b);
@@ -127,7 +169,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
       // });
 
       List<Category> fetchedCategories =
-          await wooCommerceService.fetchCategories(context);
+      await wooCommerceService.fetchCategories(context);
       setState(() {
         categories = fetchedCategories;
       });
@@ -179,14 +221,14 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
             builder: (BuildContext context, StateSetter setState) {
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       AppLocalizations.of(context)!.filterProducts,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SingleChildScrollView(
                       child: Column(
@@ -195,7 +237,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         children: [
                           RangeSlider(
                             values:
-                                RangeValues(selectedMinPrice, selectedMaxPrice),
+                            RangeValues(selectedMinPrice, selectedMaxPrice),
                             min: minPrice ?? 0,
                             max: maxPrice ?? 1000,
                             onChanged: (RangeValues values) {
@@ -209,7 +251,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                               '${AppLocalizations.of(context)!.price}: ${selectedMinPrice.toStringAsFixed(2)} - ${selectedMaxPrice.toStringAsFixed(2)}'),
                           DropdownButton<int>(
                             hint:
-                                Text(AppLocalizations.of(context)!.selectBrand),
+                            Text(AppLocalizations.of(context)!.selectBrand),
                             value: selectedBrandId,
                             onChanged: (int? newValue) {
                               setState(() {
@@ -309,7 +351,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                     Text(
                       AppLocalizations.of(context)!.sortProducts,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SingleChildScrollView(
                       child: Column(
@@ -394,7 +436,8 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.products),
+      appBar: CustomAppBar(
+        title: AppLocalizations.of(context)!.products, home: false,),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
           if (!isLoading &&
@@ -411,31 +454,43 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(widget.categoryName),
+                  child: Text(widget.categoryName, style: TextStyle(
+                      fontWeight: FontWeight.bold
+                  ),),
                 ),
               ),
             ),
+            isLoading && products.isEmpty ?
+            Expanded(child: ProductCardWithShimmer(count: 10,)) : // Initial Shimmer
             Expanded(
               child: ListView(
                 children: [
                   buildCategoriesList(),
+                  if (products.isEmpty)
+                    Column(
+                      children: [
+                        Center(
+                            child: buildEmptyState(context,
+                                AppLocalizations.of(context)!
+                                    .noProductsAvailable)),
+                      ],
+                    ),
                   GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(8.0),
                     gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.60,
+                      childAspectRatio: 0.5,
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
                     ),
-                    itemCount:
-                        isLoading && products.isEmpty ? 6 : products.length,
+                    itemCount: isLoading && products.isNotEmpty && page > 1
+                        ? products.length + 1 : products.length, // Show shimmer for load more
                     itemBuilder: (context, index) {
-                      if (isLoading && products.isEmpty) {
-                        return Skeletonizer(
-                            child: ProductCard(product: fakeProduct));
+                      if (isLoading && index == products.length) {
+                        return ShimmerCard(); // Shimmer for Load More
                       }
                       return GestureDetector(
                         onTap: () {
@@ -448,16 +503,32 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                             ),
                           );
                         },
-                        child: ProductCard(product: products[index]),
+                        child: ProductCard(
+                          product: products[index], fakeProduct: "",),
                       );
                     },
                   ),
                 ],
               ),
             ),
+            SizedBox(height: 60,)
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .miniCenterDocked,
+      floatingActionButton: widget.isLink == false ? Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          children: [
             Container(
+              width: mediaQueryWidth(context) * 0.53,
+              height: mediaQueryHeight(context) * 0.05,
               decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: borderColor, width: 0.5)),
+                color: Colors.indigo,
+                borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
                 children: [
@@ -467,10 +538,10 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.sort, color: Colors.black),
+                          Icon(Icons.sort, color: Colors.white),
                           Text(
                             AppLocalizations.of(context)!.sort,
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ],
                       ),
@@ -484,11 +555,11 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         children: [
                           Icon(
                             Icons.filter_list_outlined,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                           Text(
                             AppLocalizations.of(context)!.filter,
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(color: Colors.white),
                           ),
                         ],
                       ),
@@ -497,9 +568,15 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                 ],
               ),
             ),
+            SizedBox(width: 10),
+            CircleAvatar(
+              backgroundColor: Colors.indigo,
+              child: Icon(Icons.share, color: Colors.white),
+            )
           ],
         ),
-      ),
+      ) : SizedBox(height: 0,),
+
     );
   }
 
@@ -538,7 +615,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       children: [
                         CircleAvatar(
                           backgroundImage:
-                              CachedNetworkImageProvider(category.imageUrl),
+                          CachedNetworkImageProvider(category.imageUrl),
                           radius: 40,
                         ),
                         Text(

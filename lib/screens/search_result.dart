@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:skincare/widgets/app_bar.dart';
-import 'package:provider/provider.dart';
 import '../services/woocommerce_service.dart';
 import '../models/product.dart';
+import '../widgets/app_bar.dart';
 import '../widgets/product_card.dart';
 import 'product_screen.dart';
 import 'cart_screen.dart';
@@ -61,7 +60,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.searchResults),
+      appBar: CustomAppBar(title: AppLocalizations.of(context)!.searchResults,home: false,),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
           if (!isLoading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
@@ -90,7 +89,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                   ),
                 );
               },
-              child: ProductCard(product: products[index]),
+              child: ProductCard(product: products[index],fakeProduct: "",),
             );
           },
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:skincare/widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../widgets/app_bar.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   final String phoneNumber = '123-456-7890'; // Replace with actual phone number
@@ -27,7 +28,7 @@ class HelpSupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Help & Support'),
+      appBar: CustomAppBar(title: 'Help & Support',home: false,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

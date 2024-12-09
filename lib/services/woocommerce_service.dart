@@ -1,27 +1,31 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:skincare/env.dart';
-import 'package:skincare/models/brand.dart';
-import 'package:skincare/models/cart_item.dart';
-import 'package:skincare/models/order.dart';
-import 'package:skincare/models/payment_method.dart';
-import 'package:skincare/providers/locale_provider.dart';
-import 'package:skincare/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../env.dart';
+import '../models/brand.dart';
+import '../models/cart_item.dart';
+import '../models/order.dart';
+import '../models/payment_method.dart';
 import '../models/product.dart';
 import '../models/category.dart';
+import 'auth_service.dart';
 
 class WooCommerceService {
   final String baseUrl = '$siteUrl/wp-json/wc/v3';
   final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
   final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
 
+
   Future<List<Product>> fetchProducts(
-      int categoryId, int page, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+      int categoryId, int page, BuildContext context) async
+  {
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    if (language == null) {
+      language = 'ar';
+    }
 
     final response = await http.get(
       Uri.parse(
@@ -43,6 +47,30 @@ class WooCommerceService {
     }
   }
 
+  Future<List<Product>> fetchProductsBest(
+    BuildContext context,String url) async
+  {
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
+    final response = await http.get(
+      Uri.parse(
+          url+"&lang=$language"),
+      headers: {
+        'Authorization': 'Basic ' +
+            base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+      },
+    );
+
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((product) => Product.fromJson(product)).toList();
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
+
   Future<List<Product>> filterProducts({
     required BuildContext context,
     double? minPrice,
@@ -52,9 +80,9 @@ class WooCommerceService {
     int page = 1,
     String? orderBy,
   }) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final url = Uri.parse(
         '$baseUrl/products?page=$page&per_page=10${minPrice != null ? '&min_price=$minPrice' : ''}${maxPrice != null ? '&max_price=$maxPrice' : ''}${brandId != null ? '&brand=$brandId' : ''}${categoryIdFilter != null ? '&category=$categoryIdFilter' : ''}${orderBy != null ? '&orderby=$orderBy' : ''}&lang=$language');
     final response = await http.get(url, headers: {
@@ -63,6 +91,13 @@ class WooCommerceService {
     });
 
     if (response.statusCode == 200) {
+     /* print(" response.body");
+      print( response.body);
+      print( response.body);
+      print( response.body);
+
+      print( "response.body");*/
+      print( response.body);
       final List<dynamic> data = json.decode(response.body);
       return data.map((item) => Product.fromJson(item)).toList();
     } else {
@@ -71,9 +106,9 @@ class WooCommerceService {
   }
 
   Future<Product> fetchProduct(int productId, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse('$baseUrl/products/$productId?lang=$language'),
       headers: {
@@ -91,9 +126,9 @@ class WooCommerceService {
 
   Future<List<Product>> fetchProductsByBrand(
       int brandId, int page, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse('$baseUrl/products?brand=$brandId&page=$page&lang=$language'),
       headers: {
@@ -111,9 +146,9 @@ class WooCommerceService {
   }
 
   Future<List<Category>> fetchCategories(BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse('$baseUrl/products/categories?lang=$language&per_page=100'),
       headers: {
@@ -137,9 +172,9 @@ class WooCommerceService {
 
   Future<List<Category>> fetchSubCategories(
       BuildContext context, int categoryId) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse(
           '$baseUrl/products/categories?lang=$language&per_page=100&parent=$categoryId'),
@@ -210,9 +245,9 @@ class WooCommerceService {
   }
 
   Future<List<Category>> fetchHomeCategories(BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse('$siteUrl/wp-json/custom/v1/mobile-home-product-categories'),
       headers: {
@@ -234,9 +269,9 @@ class WooCommerceService {
   // fetch child categories
   Future<List<Category>> fetchChildCategories(
       int parentId, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse(
           '$baseUrl/products/categories?lang=$language&hide_empty=true&parent=$parentId'),
@@ -257,12 +292,12 @@ class WooCommerceService {
   }
 
   Future<List<Brand>> fetchBrands(BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       // fetch all brands without pagination
-      Uri.parse('$siteUrl/wp-json/wc/v3/brands'),
+      Uri.parse('$siteUrl/wp-json/v2/product_brand'),
       headers: {
         'Authorization': 'Basic ' +
             base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -278,9 +313,12 @@ class WooCommerceService {
   }
 
   Future<List<PaymentMethod>> fetchPaymentMethods(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse(
-          '$baseUrl/payment_gateways?lang=${Provider.of<LocaleProvider>(context, listen: false).locale.languageCode}'),
+          '$baseUrl/payment_gateways?lang=${language}'),
       headers: {
         'Authorization': 'Basic ' +
             base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -323,8 +361,9 @@ class WooCommerceService {
   // fetchRelatedProducts
   Future<List<Product>> fetchRelatedProducts(
       int productId, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final response = await http.get(
       Uri.parse('$baseUrl/products/$productId/related?lang=$language'),
       headers: {
@@ -345,8 +384,9 @@ class WooCommerceService {
   Future<List<Order>> fetchUserOrders(BuildContext context) async {
     final pref = await SharedPreferences.getInstance();
     final String jwtToken = pref.getString('auth_token') ?? '';
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
 
     final userInfo = await AuthService.fetchUserInfo();
 
@@ -386,8 +426,9 @@ class WooCommerceService {
     required int userId,
     String couponCode = '',
   }) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final url = Uri.parse('$baseUrl/orders?lang=$language');
 
     // Encoding the consumer key and secret for Basic Authentication
@@ -465,8 +506,9 @@ class WooCommerceService {
 
   Future<List<Product>> searchProducts(
       String query, int page, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final url = Uri.parse(
         '$baseUrl/products?search=$query&page=$page&per_page=10&consumer_key=$consumerKey&consumer_secret=$consumerSecret&lang=$language');
     final response = await http.get(url);
@@ -480,8 +522,9 @@ class WooCommerceService {
   }
 
   Future<List<dynamic>> fetchShippingZones(BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final url = Uri.parse('$baseUrl/shipping/zones?lang=$language');
     String auth =
         'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
@@ -505,8 +548,9 @@ class WooCommerceService {
 
   Future<List<dynamic>> fetchShippingMethods(
       int zoneId, BuildContext context) async {
-    final String language =
-        Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';
     final url =
         Uri.parse('$baseUrl/shipping/zones/$zoneId/methods?lang=$language');
     String auth =
@@ -523,8 +567,9 @@ class WooCommerceService {
   }
 
   Future<List?> validateCoupon(String couponCode, BuildContext context) async {
-    final String language = Localizations.localeOf(context).languageCode;
-    final url = Uri.parse('$baseUrl/coupons?code=$couponCode&lang=$language');
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale') ;
+    language ??= 'ar';    final url = Uri.parse('$baseUrl/coupons?code=$couponCode&lang=$language');
 
     // Encoding the consumer key and secret for Basic Authentication
     String auth =

@@ -1,5 +1,5 @@
+import 'package:Gomla/models/variation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:skincare/models/variation.dart';
 import 'cart_item.dart';
 import 'product.dart';
 

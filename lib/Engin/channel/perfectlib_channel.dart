@@ -17,7 +17,7 @@ class PerfectLibConfiguration {
     this.imageSource = PerfectImageSource.imageSourceFile,
     this.previewMode = false,
     this.mappingMode = false,
-    this.developerMode = false,
+    this.developerMode = true,
     this.userId = "",
     this.configFile = "android/app/src/main/assets/perfectlib/config.json",
     this.modelFolder = "android/app/src/main/assets/model"

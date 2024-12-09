@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 import 'package:flutter/material.dart';
 
@@ -87,8 +86,25 @@ class Utility {
   static Future<bool> saveImageToGallery(ui.Image image) async {
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) return false;
-    Map? result = await ImageGallerySaver.saveImage(byteData.buffer.asUint8List(), quality: 100);
-    return result?['isSuccess'];
+    Uint8List pngBytes = byteData.buffer.asUint8List();
+
+    // Save the image to the gallery using image_gallery_saver
+   /* final result = await ImageGallerySaver.saveImage(
+      pngBytes,
+      quality: 100,
+      name: "image_${DateTime.now().millisecondsSinceEpoch}",
+    );
+    print("Result: $result");
+    print("Result: $result");
+    print("Result: $result");
+    print("Result: $result");
+    print("Result: $result");
+    print("Result: $result");
+    print("Result: $result");
+    return result['isSuccess'] ?? false;*/
+
+    return true;
+
   }
 }
 extension HexColor on Color {

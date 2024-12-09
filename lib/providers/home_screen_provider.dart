@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:skincare/models/brand.dart';
-import 'package:skincare/models/category.dart';
-import 'package:skincare/models/product.dart';
-import 'package:skincare/services/woocommerce_service.dart';
+
+import '../models/brand.dart';
+import '../models/category.dart';
+import '../models/product.dart';
+import '../services/woocommerce_service.dart';
+
 
 class HomeScreenProvider with ChangeNotifier {
   final WooCommerceService wooCommerceService = WooCommerceService();

@@ -10,17 +10,14 @@ ButtonStyle settingPageButtonStyle() {
 
 Positioned backButton(BuildContext context) {
   return Positioned(
-    top: 46.0,
+    top: 30.0,
     left: 16.0,
     child: Stack (
       children: [
+
         IconButton(
-          icon: const Icon(Icons.lens, color: Colors.white, shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 1.0)],),
-          onPressed: () {},
-        ),
-        IconButton(
-          padding: const EdgeInsets.only(left: 4),
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 12,),
+          alignment: Alignment.center,
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 30,),
           onPressed: () {
             Navigator.maybePop(context);
           },
@@ -30,68 +27,82 @@ Positioned backButton(BuildContext context) {
   );
 }
 
-Icon lightQualityIcon(String result) {
+StatelessWidget lightQualityIcon(String label, String result, BuildContext context) {
+  Color containerColor;
+
+  // Determine the container color based on the result
   switch (result) {
     case "Good":
-      return const Icon(Icons.circle, color: Colors.green, size: 20);
+      containerColor = Colors.green;
+      break;
     case "Normal":
-      return const Icon(Icons.circle, color: Colors.orange, size: 20);
+      containerColor = Colors.orange;
+      break;
     case "Unknown":
-      return const Icon(Icons.circle, color: Colors.grey, size: 20);
+      containerColor = Colors.grey;
+      break;
     default:
-      return const Icon(Icons.circle, color: Colors.red, size: 20);
+      containerColor = Colors.red;
+      break;
   }
-  
-}
 
-Positioned lightQualityBox(String faceLighting, String faceFront, String faceArea) {
-  return Positioned(
-    top: 56.0,
-    right: 16.0,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text.rich(
-          TextSpan(
-            style: const TextStyle(
-              fontSize: 15,
-            ),
-            children: [
-              const TextSpan(text:"Lighting: ", style: TextStyle(fontWeight: FontWeight.bold)),
-              WidgetSpan(child: lightQualityIcon(faceLighting)),
-              TextSpan(text:" $faceLighting")
-            ]
+  return Container(
+    width: MediaQuery.of(context).size.width * 0.29,
+    height: 50,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10.0),
+      color: containerColor,
+    ),
+    child: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-        ),
-        Text.rich(
-          TextSpan(
-            style: const TextStyle(
-              fontSize: 15,
-            ),
-            children: [
-              const TextSpan(text:"Face frontal: ", style: TextStyle(fontWeight: FontWeight.bold)),
-              WidgetSpan(child: lightQualityIcon(faceFront)),
-              TextSpan(text:" $faceFront")
-            ]
+          Text(
+            result,
+            style: TextStyle(color: Colors.white),
           ),
-        ),
-        Text.rich(
-          TextSpan(
-            style: const TextStyle(
-              fontSize: 15,
-            ),
-            children: [
-              const TextSpan(text:"Face area: ", style: TextStyle(fontWeight: FontWeight.bold)),
-              WidgetSpan(child: lightQualityIcon(faceArea)),
-              TextSpan(text:" $faceArea")
-            ]
-          ),
-        ),
-        const SizedBox(height: 20),
-      ],
+        ],
+      ),
     ),
   );
 }
+
+Positioned lightQualityBox(String faceLighting, String faceFront, String faceArea, BuildContext context) {
+  return Positioned(
+    top: 50,
+    right: 1,
+
+    left: 10,
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        crossAxisAlignment:   CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Box for Lighting Quality
+          lightQualityIcon("Lighting", faceLighting, context),
+          SizedBox(width: 10),
+
+
+          // Box for Face Frontal Quality
+          lightQualityIcon("Face frontal", faceFront, context),
+          SizedBox(width: 10),
+
+
+          // Box for Face Area Quality
+          lightQualityIcon("Face area", faceArea, context),
+            SizedBox(width: 10),
+
+        ],
+      ),
+    ),
+  );
+}
+
 
 Stack flashView() {
   return Stack (
@@ -109,7 +120,33 @@ Stack flashView() {
   );
 }
 
-Column scoreView(Size scoreSize, String score, String featureName, bool isSelected) {
+Column scoreView(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor) {
+  return Column(children: [
+    Container(
+      width:scoreSize.width,
+      height:scoreSize.height,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isSelected ? borderColor : Colors.transparent,
+        border: Border.all(
+              color: borderColor,
+              width:3,
+            ),
+      ),
+      child: Center(
+        child:
+          Text(score, style: TextStyle(
+            color: Colors.white,
+          ))
+        ),
+      ),
+      Text(featureName, style: TextStyle(
+        color: Colors.white
+      ))
+    ],
+  );
+}
+Column scoreViewAll(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor) {
   return Column(children: [
     Container(
       width:scoreSize.width,
@@ -118,23 +155,29 @@ Column scoreView(Size scoreSize, String score, String featureName, bool isSelect
         shape: BoxShape.circle,
         color: isSelected ? Colors.black.withAlpha(70) : Colors.transparent,
         border: Border.all(
-              color: Colors.pink,
-              width: 2.0,
+              color: borderColor,
+              width:3,
             ),
       ),
       child: Center(
-        child: 
-          Text(score, style: glowingText())
+        child:
+          Text(score, style: TextStyle(
+            color: backColor,
+            fontSize: 25,
+            fontWeight: FontWeight.bold
+          ))
         ),
       ),
-      Text(featureName, style: glowingText())
+      Text(featureName, style: TextStyle(
+        color: Colors.white
+      ))
     ],
-  ); 
+  );
 }
 
 TextStyle glowingText() {
   return const TextStyle(
-    color: Colors.white, 
+    color: Colors.black,
     fontWeight:FontWeight.bold, 
     shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 2.0)]
   );

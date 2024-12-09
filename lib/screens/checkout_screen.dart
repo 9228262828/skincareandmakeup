@@ -3,16 +3,17 @@ import 'package:flutter_paytabs_bridge/BaseBillingShippingInfo.dart';
 import 'package:flutter_paytabs_bridge/PaymentSdkConfigurationDetails.dart';
 import 'package:flutter_paytabs_bridge/PaymentSdkLocale.dart';
 import 'package:flutter_paytabs_bridge/flutter_paytabs_bridge.dart';
-import 'package:skincare/contstants.dart';
-import 'package:skincare/env.dart';
-import 'package:skincare/main.dart';
-import 'package:skincare/models/cart.dart';
-import 'package:skincare/services/auth_service.dart';
-import 'package:skincare/services/woocommerce_service.dart';
-import 'package:skincare/widgets/app_bar.dart';
-import 'package:skincare/widgets/fade_image.dart';
+
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../contstants.dart';
+import '../env.dart';
+import '../main.dart';
+import '../models/cart.dart';
+import '../services/auth_service.dart';
+import '../services/woocommerce_service.dart';
+import '../widgets/app_bar.dart';
 
 class CheckoutScreen extends StatefulWidget {
   @override
@@ -77,11 +78,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+         SnackBar(
           duration: const Duration(milliseconds: 500),
           backgroundColor: Colors.red,
           content: Text(
-            'من فضلك قم بتسجيل الدخول',
+            AppLocalizations.of(context)!.pleaseLogin,
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -207,7 +208,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _totalAmount = _calculateTotalAmount();
 
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.checkout),
+      appBar: CustomAppBar(title: AppLocalizations.of(context)!.checkout,home: false,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

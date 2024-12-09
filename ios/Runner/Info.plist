@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Skincare</string>
+	<string>Gomla</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>skincare</string>
+	<string>Gomla</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -41,6 +41,22 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+
+	<!-- Facebook Configuration -->
+	<key>FacebookAppID</key>
+	<string>your-app-id</string> <!-- Replace with your Facebook App ID -->
+	<key>FacebookDisplayName</key>
+	<string>Gomla</string> <!-- Replace with your Facebook app's display name -->
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb{your-app-id}</string> <!-- Replace with your Facebook App ID -->
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

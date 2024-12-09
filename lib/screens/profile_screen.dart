@@ -1,254 +1,470 @@
+import 'package:Gomla/Engin/skincare.dart';
+import 'package:Gomla/screens/delete_account_Screen.dart';
+import 'package:Gomla/shared/utils/app_assets.dart';
+import 'package:Gomla/shared/utils/app_values.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:skincare/contstants.dart';
-import 'package:skincare/main.dart';
-import 'package:skincare/models/order.dart';
-import 'package:skincare/screens/fav_screen.dart';
-import 'package:skincare/screens/help_screen.dart';
-import 'package:skincare/screens/home_screen.dart';
-import 'package:skincare/screens/login_screen.dart';
-import 'package:skincare/screens/orders_screen.dart';
-import 'package:skincare/screens/registration_screen.dart';
-import 'package:skincare/services/auth_service.dart';
-import 'package:skincare/services/woocommerce_service.dart';
-import 'package:skincare/widgets/app_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:shimmer/shimmer.dart'; // Shimmer import
 
-import 'package:http/http.dart' as http;
-
+import '../contstants.dart';
+import '../main.dart';
+import '../services/auth_service.dart';
+import '../widgets/account_shimmer.dart';
 import '../widgets/language_selector.dart';
+import '../widgets/unauth_widget.dart';
+import 'fav_screen.dart';
+import 'help_screen.dart';
+import 'orders_screen.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class ProfileState extends Equatable {
+  final bool isLoading;
+  final Map<String, dynamic>? userInfo;
+  final String? errorMessage;
+
+  const ProfileState({
+    this.isLoading = true,
+    this.userInfo,
+    this.errorMessage,
+  });
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  List<Object?> get props => [isLoading, userInfo, errorMessage];
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isLoading = true;
-  Map<String, dynamic>? _userInfo;
-  late Future<List<Order>> futureOrders;
+// Cubit Logic
+class ProfileCubit extends Cubit<ProfileState> {
+  ProfileCubit() : super(const ProfileState());
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchUserInfo();
-  }
-
-  Future<void> _fetchUserInfo() async {
+  Future<void> fetchUserInfo(context) async {
     try {
+      emit(ProfileState(isLoading: true)); // Show loading state
       final userInfo = await AuthService.fetchUserInfo();
-      print(userInfo);
-
-      setState(() {
-        _userInfo = userInfo;
-        _isLoading = false;
-      });
+      emit(ProfileState(
+          isLoading: false, userInfo: userInfo)); // Show fetched data
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(milliseconds: 500),
-          backgroundColor: Colors.red,
-          content: Text(
-            'من فضلك قم بتسجيل الدخول',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
+      emit(ProfileState(
+          isLoading: false,
+          errorMessage: AppLocalizations.of(context)!.pleaseLogin));
     }
   }
 
-  void _shareApp() {
-    Share.share('Check out this amazing app: [App Link]');
+  void logout() {
+    AuthService.logout();
+    emit(const ProfileState(isLoading: false)); // Reset after logout
   }
+}
 
-  Future<void> _launchUrl(_url) async {
-    final Uri url = Uri.parse(_url);
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $_url');
-    }
-  }
+class ProfileScreen extends StatelessWidget {
+  ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.profile),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            if (_userInfo == null) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  // make buttons 50% of the screen width
-                  // and spread them evenly
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+    return BlocProvider(
+      create: (_) => ProfileCubit()..fetchUserInfo(context),
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade100,
+        /* appBar: CustomAppBar(
+            title: AppLocalizations.of(context)!.profile, home: true),*/
+        body: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return MyShimmerScreen();
+            }
 
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: mainColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0))),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
-                          );
-                        },
-                        child: Text(AppLocalizations.of(context)!.login, style: TextStyle(color: Colors.white)),
-                      ),
+            return _buildProfileScreen(context, state.userInfo);
+          },
+        ),
+      ),
+    );
+  }
+
+
+
+  Widget _buildProfileScreen(
+      BuildContext context, Map<String, dynamic>? userInfo)
+  {
+    // List of items that can contain either icons or image paths
+    final List<Map<String, dynamic>> gridItems = [
+      {
+        'text': AppLocalizations.of(context)!.orders,
+        'icon': Icons.local_mall,
+        'action': () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => OrdersScreen()));
+        }
+      },
+      {
+        'text': AppLocalizations.of(context)!.favorites,
+        'icon': Icons.favorite_border,
+        'action': () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => FavScreen()));
+        }
+      },
+    ];
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (userInfo == null) ...[
+              UnauthWidget(),
+            ]
+            else ...[
+              SizedBox(
+                height: mediaQueryHeight(context) * 0.02,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4),
+                child: Container(
+                  height: mediaQueryHeight(context) * 0.12,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            radius: 25,
+                            child: Text(userInfo['username'][0],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.welcome,
+                              style: TextStyle(
+                                color: mainColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w100,
+                              ),
+                            ),
+                            Text(
+                              userInfo['username'],
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w100,
+                              ),
+                            ),
+                            Text(
+                              userInfo['email'],
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w100,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                    SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0))),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => RegistrationScreen()),
-                          );
-                        },
-                        child: Text(AppLocalizations.of(context)!.register, style: TextStyle(color: mainColor)),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ] else ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text('${_userInfo!['username']}'),
+              SizedBox(
+                height: mediaQueryHeight(context) * 0.1,
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8.0,
+                    mainAxisSpacing: 8.0,
+                    childAspectRatio: 2.1,
+                  ),
+                  padding: const EdgeInsets.all(0),
+                  itemCount: gridItems.length,
+                  // Number of items in the grid
+                  itemBuilder: (context, index) {
+                    var item = gridItems[index];
+
+                    // Check if the icon is an IconData or a String (image path)
+                    return GestureDetector(
+                      onTap: item['action'],
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Display Icon or Image depending on the data type
+                              item['icon'] is IconData
+                                  ? Icon(
+                                      item['icon'] as IconData,
+                                      color: Colors.grey.shade500,
+                                      size: 35,
+                                    )
+                                  : Image.asset(
+                                      item['icon'] as String,
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                              SizedBox(width: 10),
+                              Text(
+                                item['text']!,
+                                style: TextStyle(color: Colors.grey),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ],
-            (_userInfo != null)
-                ? ListTile(
-                    tileColor: Colors.grey.shade100,
-                    leading: Icon(
-                      Icons.local_mall,
-                      color: Colors.grey.shade500,
-                    ),
-                    title: Text(AppLocalizations.of(context)!.myOrders),
-                    onTap: () {
-                      // Navigate to My Favourites
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OrdersScreen()),
-                      );
-                    },
-                  )
-                : Container(),
-            ListTile(
-              tileColor: Colors.grey.shade100,
-              leading: Icon(
-                Icons.favorite_border,
-                color: Colors.grey.shade500,
+              SizedBox(
+                height: mediaQueryHeight(context) * 0.02,
               ),
-              title: Text(AppLocalizations.of(context)!.myFavorites),
-              onTap: () {
-                // Navigate to My Favourites
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FavScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.headset_mic,
-                color: Colors.grey.shade500,
-              ),
-              title: Text(AppLocalizations.of(context)!.helpSupport),
-              onTap: () {
-                // Navigate to Help & Support
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HelpSupportScreen()),
-                );
-              },
-            ),
-            ListTile(
-              tileColor: Colors.grey.shade100,
-              leading: Icon(
-                Icons.policy,
-                color: Colors.grey.shade500,
-              ),
-              title: Text(AppLocalizations.of(context)!.privacyPolicy),
-              onTap: () async {
-                // _launchUrl('https://mskra.com/privacy-policy/');
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.delivery_dining,
-                color: Colors.grey.shade500,
-              ),
-              title: Text(AppLocalizations.of(context)!.delveryPolicy),
-              onTap: () async {
-                // _launchUrl('https://mskra.com/delivery-policy/');
-              },
-            ),
-            ListTile(
-              tileColor: Colors.grey.shade100,
-              leading: Icon(
-                Icons.policy_outlined,
-                color: Colors.grey.shade500,
-              ),
-              title: Text(AppLocalizations.of(context)!.termsOfUse),
-              onTap: () async {
-                // _launchUrl('https://mskra.com/terms-of-use/');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.question_answer, color: Colors.grey.shade500),
-              title: Text(AppLocalizations.of(context)!.faqs),
-              onTap: () async {
-                // _launchUrl('https://mskra.com/faq/');
-              },
-            ),
-            ListTile(
-              tileColor: Colors.grey.shade100,
-              leading: Icon(
-                Icons.share,
-                color: Colors.grey.shade500,
-              ),
-              title: Text(AppLocalizations.of(context)!.shareApp),
-              onTap: _shareApp,
-            ),
-            ListTile(
-              leading: Icon(Icons.language, color: Colors.grey.shade500),
-              title: Text(AppLocalizations.of(context)!.changeLanguage),
-              trailing: LanguageSelector(),
-              onTap: () {
-                // Navigate to Change Language
-              },
-            ),
-            if (_userInfo != null) ...[
-              ListTile(
-                // add border bottom to the list tile
-                tileColor: Colors.grey.shade100,
-                leading: Icon(Icons.logout, color: Colors.grey.shade500),
-                title: Text(AppLocalizations.of(context)!.logout),
+            /*  GestureDetector(
                 onTap: () {
-                  AuthService.logout();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SkincareDetect()));
+                },
+                child: Container(
+                    height: mediaQueryHeight(context) * 0.078,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      mainAxisAlignment:  MainAxisAlignment.spaceEvenly,
+                        children: [
+                      Text(AppLocalizations.of(context)!.skinCare,
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w100,
+                          )),
+                      ClipRRect(
+                        borderRadius:   BorderRadius.circular(15),
+                        child: Image(
+                          image: AssetImage(ImageAssets.skin),
+                          width: 50,
+                        ),
+                      )
+                    ])),
+              ),*/
+              SizedBox(height: mediaQueryHeight(context) * 0.02),
+              Text(
+                AppLocalizations.of(context)!.settings,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: mediaQueryHeight(context) * 0.02),
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: _buildLanguageSelector(context)),
+              SizedBox(height: mediaQueryHeight(context) * 0.01),
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: _buildDeleteAccount(context)),
+              SizedBox(height: mediaQueryHeight(context) * 0.01),
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: _buildShareApp(context)),
+              SizedBox(height: mediaQueryHeight(context) * 0.06),
+              GestureDetector(
+                onTap: () {
+                  context.read<ProfileCubit>().logout();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MainScreen()),
                   );
                 },
+                child: Container(
+                  height: mediaQueryHeight(context) * 0.08,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(AppLocalizations.of(context)!.logout,
+                            style: TextStyle(
+                              color: mainColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w100,
+                            )),
+                        Icon(Icons.logout, color: mainColor, size: 25,)
+
+                      ],
+                    )
+                  ),
+                ),
               ),
+              SizedBox(height: mediaQueryHeight(context) * 0.02),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Text(
+                        AppLocalizations.of(context)!.sellwithus,
+                        style: TextStyle(
+                            color: mainColor,
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(height: mediaQueryHeight(context) * 0.01),
+                    Divider(
+                      color: Colors.grey.shade300,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.helpSupport,
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey.shade500),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                              AppLocalizations.of(context)!.privacyPolicy,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey.shade500)),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                              AppLocalizations.of(context)!.delveryPolicy,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey.shade500)),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.termsOfUse,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.faqs,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.shareApp,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: mediaQueryHeight(context) * 0.02),
+              Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.version,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  )),
+              Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.all_rights_reserved,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  )),
             ],
           ],
         ),
       ),
     );
   }
+
+
+  Widget _buildLanguageSelector(BuildContext context) {
+    return ListTile(
+      tileColor: Colors.grey.shade100,
+      leading: Icon(Icons.language, color: Colors.grey.shade500),
+      title: Text(AppLocalizations.of(context)!.changeLanguage),
+      trailing: LanguageSelector(),
+      onTap: () {},
+    );
+  }
+  Widget _buildDeleteAccount(BuildContext context) {
+    return ListTile(
+      tileColor: Colors.grey.shade100,
+      leading: Icon(Icons.security, color: Colors.grey.shade500),
+      title: Text(AppLocalizations.of(context)!.securitySettings),
+      trailing: Icon(Icons.keyboard_arrow_left, color: Colors.grey.shade500),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DeleteAccount()),
+        );
+      },
+    );
+  }
+  Widget _buildShareApp(BuildContext context) {
+    return ListTile(
+      tileColor: Colors.grey.shade100,
+      leading: Icon(Icons.share, color: Colors.grey.shade500),
+      title: Text(AppLocalizations.of(context)!.shareApp),
+      trailing: Icon(Icons.keyboard_arrow_left, color: Colors.grey.shade500),
+      onTap: () {
+        _shareApp();
+      },
+    );
+  }
+
+  void _shareApp() {
+    Share.share('Check out this amazing app: [App Link]');
+  }
 }
+
+
