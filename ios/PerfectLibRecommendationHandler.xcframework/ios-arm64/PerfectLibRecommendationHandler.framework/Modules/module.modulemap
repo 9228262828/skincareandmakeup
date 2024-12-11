@@ -1,0 +1,6 @@
+framework module PerfectLibRecommendationHandler {
+  umbrella header "PerfectLibRecommendationHandler.h"
+  export *
+
+  module * { export * }
+}

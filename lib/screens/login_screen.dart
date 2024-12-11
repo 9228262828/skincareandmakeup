@@ -282,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Facebook Sign-In Button
                   IconButton(
                     onPressed: (){
-                      loginWithFacebookToken("");
+                      signInWithFacebook();
                     },
                     icon: Icon(
                       Icons.facebook,

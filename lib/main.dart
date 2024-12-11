@@ -4,6 +4,7 @@ import 'package:Gomla/screens/brands_screen.dart';
 import 'package:Gomla/screens/cart_screen.dart';
 import 'package:Gomla/screens/categories_screen.dart';
 import 'package:Gomla/screens/home_screen.dart';
+import 'package:Gomla/screens/login_screen.dart';
 import 'package:Gomla/screens/profile_screen.dart';
 import 'package:Gomla/services/woocommerce_service.dart';
 import 'package:Gomla/shared/utils/app_assets.dart';
@@ -17,7 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Engin/skincare.dart';
-import 'Engin/test.dart';
+import 'test.dart';
 import 'Engin/utility/makeupCam.dart';
 import 'controllers/brands_controller/brands_cubit.dart';
 import 'contstants.dart';
@@ -90,10 +91,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Start a timer to navigate to the main screen after 3 seconds
     Future.delayed(const Duration(seconds: 3), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? savedLocale = prefs.getString("locale");
+      String savedLocale = prefs.getString("locale")?? "ar";
 
       print('Stored locale: $savedLocale'); // Debugging print
 
@@ -127,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OpenScreen()),
+        MaterialPageRoute(builder: (context) => LoginScreen()),
       );
 
   }

@@ -28,7 +28,7 @@ dependencies:
   intl: any
   dio:
   provider: ^6.0.0
-  share_plus: ^9.0.0
+  share_plus: ^10.1.2
   shared_preferences: ^2.0.6
   skeletonizer: ^1.4.2
   url_launcher: ^6.3.0
@@ -37,12 +37,12 @@ dependencies:
   pdf: ^3.6.1
   permission_handler: ^10.2.0
   video_player:
-  fl_chart: ^0.40.0
+  fl_chart: 0.36.0
   flutter_bloc: ^8.1.6
   shimmer: ^3.0.0
   flutter_svg: ^2.0.16
   google_sign_in:
-  flutter_facebook_auth:
+  flutter_facebook_auth: ^7.1.1
   firebase_auth:
 
 ## open_filex: ^3.2.1

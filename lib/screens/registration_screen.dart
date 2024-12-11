@@ -287,6 +287,35 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
+                SizedBox(height: 20),TextFormField(
+                  controller: _passwordController,
+                  decoration: customInputDecoration(
+                      context
+                      , AppLocalizations.of(context)!.password, AppLocalizations.of(context)!.password),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return AppLocalizations.of(context)!
+                          .pleaseEnterYourPhoneNumber;
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: customInputDecoration(
+                      context
+                      , AppLocalizations.of(context)!.confirmPassword, AppLocalizations.of(context)!.confirmPassword),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return AppLocalizations.of(context)!
+                          .pleaseEnterYourPhoneNumber;
+                    }
+                    return null;
+                  },
+                ),
                 SizedBox(height: 20),
                 _isLoading
                     ? CircularProgressIndicator(color: mainColor)
