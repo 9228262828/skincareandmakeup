@@ -1,16 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:ffi';
 
-import '../providers/home_screen_provider.dart';
-import '../services/woocommerce_service.dart';
+import 'package:Gomla/shared/utils/app_values.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart'; // Add this import
+import '../controllers/brands_controller/brands_cubit.dart';
+import '../controllers/brands_controller/brands_states.dart';
 import '../models/brand.dart';
-import 'package:provider/provider.dart';
-import '../localization/localization_provider.dart';
+import '../services/woocommerce_service.dart';
 import '../widgets/app_bar.dart';
-import '../widgets/fade_image.dart';
 import 'brand_listing_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 
 class BrandsScreen extends StatefulWidget {
   @override
@@ -18,89 +19,113 @@ class BrandsScreen extends StatefulWidget {
 }
 
 class _BrandsScreenState extends State<BrandsScreen> {
-  late WooCommerceService wooCommerceService;
-  List<Brand> brands = [];
-  int page = 1;
-  bool isLoading = false;
-  bool isLastPage = false;
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    wooCommerceService = WooCommerceService();
-    fetchBrands();
-  }
-
-  Future<void> fetchBrands() async {
-    if (isLoading || isLastPage) return;
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      List<Brand> newBrands = await wooCommerceService.fetchBrands(context);
-    } catch (e) {
-      print(e);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Widget _buildShimmerGrid(BuildContext context) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+      itemCount: 21, // Number of shimmer placeholders
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: mediaQueryHeight(context) * 0.15,
+                  height: mediaQueryWidth(context) * 0.15,
+                  color: Colors.grey[300],
+                ),
+              ),
+              SizedBox(height: 10),
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: 10,
+                  width: mediaQueryWidth(context) * 0.2,
+                  color: Colors.grey[300],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
     return Scaffold(
-      appBar: CustomAppBar(title: '',home: false,),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemCount: homeScreenProvider.brands.length,
-        itemBuilder: (context, index) {
-          if (homeScreenProvider.brands.isEmpty) {
-            return Center(child: Text(AppLocalizations.of(context)!.noProductsAvailable));
-          }
-          final brand = homeScreenProvider.brands[index];
-          return Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BrandProductsScreen(
+      appBar: CustomAppBar(title: '', home: true),
+      body: BlocBuilder<BrandsCubit, BrandsState>(
+        bloc: BrandsCubit(WooCommerceService())..fetchBrands(),
+        builder: (context, state) {
+          if (state is BrandsInitial || state is BrandsLoading) {
+            return _buildShimmerGrid(context); // Show shimmer while loading
+          } else if (state is BrandsError) {
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noProductsAvailable),
+            );
+          } else if (state is BrandsLoaded) {
+            final brands = state.brands;
 
-                        brandName: brand.name, id: brand.id,
+            print(brands);
+if (brands.isEmpty) {
+              return Center(
+                child: Text(AppLocalizations.of(context)!.noBrandsAvailable),
+              );
+            }
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+              itemCount: brands.length,
+              itemBuilder: (context, index) {
+                final brand = brands[index];
+                final brandId = brand.id is String
+                    ? int.tryParse(brand.id) ?? 0 // If it's a string, try to parse it to int
+                    : brand.id;
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BrandProductsScreen(
+                                brandName: brand.name,
+                                id:  brandId,
+                                isLink: false,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: brand.imageUrl,
+                              width: mediaQueryHeight(context) * 0.15,
+                              height: mediaQueryWidth(context) * 0.15,
+                              fit: BoxFit.contain,
+                              errorWidget: (context, url, error) => Image.asset(
+                                  "assets/placeholder.png") // Use an icon or any fallback widget
+                            ),
+                            SizedBox(width: 10),
+                            Text(brand.name),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: brand.imageUrl,
-                      width: 150,
-                      height: 50,
-                      // fit: BoxFit.cover,
-                      placeholder: (context, url) => Center(child: Image.asset('assets/grey_image.jpeg')),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
-                    SizedBox(width: 10),
-                    Text(brand.name),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-            ],
-          );
+                      SizedBox(height: 10),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+          return SizedBox(); // Fallback for unexpected states
         },
       ),
     );

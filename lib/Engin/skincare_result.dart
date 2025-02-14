@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:Gomla/Engin/ads.dart';
+import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
 
 import 'channel/skincare_channel.dart';
@@ -206,6 +208,12 @@ class _SkincareResultState extends State<SkincareResult> {
                 selectedFeature == feature ? Colors.white : Colors.black,
                 // Text color    backgroundColor,
                 borderColor,
+                Colors.black,
+                Shadow(
+                  offset: Offset(1.0, 1.0),
+                  blurRadius: 3.0,
+                  color: Colors.transparent,
+                ),
               ),
             ],
           ),
@@ -300,6 +308,14 @@ class _SkincareResultState extends State<SkincareResult> {
                 selectedFeature == feature, // Highlight the selected item
                 selectedFeature == feature ? Colors.white : Colors.black, // Text color
                 backgroundColor,
+              selectedFeature == feature?   Colors.black :Colors.white,
+
+                  Shadow(
+                      offset: Offset(.5, .5),
+                      blurRadius: 1,
+                      color: Colors.white
+                  ),
+
 
               ),
             ],
@@ -647,30 +663,64 @@ class _SkincareResultState extends State<SkincareResult> {
               top: 40,
               left: 10,
               child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back_ios, color:mainColor  ),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            showReport
-                ? Positioned(
+             Positioned(
                     bottom: MediaQuery.of(context).size.height * 0.15,
                     right: 20,
                     child: ElevatedButton(
-                      onPressed: () async {
-                        // Ensure all 10 features are captured
+                      style:  ElevatedButton.styleFrom(
+                       backgroundColor: showReport?  mainColor : Colors.grey,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      onPressed: showReport? ()  async {
+                        print(scores);
+                        print(reports);
+                        print(capturedFeatures);
+                        if (scores == null || reports == null || capturedFeatures.isEmpty) {
+                          print("Scores, reports, or capturedFeatures are missing.");
+                          return;
+                        }
+
+                        Map<String, String> skinAnalysisData = {
+                          "dryness": reports!["moisture"] ?? "--",
+                          "redness": reports!["redness"] ?? "--",
+                          "oillness": reports!["oiliness"] ?? "--",
+                          "acne": reports!["acne"] ?? "--",
+                          "pores": reports!["pore"] ?? "--",
+                          "texture": reports!["texture"] ?? "--",
+                          "wrinkles": reports!["wrinkle"] ?? "--",
+                          "dark spots": reports!["age_spot"] ?? "--",
+                          "dark circles": reports!["dark_circle_v2"] ?? "--",
+                          "radiance": reports!["radiance"] ?? "--",
+                        };
+                        Map <String, String> scores1 = {
+                          "skinAge": scores!["skinAge"] ?? "--",
+                          "overallScore": scores!["overallScore"] ?? "--",
+                        };
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ReportScreen(
-                                capturedFeatures: capturedFeatures,
-                                reports: reports!),
+                            builder: (context) => AdPage(
+                              isbeforetest: false,
+                              capturedFeatures: capturedFeatures,
+                              reports: reports!,
+                              skinAnalysisData: skinAnalysisData,
+                              scores: scores1,
+                            ),
                           ),
                         );
-                      },
-                      child: const Text("View Report"),
+                      } : null,
+
+                      child:  Text(AppLocalizations.of(context)!.viewReport),
                     ),
                   )
-                : Container(),
+                ,
             Positioned(
               top: MediaQuery.of(context).size.height *
                   0.15, // Adjust to your desired position

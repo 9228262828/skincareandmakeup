@@ -1,5 +1,5 @@
 class Brand {
-  final int id;
+  final dynamic id;
   final String name;
   final String imageUrl;
 
@@ -13,7 +13,7 @@ class Brand {
     return Brand(
       id: json['id'],
       name: json['name'],
-      imageUrl: json['image'] != null ? json['image']['src'] : '',
+      imageUrl: json['brand_image'] != null ? json['brand_image']['sizes']['full']['url'] : '',
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:Gomla/Engin/skincare.dart';
 import 'package:Gomla/screens/delete_account_Screen.dart';
+import 'package:Gomla/screens/policy_screen.dart';
+import 'package:Gomla/screens/terms_screen.dart';
 import 'package:Gomla/shared/utils/app_assets.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:equatable/equatable.dart';
@@ -7,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shimmer/shimmer.dart'; // Shimmer import
 
 import '../contstants.dart';
 import '../main.dart';
@@ -40,7 +41,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   Future<void> fetchUserInfo(context) async {
     try {
-      emit(ProfileState(isLoading: true)); // Show loading state
+      emit(ProfileState(isLoading: true));
       final userInfo = await AuthService.fetchUserInfo();
       emit(ProfileState(
           isLoading: false, userInfo: userInfo)); // Show fetched data
@@ -240,37 +241,6 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(
                 height: mediaQueryHeight(context) * 0.02,
               ),
-            /*  GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SkincareDetect()));
-                },
-                child: Container(
-                    height: mediaQueryHeight(context) * 0.078,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      mainAxisAlignment:  MainAxisAlignment.spaceEvenly,
-                        children: [
-                      Text(AppLocalizations.of(context)!.skinCare,
-                          style: TextStyle(
-                            color: mainColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w100,
-                          )),
-                      ClipRRect(
-                        borderRadius:   BorderRadius.circular(15),
-                        child: Image(
-                          image: AssetImage(ImageAssets.skin),
-                          width: 50,
-                        ),
-                      )
-                    ])),
-              ),*/
               SizedBox(height: mediaQueryHeight(context) * 0.02),
               Text(
                 AppLocalizations.of(context)!.settings,
@@ -353,41 +323,61 @@ class ProfileScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.helpSupport,
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade500),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                              AppLocalizations.of(context)!.privacyPolicy,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey.shade500)),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                              AppLocalizations.of(context)!.delveryPolicy,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey.shade500)),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TermsAndConditionsPage()),
+                            );
+                          },
                           child: Text(
                             AppLocalizations.of(context)!.termsOfUse,
                             style: TextStyle(
                                 fontSize: 12, color: Colors.grey.shade500),
                           ),
                         ),
+                        /*TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.helpSupport,
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey.shade500),
+                          ),
+                        ),*/
                         TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PrivacyPolicyPage()),
+                            );
+                          },
+                          child: Text(
+                              AppLocalizations.of(context)!.privacyPolicy,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey.shade500)),
+                        ),
+                        /*TextButton(
+                          onPressed: () {},
+                          child: Text(
+                              AppLocalizations.of(context)!.delveryPolicy,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey.shade500)),
+                        ),*/
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                      /*  TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.termsOfUse,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),*/
+                        /*TextButton(
                           onPressed: () {},
                           child: Text(
                             AppLocalizations.of(context)!.faqs,
@@ -402,7 +392,7 @@ class ProfileScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 12, color: Colors.grey.shade500),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ],
@@ -463,7 +453,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _shareApp() {
-    Share.share('Check out this amazing app: [App Link]');
+    Share.share('https://play.google.com/store/apps/details?id=com.perfectcorp.mcsdkapp');
   }
 }
 

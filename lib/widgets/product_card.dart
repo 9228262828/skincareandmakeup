@@ -1,15 +1,14 @@
 
+import 'package:Gomla/widgets/product_review_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
+
 import '../contstants.dart';
 import '../models/cart.dart';
 import '../models/fav.dart';
 import '../models/product.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:http/http.dart' as http;
-
 import '../models/variation.dart';
 import '../screens/product_screen.dart';
 
@@ -36,42 +35,6 @@ class _ProductCardState extends State<ProductCard> {
     price = widget.product.price.toString();
     //fetchVariations();
   }
-
-  /*void fetchVariations() async {
-    try {
-      List<Variation> fetchedVariations =
-          await fetchProductVariations(widget.product.id);
-      setState(() {
-        variations = fetchedVariations;
-        selectedVariation = variations.first;
-        imageUrl = selectedVariation!.imageUrl;
-        price = selectedVariation!.price;
-      });
-    } catch (e) {
-      print('Error fetching variations: $e');
-    }
-  }
-*/
-/*
-  Future<List<Variation>> fetchProductVariations(int productId) async {
-    try {
-      final response = await http.get(Uri.parse(
-          'https://gomla.sa/wp-json/wc/v3/variations/$productId'));
-
-      if (response.statusCode == 200) {
-        List jsonResponse = json.decode(response.body);
-        return jsonResponse
-            .map((variation) => Variation.fromJson(variation))
-            .toList();
-      } else {
-        throw Exception('Failed to load variations: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error: $e');
-      throw Exception('Failed to load variations');
-    }
-  }
-*/
 
   int quantity = 1;
   void _toggleFavorite() {
@@ -155,10 +118,14 @@ class _ProductCardState extends State<ProductCard> {
                     children: [
                     //  fakeProduct == "fake"? SizedBox(height: 10):
                       FadeInImage(
-                        image:  NetworkImage(imageUrl),
+                        image: (imageUrl.isNotEmpty &&
+                                Uri.tryParse(imageUrl)?.hasAbsolutePath == true)
+                            ? NetworkImage(imageUrl)
+                            :AssetImage('assets/placeholder.png')
+                                as ImageProvider,
                         placeholder: AssetImage('assets/grey_image.jpeg'),
-                        height: MediaQuery.of(context).size.height * 0.18,
-                        fit: BoxFit.fitWidth,
+                        height: MediaQuery.of(context).size.height * 0.21,
+                        fit: BoxFit.fitHeight,
                         width: double.infinity,
                       ),
                       SizedBox(height: 10),
@@ -416,28 +383,12 @@ class _ProductCardState extends State<ProductCard> {
             ),
           // SizedBox(height: 8.0),
           // rating
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: SizedBox(
-              width: double.infinity,
-              height: 8.0,
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 8.0,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.star, size: 16, color: mainColor),
-                    ),
-                  );
-                },
-                itemCount: 5,
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-              ),
-            ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: buildRatingIcons(double.parse(widget.product.avrage_rating)), // Helper function to build star icons
           ),
+
           SizedBox(height: 8.0),
         ],
       ),

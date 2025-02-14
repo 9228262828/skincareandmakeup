@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Gomla/shared/global/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +66,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         prefs.setString('userLastName', _lastNameController.text);
         prefs.setString('userPhoto', ''); // You can store the photo URL here if available
 
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => MainScreen()));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -77,6 +79,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
     }
   }
+
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -214,7 +217,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 Image.asset(ImageAssets.logoWhite,
                     height: mediaQueryHeight(context) * 0.15,
                     width: mediaQueryWidth(context) * 0.7),
-                TextFormField(
+                /*TextFormField(
                   controller: _firstNameController,
                   decoration: customInputDecoration(
                     context
@@ -240,7 +243,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),
+                ),*/
                 SizedBox(height: 20),
                 TextFormField(
                   controller: _usernameController,
@@ -255,8 +258,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
-                TextFormField(
+
+                /*TextFormField(
                   controller: _emailController,
                   decoration: customInputDecoration(
                       context
@@ -271,9 +274,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),
+                ),*/
                 SizedBox(height: 20),
-                TextFormField(
+               /* TextFormField(
                   controller: _phoneController,
                   decoration: customInputDecoration(
                       context
@@ -286,13 +289,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),
-                SizedBox(height: 20),TextFormField(
+                ),*/
+                /*SizedBox(height: 20),*/TextFormField(
                   controller: _passwordController,
                   decoration: customInputDecoration(
                       context
                       , AppLocalizations.of(context)!.password, AppLocalizations.of(context)!.password),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.visiblePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
@@ -301,7 +304,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                /*SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: customInputDecoration(
@@ -315,7 +318,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),
+                ),*/
                 SizedBox(height: 20),
                 _isLoading
                     ? CircularProgressIndicator(color: mainColor)
@@ -332,7 +335,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   child: Text(AppLocalizations.of(context)!.register),
                 ),
                 SizedBox(height: 20),
-                Row(
+             /*   Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -371,7 +374,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           )),
                     ),
                   ],
-                ),
+                ),*/
                 TextButton(
                   onPressed: () {
                     Navigator.push(

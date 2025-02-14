@@ -265,7 +265,7 @@ class ProductListingCubit extends Cubit<ProductListingState> {
 
     try {
 
-      categories = await wooCommerceService.fetchCategories(context);
+      categories = await wooCommerceService.fetchCategories();
       await fetchProducts(context, categoryId);
       emit(ProductListingLoaded(
         products: products,
@@ -278,7 +278,7 @@ class ProductListingCubit extends Cubit<ProductListingState> {
       ));
 
       // Now fetch the other data asynchronously without blocking the UI
-      brands = await wooCommerceService.fetchBrands(context);
+      brands = await wooCommerceService.fetchBrands();
       childCategories =
       await wooCommerceService.fetchChildCategories(categoryId, context);
 

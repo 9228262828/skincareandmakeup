@@ -1,15 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Gomla/Engin/pdf_screen.dart';
 import 'package:Gomla/Engin/skincare_result.dart';
+import 'package:Gomla/contstants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../shared/utils/app_values.dart';
+import '../test.dart';
 import 'channel/perfectlib_channel.dart';
 import 'channel/skincare_channel.dart';
 import 'utility/styles.dart';
@@ -131,33 +136,184 @@ class _SkincareDetectState extends State<SkincareDetect>
 
   // Utility function to show error messages as SnackBars
 
-  void _showInstructionDialog() {
+  void _showInstructionDialog (){
     showDialog(
-      context: context,
-      barrierDismissible: false,
-      // Prevent closing the dialog by tapping outside
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.instructionsTitle),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(AppLocalizations.of(context)!.removeMakeupInstruction),
-              const SizedBox(height: 8),
-              Text(AppLocalizations.of(context)!.removeGlassesInstruction),
+        context: context, builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        insetPadding: EdgeInsets.all(20),
+        shape:  RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15)
+        ),
+
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize:   MainAxisSize.min,
+            children: <Widget>[
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(AppLocalizations.of(context)!.be_ready_for_skin_test,style: TextStyle(
+
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                  ),),
+                  SizedBox(
+                    height: 7,
+                  ),
+                  Divider(
+                    color: Color(0xffEAEAEA),
+                    thickness: 2,
+                  ),
+                  SizedBox(
+                    height: 7,
+                  ),
+                  Text(AppLocalizations.of(context)!.instructionsTitle,style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+
+                  ),),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Row(
+                    children: [
+                      Image.asset("assets/remove.png",width: 35,height:35,color:  mainColor,fit:   BoxFit.contain,),
+                      // Icon before the text
+                      SizedBox(width: 8),
+                      // Add some space between the icon and the text
+                      Expanded(
+                        child: Text(
+                          AppLocalizations.of(context)!.removeMakeupInstruction,
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Second row with icon and text
+                  Row(
+                    children: [
+                      Image.asset("assets/sunglasses.png",width: 35,height:35,color:  mainColor,fit:   BoxFit.contain,), // Another icon
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                            AppLocalizations.of(context)!.removeGlassesInstruction),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Third row with icon and text
+                  Row(
+                    children: [
+                      Image.asset("assets/light.png",width: 35,height:35,color:  mainColor,fit:   BoxFit.contain,),// Another icon for adjustment
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(AppLocalizations.of(context)!
+                            .adjustPositionInstruction),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/face-circle.png',
+                        width: 35,
+                        height: 35,
+                        color: mainColor,
+                      ), // Another icon for adjustment
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(AppLocalizations.of(context)!
+                            .adjustPosition),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                ],
+              ),
+              SizedBox(
+                width: mediaQueryWidth(context  )*.9,
+                child: ElevatedButton(
+                  style:  ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        side:   BorderSide(
+                            color:  mainColor
+                        )
+                    ),),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+
+                  },
+                  child: Text(AppLocalizations.of(context)!.start_test,style:
+                  TextStyle(
+                      color: mainColor
+                  ),),
+                ),
+              ),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            PDFViewerPage(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(0.0, 1.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                              position: offsetAnimation, child: child);
+                        },
+                        transitionDuration: Duration(milliseconds: 300),
+                      ),
+
+                    );
+                    //  dispose(); // Ensure dispose is called properly
+                  },
+                  child: Text(AppLocalizations.of(context)!.showpdf,style:
+                  TextStyle(
+                    color: Colors.grey.shade500,
+                    decoration:  TextDecoration.underline,
+                  ),),
+                ),
+              ),
+
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text(AppLocalizations.of(context)!.ok),
-            ),
-          ],
-        );
-      },
-    );
+        )
+    ));
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    skincareViewChannel?.stop();
+    skincareViewChannel?.dispose();
+    perfectLibChannel.unload();
+    currentState = SkincareState.suspend;
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -309,7 +465,8 @@ class _SkincareDetectState extends State<SkincareDetect>
                                           skinFeatures: skinFeatures,
                                           skincareViewChannel:
                                               skincareViewChannel!)),
-                                ).then((value) => {
+                                ).then((value) =>
+                                {
                                       setState(() {
                                         _isLoading = false;
                                         currentState =
@@ -475,6 +632,12 @@ class _SkincareDetectState extends State<SkincareDetect>
           false,
           backgroundColors[index % backgroundColors.length], // Custom color
           borderColors[index % borderColors.length],
+          Colors.black,
+          Shadow(
+            offset: Offset(1.0, 1.0),
+            blurRadius: 3.0,
+            color: Colors.transparent,
+          ),
         );
       },
     );
@@ -537,6 +700,12 @@ class _SkincareDetectState extends State<SkincareDetect>
             backgroundColors[index % backgroundColors.length],
             // Use custom color
             borderColors[index % borderColors.length],
+            Colors.black,
+            Shadow(
+              offset: Offset(1.0, 1.0),
+              blurRadius: 3.0,
+              color: Colors.transparent,
+            ),
           );
         },
       ),
@@ -603,9 +772,9 @@ class _SkincareDetectState extends State<SkincareDetect>
 
             // Position for overall score view
             Positioned(
-              top: 100.0,
+              bottom: MediaQuery.of(context).size.height * 0.15,
               right: 0,
-              left: MediaQuery.of(context).size.width * 0.25,
+              left: 0,
               child: SizedBox(
                 height: 100,
                 child: overallScoreView(
@@ -630,16 +799,6 @@ class _SkincareDetectState extends State<SkincareDetect>
     );
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    skincareViewChannel?.stop();
-    skincareViewChannel?.dispose();
-    perfectLibChannel.unload();
-    currentState = SkincareState.suspend;
-    timer.cancel();
-    super.dispose();
-  }
 
 // In your onPlatformViewCreated method
 // Declare the channel without late keyword

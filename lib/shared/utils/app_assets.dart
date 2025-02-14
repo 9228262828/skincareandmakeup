@@ -6,6 +6,7 @@ class ImageAssets {
   static const String logoWhite =  'assets/app_icon.png';
   static const String home = '$IMAGE_PATH/home.svg';
   static const String skin = 'assets/skin.png';
+  static const String testSkin = 'assets/img.png';
   static const String category = '$IMAGE_PATH/categories.svg';
   static const String account = '$IMAGE_PATH/account.svg';
   static const String sale = '$IMAGE_PATH/sale.svg';

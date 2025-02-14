@@ -1,3 +1,4 @@
+import 'package:Gomla/contstants.dart';
 import 'package:Gomla/screens/product_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,9 @@ import '../widgets/product_shimmer_widget.dart';
 class BrandProductsScreen extends StatefulWidget {
   final int id;
   final String brandName;
+  final bool isLink;
 
-  const BrandProductsScreen({required this.id, super.key, required this.brandName});
+  const BrandProductsScreen({required this.id, super.key, required this.brandName, required this.isLink});
 
   @override
   _BrandProductsScreenState createState() => _BrandProductsScreenState();
@@ -57,7 +59,7 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
             builder: (context, state) {
               if (state is ProductsLoading && state.page == 1) {
                 // Initial loading shimmer
-                return  Expanded(child: ProductCardWithShimmerAllScreen(count: 10)); // Show 6 shimmer items
+                return  ProductCardWithShimmerAllScreen(count: 10); // Show 6 shimmer items
               } else if
               (state is ProductsLoaded) {
                 return RefreshIndicator(
@@ -102,6 +104,9 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
                               }
                             },
                           ),
+                        ),
+                        SizedBox(
+                          height: mediaQueryHeight(context) * 0.04,
                         )
                       ]
                   ),
@@ -115,10 +120,76 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
           )
           ,
         ),
-        bottomNavigationBar: _buildSortAndFilterButtons(cubit),
+     //   bottomNavigationBar: _buildSortAndFilterButtons(cubit),
+        floatingActionButtonLocation: FloatingActionButtonLocation
+            .miniCenterDocked,
+        floatingActionButton: widget.isLink == false ? Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+
+            children: [
+              Container(
+                width: mediaQueryWidth(context) * 0.53,
+                height: mediaQueryHeight(context) * 0.05,
+                decoration: BoxDecoration(
+                  color: mainColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: (){
+                          showSortDialog(context, cubit,);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.sort, color: Colors.white),
+                            Text(
+                              AppLocalizations.of(context)!.sort,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.filter_list_outlined,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.filter,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 10),
+              CircleAvatar(
+                backgroundColor: mainColor,
+                child: Icon(Icons.share, color: Colors.white),
+              )
+            ],
+          ),
+        ) : SizedBox(height: 0,),
       ),
     );
   }
+
   Widget _buildSortAndFilterButtons(cubit) {
     return Row(
       children: [
@@ -161,6 +232,7 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
       ],
     );
   }
+
   Widget _buildBrandHeader(String brandName) {
     return Container(
       width: mediaQueryWidth(context),
@@ -329,9 +401,11 @@ void showSortDialog(BuildContext context, cubit,  ) {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
+
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.red,
+                          side:    BorderSide(color: mainColor),
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -343,7 +417,7 @@ void showSortDialog(BuildContext context, cubit,  ) {
                       TextButton(
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.green,
+                          backgroundColor: mainColor,
                         ),
                         onPressed: () {
                           cubit.applySort(

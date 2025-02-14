@@ -1,10 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
-import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../models/category.dart';
-import '../providers/home_screen_provider.dart';
 import '../services/woocommerce_service.dart';
 import '../shared/utils/app_values.dart';
 import '../widgets/app_bar.dart';
@@ -19,10 +18,14 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   late WooCommerceService wooCommerceService;
   List<Category> mainCategories = [];
-  Map<int, bool> showSubCategories = {}; // Track visibility of subcategories
-  Map<int, List<Category>> subCategories = {}; // Store subcategories by parent ID
-  int? selectedCategoryId; // Track the currently selected category
+  Map<int, bool> showSubCategories = {};
+  Map<int, List<Category>> subCategories = {};
+  Map<int, bool> isSubCategoryLoading = {};
+  int? selectedCategoryId;
   bool isLoading = true;
+  bool isLoadingMore = false;
+  bool isLastPage = false;
+  int currentPage = 1;
 
   @override
   void initState() {
@@ -31,71 +34,152 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     fetchMainCategories();
   }
 
-  Future<void> fetchMainCategories() async {
+  Future<void> fetchMainCategories({int page = 1}) async {
+    if (isLoadingMore || isLastPage) return;
+
+    setState(() {
+      isLoadingMore = true;
+    });
+
     try {
-      mainCategories = await wooCommerceService.fetchCategories(context);
-      // filter out categories with no image
-      mainCategories = mainCategories.where((category) => category.imageUrl.isNotEmpty).toList();
+      List<Category> newCategories =
+          await wooCommerceService.fetchCategories(page: page);
+      if (newCategories.isEmpty) {
+        setState(() {
+          isLastPage = true;
+        });
+      } else {
+        setState(() {
+          mainCategories.addAll(newCategories);
+          currentPage++;
+        });
+      }
     } catch (e) {
       print(e);
     } finally {
       setState(() {
         isLoading = false;
+        isLoadingMore = false;
       });
     }
   }
 
   Future<void> fetchSubCategories(int parentId) async {
+    setState(() {
+      isSubCategoryLoading[parentId] = true;
+    });
     try {
-      List<Category> fetchedSubCategories = await wooCommerceService.fetchSubCategories(context, parentId);
+      List<Category> fetchedSubCategories =
+          await wooCommerceService.fetchSubCategories(parentId);
       setState(() {
         subCategories[parentId] = fetchedSubCategories;
+        isSubCategoryLoading[parentId] = false;
       });
     } catch (e) {
       print(e);
+      setState(() {
+        isSubCategoryLoading[parentId] = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final homeScreenProvider = Provider.of<HomeScreenProvider>(context);
     return Scaffold(
       appBar: CustomAppBar(title: '', home: true),
-      body: ListView(
-        children: [
-          // Display categories in rows of 3
-          for (int i = 0; i < homeScreenProvider.categories.length; i += 3)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Display 3 categories in each row with space between them
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    for (int j = i; j < i + 3 && j < homeScreenProvider.categories.length; j++)
-                      _buildCategoryTile(homeScreenProvider.categories[j]),
-                  ],
-                ),
-                // Display subcategories for each category when clicked, directly under the category
-                for (int j = i; j < i + 3 && j < homeScreenProvider.categories.length; j++)
-                  if (showSubCategories[homeScreenProvider.categories[j].id] == true)
-                    _buildSubCategories(homeScreenProvider.categories[j]),
-              ],
+      body: isLoading
+          ? _buildMainCategoryShimmer()
+          : NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                if (scrollNotification is ScrollEndNotification &&
+                    scrollNotification.metrics.pixels ==
+                        scrollNotification.metrics.maxScrollExtent) {
+                  fetchMainCategories(page: currentPage);
+                }
+                return false;
+              },
+              child: ListView(
+                children: [
+                  for (int i = 0; i < mainCategories.length; i += 3)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            for (int j = i;
+                                j < i + 3 && j < mainCategories.length;
+                                j++)
+                              _buildCategoryTile(mainCategories[j]),
+                          ],
+                        ),
+                        for (int j = i;
+                            j < i + 3 && j < mainCategories.length;
+                            j++)
+                          if (showSubCategories[mainCategories[j].id] == true)
+                            isSubCategoryLoading[mainCategories[j].id] == true
+                                ? _buildSubCategoryShimmer()
+                                : _buildSubCategories(mainCategories[j]),
+                      ],
+                    ),
+                  if (isLoadingMore)
+                    SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.23,
+                        child: _buildMainCategoryShimmer())
+                ],
+              ),
             ),
-        ],
+    );
+  }
+// filter the images
+  Widget _buildMainCategoryShimmer() {
+    return GridView.builder(
+      padding: const EdgeInsets.all(8.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3, // Three items in a row
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+        childAspectRatio: 0.6, // Adjust to ensure image and text fit well
       ),
+      itemCount: 12, // Number of shimmer placeholders
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Placeholder for image
+              Container(
+                height: MediaQuery.of(context).size.height * 0.17,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.grey[300],
+                ),
+              ),
+              const SizedBox(height: 8.0),
+              // Placeholder for name container
+              Container(
+                height: 20.0,
+                width: double.infinity,
+                color: Colors.grey[300],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildCategoryTile(Category category) {
 
     showSubCategories.putIfAbsent(category.id, () => false);
+    isSubCategoryLoading.putIfAbsent(category.id, () => false);
 
     return Expanded(
       child: GestureDetector(
         onTap: () {
           setState(() {
-
             if (selectedCategoryId == category.id) {
               showSubCategories[category.id] = false;
               selectedCategoryId = null;
@@ -114,8 +198,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         },
         child: Container(
           width: double.infinity,
-          margin:  EdgeInsets.all(4.0),
-padding:  selectedCategoryId == category.id ? EdgeInsets.all(5.0) : EdgeInsets.all(4.0),
+          margin: EdgeInsets.all(4.0),
+          padding: selectedCategoryId == category.id
+              ? EdgeInsets.all(5.0)
+              : EdgeInsets.all(4.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.0),
             border: Border.all(
@@ -128,18 +214,18 @@ padding:  selectedCategoryId == category.id ? EdgeInsets.all(5.0) : EdgeInsets.a
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Category image container
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: CachedNetworkImage(
                   imageUrl: category.imageUrl,
                   height: selectedCategoryId == category.id
-                      ? MediaQuery.of(context).size.height * 0.24: mediaQueryHeight(context) * 0.23,
+                      ? MediaQuery.of(context).size.height * 0.14
+                      : mediaQueryHeight(context) * 0.15,
                   fit: BoxFit.fill,
                   placeholder: (context, url) => Center(
-                    child: FadeInOutImage(height: MediaQuery.of(context).size.height * 0.23),
+                    child: FadeInOutImage(height: MediaQuery.of(context).size.height * 0.15),
                   ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  errorWidget: (context, url, error) => Image.asset("assets/placeholder.png"),
                 ),
               ),
               const SizedBox(height: 4.0),
@@ -162,8 +248,8 @@ padding:  selectedCategoryId == category.id ? EdgeInsets.all(5.0) : EdgeInsets.a
 
   Widget _buildSubCategories(Category category) {
     return Container(
-      width: double.infinity, // Full width for subcategories
-      padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 4), // Padding for subcategories
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
       child: Column(
         children: subCategories[category.id]?.map((subCategory) {
           return Padding(
@@ -177,8 +263,9 @@ padding:  selectedCategoryId == category.id ? EdgeInsets.all(5.0) : EdgeInsets.a
                 fit: BoxFit.cover,
                 placeholder: (context, url) =>
                     Center(child: FadeInOutImage(height: 40)),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
+                    errorWidget: (context, url, error) =>
+                        Center(child: FadeInOutImage(height: 40)),
+                  ),
               title: Text(
                 _stripHtmlTags(subCategory.name),
                 style: const TextStyle(fontSize: 14),
@@ -201,6 +288,27 @@ padding:  selectedCategoryId == category.id ? EdgeInsets.all(5.0) : EdgeInsets.a
         }).toList() ??
             [],
       ),
+    );
+  }
+
+  Widget _buildSubCategoryShimmer() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: 2,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 60,
+              color: Colors.grey[300],
+            ),
+          ),
+        );
+      },
     );
   }
 

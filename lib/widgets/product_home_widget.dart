@@ -67,12 +67,12 @@ class ProductHomeWidget extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(context),
-            const SizedBox(height: 16.0),
             BlocBuilder<BestDealsCubit, BestDealsState>(
               builder: (context, state) {
                 if (state is BestDealsLoading) {
                   return const ProductCardWithShimmer(count: 2,);
                 } else if (state is BestDealsLoaded) {
+
                   // Check if the list is empty
                   if (state.products.isEmpty) {
                     return buildEmptyState(
@@ -80,13 +80,14 @@ class ProductHomeWidget extends StatelessWidget {
                   }
                   return _buildProductList(context, state.products);
                 } else if (state is BestDealsError) {
+                  print("Error: ${state.error}");
                   return _buildError(state.error);
                 } else {
                   return const SizedBox.shrink();
                 }
               },
             ),
-            SizedBox(height: 8.0),
+            SizedBox(height: 4.0),
           ],
         ),
       ),
@@ -104,7 +105,7 @@ class ProductHomeWidget extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold),
+                  fontSize: 17, fontWeight: FontWeight.w700),
             ),
             TextButton(
               onPressed: () {

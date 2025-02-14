@@ -3,32 +3,8 @@ import 'package:equatable/equatable.dart';
 import '../../models/brand.dart';
 import '../../models/product.dart';
 
-abstract class BrandsState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
 
-class BrandsInitial extends BrandsState {}
 
-class BrandsLoading extends BrandsState {}
-
-class BrandsLoaded extends BrandsState {
-  final List<Brand> brands;
-
-  BrandsLoaded(this.brands);
-
-  @override
-  List<Object?> get props => [brands];
-}
-
-class BrandsError extends BrandsState {
-  final String error;
-
-  BrandsError(this.error);
-
-  @override
-  List<Object?> get props => [error];
-}
 
 abstract class ProductsState {}
 

@@ -120,7 +120,7 @@ Stack flashView() {
   );
 }
 
-Column scoreView(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor) {
+Column scoreView(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor, Color scoreColor, Shadow shadow) {
   return Column(children: [
     Container(
       width:scoreSize.width,
@@ -136,7 +136,8 @@ Column scoreView(Size scoreSize, String score, String featureName, bool isSelect
       child: Center(
         child:
           Text(score, style: TextStyle(
-            color: Colors.white,
+            color: scoreColor,
+          //  shadows:   <Shadow>[shadow ],
           ))
         ),
       ),

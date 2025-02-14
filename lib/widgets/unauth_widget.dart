@@ -6,6 +6,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../contstants.dart';
 import '../screens/login_screen.dart';
+import '../screens/policy_screen.dart';
+import '../screens/terms_screen.dart';
 import 'language_selector.dart';
 
 class UnauthWidget extends StatelessWidget {
@@ -96,7 +98,7 @@ class UnauthWidget extends StatelessWidget {
             ),
             child: _buildLanguageSelector(context)),
         SizedBox(height: mediaQueryHeight(context) * 0.06),
-        Container(
+        /*Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
@@ -165,6 +167,104 @@ class UnauthWidget extends StatelessWidget {
                           fontSize: 12, color: Colors.grey.shade500),
                     ),
                   ),
+                ],
+              ),
+            ],
+          ),
+        ),*/
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            children: [
+              Center(
+                child: Text(
+                  AppLocalizations.of(context)!.sellwithus,
+                  style: TextStyle(
+                      color: mainColor,
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: mediaQueryHeight(context) * 0.01),
+              Divider(
+                color: Colors.grey.shade300,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TermsAndConditionsPage()),
+                      );
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.termsOfUse,
+                      style: TextStyle(
+                          fontSize: 12, color: Colors.grey.shade500),
+                    ),
+                  ),
+                  /*TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.helpSupport,
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey.shade500),
+                          ),
+                        ),*/
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PrivacyPolicyPage()),
+                      );
+                    },
+                    child: Text(
+                        AppLocalizations.of(context)!.privacyPolicy,
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.grey.shade500)),
+                  ),
+                  /*TextButton(
+                          onPressed: () {},
+                          child: Text(
+                              AppLocalizations.of(context)!.delveryPolicy,
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.grey.shade500)),
+                        ),*/
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  /*  TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.termsOfUse,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),*/
+                  /*TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.faqs,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.shareApp,
+                            style: TextStyle(
+                                fontSize: 12, color: Colors.grey.shade500),
+                          ),
+                        ),*/
                 ],
               ),
             ],

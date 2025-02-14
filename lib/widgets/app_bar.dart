@@ -1,6 +1,7 @@
+import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
 import '../screens/search_result.dart';
@@ -25,10 +26,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final int cartCount = Provider.of<Cart>(context, listen: true).items.length;
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.white,
+      backgroundColor: Color(0xFF212224),
+      surfaceTintColor: Color(0xFF212224),
       title: Image.asset(
         'assets/app_icon.png',
+
         width: MediaQuery.of(context).size.width * 0.35,
       ),
       // centerTitle: true,
@@ -40,19 +42,32 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               width: MediaQuery.of(context).size.width * 0.60,
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey, width: .5)),
+                  color: Color(0xFF212224),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: .5)),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.search,color: Colors.grey,),
-                    onPressed: () {
-                      _startSearch(context);
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(AppLocalizations.of(context)!.searchForWhat,
+                        style: TextStyle(color: Colors.black)),
                   ),
-                  Text(AppLocalizations.of(context)!.searchForWhat, style: TextStyle(color: Colors.grey)),
-                
+                  Spacer(),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: mainColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        _startSearch(context);
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -90,7 +105,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: home
           ? null
           : IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded),
+              icon: Icon(Icons.arrow_back_ios_rounded, color:mainColor),
               onPressed: () {
                 Navigator.pop(context);
               },

@@ -19,7 +19,8 @@ class WooCommerceService {
 
 
   Future<List<Product>> fetchProducts(
-      int categoryId, int page, BuildContext context) async
+      int categoryId, int page, BuildContext context)
+  async
   {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale') ;
@@ -47,29 +48,30 @@ class WooCommerceService {
     }
   }
 
-  Future<List<Product>> fetchProductsBest(
-    BuildContext context,String url) async
-  {
+  Future<List<Product>> fetchProductsBest(BuildContext context, String url) async {
     final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale') ;
-    language ??= 'ar';
+    String? language = prefs.getString('locale');
+    language ??= 'ar';  // Default to 'ar' if no language is set
     final response = await http.get(
-      Uri.parse(
-          url+"&lang=$language"),
+      Uri.parse(url + "&lang=$language"),
       headers: {
-        'Authorization': 'Basic ' +
-            base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+        'Authorization': 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
       },
     );
-
+    print(url + "&lang=$language");
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
+      if (jsonResponse.isEmpty) {
+        print("No products found for lang=$language");
+        return [];  // Return an empty list if no products found
+      }
       return jsonResponse.map((product) => Product.fromJson(product)).toList();
     } else {
       throw Exception('Failed to load products');
     }
   }
+
 
   Future<List<Product>> filterProducts({
     required BuildContext context,
@@ -145,12 +147,13 @@ class WooCommerceService {
     }
   }
 
-  Future<List<Category>> fetchCategories(BuildContext context) async {
+  Future<List<Category>> fetchCategories({int page = 1}) async {
     final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale') ;
+    String? language = prefs.getString('locale');
     language ??= 'ar';
+
     final response = await http.get(
-      Uri.parse('$baseUrl/products/categories?lang=$language&per_page=100'),
+      Uri.parse('$baseUrl/products/categories?lang=$language&per_page=18&page=$page'),
       headers: {
         'Authorization': 'Basic ' +
             base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -158,7 +161,7 @@ class WooCommerceService {
     );
 
     print(
-        '$baseUrl/products/categories?lang=$language&hide_empty=true&parent=0&consumer_key=$consumerKey&consumer_secret=$consumerSecret');
+        '$baseUrl/products/categories?lang=$language&per_page=20&page=$page&consumer_key=$consumerKey&consumer_secret=$consumerSecret');
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
@@ -170,8 +173,7 @@ class WooCommerceService {
     }
   }
 
-  Future<List<Category>> fetchSubCategories(
-      BuildContext context, int categoryId) async {
+  Future<List<Category>> fetchSubCategories(int categoryId) async {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale') ;
     language ??= 'ar';
@@ -291,25 +293,29 @@ class WooCommerceService {
     }
   }
 
-  Future<List<Brand>> fetchBrands(BuildContext context) async {
+  Future<List<Brand>> fetchBrands() async {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale') ;
     language ??= 'ar';
-    final response = await http.get(
-      // fetch all brands without pagination
-      Uri.parse('$siteUrl/wp-json/v2/product_brand'),
-      headers: {
-        'Authorization': 'Basic ' +
-            base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
-      },
-    );
+    try {
+      final response = await http.get(
+        // fetch all brands without pagination
+        Uri.parse('$siteUrl/wp-json/wp/v2/product_brand'),
 
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
-      return jsonResponse.map((brand) => Brand.fromJson(brand)).toList();
-    } else {
-      throw Exception('Failed to load brands');
+      );
+
+      if (response.statusCode == 200) {
+        List jsonResponse = json.decode(response.body);
+          print(jsonResponse);
+        return jsonResponse.map((brand) => Brand.fromJson(brand)).toList();
+      } else {
+        throw Exception('Failed to load brands');
+      }
+    }catch (e) {
+      print(e);
     }
+    return [];
+
   }
 
   Future<List<PaymentMethod>> fetchPaymentMethods(BuildContext context) async {
@@ -340,6 +346,7 @@ class WooCommerceService {
     required String review,
     required String userName,
     required String userEmail,
+    required String rating,
   }) async {
     final url = Uri.parse('$baseUrl/products/reviews');
     final headers = {
@@ -352,7 +359,7 @@ class WooCommerceService {
       'review': review,
       'reviewer': userName,
       'reviewer_email': userEmail,
-      'rating': 5, // Set a default rating value
+      'rating': rating, // Set a default rating value
     });
 
     return await http.post(url, headers: headers, body: body);

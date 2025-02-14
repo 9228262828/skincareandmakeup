@@ -82,13 +82,6 @@ Widget buildCategoriesList(BuildContext context) {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: GestureDetector(
                           onTap: () {
-                            print('Category ID: ${category.id}');
-                            print('Category ID: ${category.id}');
-                            print('Category ID: ${category.id}');
-                            print('Category ID: ${category.id}');
-                            print('Category ID: ${category.id}');
-                            print('Category ID: ${category.id}');
-                            print('Category ID: ${category.id}');
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -107,11 +100,12 @@ Widget buildCategoriesList(BuildContext context) {
                               children: [
                                 CircleAvatar(
                                   backgroundColor: Colors.transparent,
-                                  backgroundImage: CachedNetworkImageProvider(
-                                    category.imageUrl,
-                                  ),
+                                  backgroundImage: (category.imageUrl.isNotEmpty && Uri.tryParse(category.imageUrl)?.hasAbsolutePath == true)
+                                      ? CachedNetworkImageProvider(category.imageUrl)
+                                      : AssetImage('assets/placeholder.png') as ImageProvider,  // Placeholder image if URL is invalid or empty
                                   radius: 40,
                                 ),
+
                                 const SizedBox(height: 8),
                                 Text(
                                   category.name,
