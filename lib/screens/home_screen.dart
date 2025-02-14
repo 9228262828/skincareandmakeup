@@ -18,7 +18,6 @@ import '../widgets/location_widget.dart';
 import '../widgets/product_home_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<Bannerr> banners;
