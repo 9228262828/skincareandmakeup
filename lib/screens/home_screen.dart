@@ -11,6 +11,7 @@ import '../Engin/skincare.dart';
 import '../contstants.dart';
 import '../models/banner.dart';
 import '../widgets/app_bar.dart';
+import '../widgets/circleBrands.dart';
 import '../widgets/crousal_widget_assets.dart';
 import '../widgets/grid_offers.dart';
 import '../widgets/home_banner_slider.dart';
@@ -67,7 +68,7 @@ class HomeScreen extends StatelessWidget {
               isLink:  true,
             ),
           //  buildProductSection("عروض جملة", homeScreenProvider.pets, 53),
-
+            CircleBrands(),
             IndexedBannerWidget(index: 0, banners: banners),
 
             /*BannerHome(
@@ -201,7 +202,7 @@ class HomeScreen extends StatelessWidget {
               allNeedsGrooming:false ,
               exclusiveDeals: false,
               nearlyArrived: false,
-              type:  'specialProducts',
+              type:  'recentlyViewedProducts',
               isLink:  false,
 
             ),

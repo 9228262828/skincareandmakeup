@@ -139,7 +139,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         crossAxisCount: 3, // Three items in a row
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
-        childAspectRatio: 0.6, // Adjust to ensure image and text fit well
+        childAspectRatio: 0.8, // Adjust to ensure image and text fit well
       ),
       itemCount: 12, // Number of shimmer placeholders
       itemBuilder: (context, index) {
@@ -198,7 +198,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         },
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.all(4.0),
+
           padding: selectedCategoryId == category.id
               ? EdgeInsets.all(5.0)
               : EdgeInsets.all(4.0),
@@ -219,8 +219,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 child: CachedNetworkImage(
                   imageUrl: category.imageUrl,
                   height: selectedCategoryId == category.id
-                      ? MediaQuery.of(context).size.height * 0.14
-                      : mediaQueryHeight(context) * 0.15,
+                      ? MediaQuery.of(context).size.height * 0.12
+                      : mediaQueryHeight(context) * 0.13,
                   fit: BoxFit.fill,
                   placeholder: (context, url) => Center(
                     child: FadeInOutImage(height: MediaQuery.of(context).size.height * 0.15),
@@ -229,13 +229,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 ),
               ),
               const SizedBox(height: 4.0),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _stripHtmlTags(category.name),
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w300,
+              Container(
+                height:   mediaQueryHeight(context) * 0.05,
+                child: Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Text(
+                    _stripHtmlTags(category.name),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w300,
+
+                    ),
+                    maxLines: 2,
                   ),
                 ),
               ),

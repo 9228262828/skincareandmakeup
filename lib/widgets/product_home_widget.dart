@@ -1,3 +1,4 @@
+import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:Gomla/widgets/product_card.dart';
 import 'package:Gomla/widgets/product_shimmer_widget.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ class ProductHomeWidget extends StatelessWidget {
                     return buildEmptyState(
                         context, AppLocalizations.of(context)!.noDealsAvailable);
                   }
-                  return _buildProductList(context, state.products);
+                  return _buildProductList(context, state.products , type);
                 } else if (state is BestDealsError) {
                   print("Error: ${state.error}");
                   return _buildError(state.error);
@@ -145,17 +146,18 @@ class ProductHomeWidget extends StatelessWidget {
   }
 
 
-  Widget _buildProductList(BuildContext context, List<Product> products) {
+  Widget _buildProductList(BuildContext context, List<Product> products,type) {
     return Padding(
       padding: const EdgeInsets.all(0.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: MediaQuery
+          Container(
+            color: Colors.white,
+            height: type != "recentlyViewedProducts" ? MediaQuery
                 .of(context)
                 .size
-                .height / 2.2,
+                .height / 2.15 : mediaQueryHeight(context) * 0.17,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: products.length,
@@ -174,14 +176,14 @@ class ProductHomeWidget extends StatelessWidget {
                     );
                   },
                   child: SizedBox(
-                    width: MediaQuery
+                    width: type != "recentlyViewedProducts" ? MediaQuery
                         .of(context)
                         .size
-                        .width / 2.2,
+                        .width / 2.2 : mediaQueryWidth(context) * 0.3,
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: ProductCard(
-                        product: products[index], fakeProduct: "",),
+                      child: type != "recentlyViewedProducts" ?ProductCard(
+                        product: products[index], fakeProduct: "",) : ProductCardEmpty(product: products[index], fakeProduct: "",),
                     ),
                   ),
                 );

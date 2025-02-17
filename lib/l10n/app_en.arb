@@ -247,7 +247,11 @@
       "locationServicesDisabled": "Location Services Disabled",
       "enableLocationServices": "Please enable location services to continue",
       "openSettings": "Open Settings",
-      "recentlyViewedProducts": "Recently Viewed Products"
+      "recentlyViewedProducts": "Recently Viewed Products",
+      "off": "Off",
+      "was": "Was",
+      "limitedOffer": "Limited Time deal",
+      "get": "Get"
 
 
 

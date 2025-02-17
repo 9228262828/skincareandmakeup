@@ -246,7 +246,11 @@
   "locationServicesDisabled": "خدمات الموقع معطلة",
   "enableLocationServices": "الرجاء تمكين خدمات الموقع للمتابعة",
   "openSettings": "فتح الإعدادات",
-  "recentlyViewedProducts": "المنتجات التي تم مشاهدتها مؤخرًا"
+  "recentlyViewedProducts": "المنتجات التي تم مشاهدتها مؤخرًا",
+  "off": "خصم",
+  "was": "كان",
+  "limitedOffer": "عرض محدود",
+  "get": "اذهب"
 
 
 

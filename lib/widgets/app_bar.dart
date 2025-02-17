@@ -42,9 +42,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               width: MediaQuery.of(context).size.width * 0.60,
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
-                  color: Color(0xFF212224),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: .5)),
+                  border: Border.all(color: Colors.white, width: .5)),
               child: Row(
                 children: [
                   Padding(
@@ -61,7 +61,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     child: IconButton(
                       icon: Icon(
                         Icons.search,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       onPressed: () {
                         _startSearch(context);

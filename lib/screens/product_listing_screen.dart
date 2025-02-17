@@ -486,7 +486,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.5,
+                      childAspectRatio: 0.45,
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
                     ),

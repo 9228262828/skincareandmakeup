@@ -82,7 +82,7 @@ if (brands.isEmpty) {
               itemBuilder: (context, index) {
                 final brand = brands[index];
                 final brandId = brand.id is String
-                    ? int.tryParse(brand.id) ?? 0 // If it's a string, try to parse it to int
+                    ? brand.id ?? 0 // If it's a string, try to parse it to int
                     : brand.id;
                 return Padding(
                   padding: const EdgeInsets.all(8.0),

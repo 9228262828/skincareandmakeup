@@ -47,7 +47,7 @@ class _GridOffersState extends State<GridOffers> {
       },
       {
         'image': 'assets/app_icon.png',
-        "mainLabel": AppLocalizations.of(context)!.bestDeals,
+        "mainLabel": AppLocalizations.of(context)!.allNeedsGrooming,
         'label': AppLocalizations.of(context)!.offers
       },
       {
@@ -62,7 +62,7 @@ class _GridOffersState extends State<GridOffers> {
       },
       {
         'image': 'assets/app_icon.png',
-        "mainLabel": AppLocalizations.of(context)!.bestDeals,
+        "mainLabel": AppLocalizations.of(context)!.allNeedsGrooming,
         'label': AppLocalizations.of(context)!.offers
       },
       {
@@ -98,7 +98,7 @@ class _GridOffersState extends State<GridOffers> {
     ];
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.grey.shade100,

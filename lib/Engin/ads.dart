@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
-import 'package:Gomla/contstants.dart';
+
+import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_player/video_player.dart';
+
 import '../Engin/report_screen.dart';
 import '../Engin/skincare.dart';
 
@@ -35,7 +37,6 @@ class _AdPageState extends State<AdPage> {
 
   int _remainingTime = 0;
   bool _isSkippable = false;
-  bool _isPaused = false;
   bool _isMuted = false;
   bool _showPauseButton = false;
 
@@ -75,7 +76,7 @@ class _AdPageState extends State<AdPage> {
           if (_ads.isNotEmpty) {
             _loadNextAd(); // Load the first ad
           } else {
-            _navigateToNextPage();
+               _navigateToNextPage();
           }
         }
       } else {
@@ -95,11 +96,13 @@ class _AdPageState extends State<AdPage> {
       final externalLink = ad['external_link'];
 
       setState(() {
+        // Reset and update variables for new ad
         _mediaUrl = mediaUrl;
         _mediaType = mediaType;
         _skipTime = skipTime;
         _remainingTime = skipTime;
         _externalLink = externalLink;
+        _isSkippable = false; // Reset skip flag
       });
 
       if (_mediaType == 'video') {
@@ -110,10 +113,9 @@ class _AdPageState extends State<AdPage> {
 
       _currentAdIndex++;
     } else {
-      _navigateToNextPage();
+        _navigateToNextPage();
     }
   }
-
 
   void _navigateToNextPage() {
     _timer?.cancel();
@@ -134,8 +136,8 @@ class _AdPageState extends State<AdPage> {
           capturedFeatures: widget.capturedFeatures,
           reports: widget.reports,
           skinAnalysisData: widget.skinAnalysisData,
-          score:  widget.scores,
-        ),
+                score: widget.scores,
+              ),
       ),
     );
   }
@@ -149,6 +151,7 @@ class _AdPageState extends State<AdPage> {
     }
     return googleDriveLink;
   }
+
   void _toggleMute() {
     setState(() {
       _isMuted = !_isMuted;
@@ -276,7 +279,6 @@ class _AdPageState extends State<AdPage> {
                 child: const Text("Skip Ad"),
               ),
             ),
-
           // Countdown timer
           if (!_isSkippable)
             Positioned(
@@ -298,16 +300,49 @@ class _AdPageState extends State<AdPage> {
           Positioned(
             bottom: 40,
             right: 20,
-            child: SizedBox(
-              width: 120,
-              height: 30,
-              child: ElevatedButton(
-                onPressed: () => _openURL(_externalLink!),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade600,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text("Get"),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              width: mediaQueryWidth(context) * 0.9,
+              height: mediaQueryHeight(context) * 0.15,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () => _openURL(_externalLink!),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text(AppLocalizations.of(context)!.get),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      AppLocalizations.of(context)!.userName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Container(
+                      width: mediaQueryWidth(context) * 0.25,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                       ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -315,6 +350,7 @@ class _AdPageState extends State<AdPage> {
       ),
     );
   }
+
   // Open an external URL (for example, external link in the ad)
   Future<void> _openURL(String url) async {
     if (await canLaunch(url)) {

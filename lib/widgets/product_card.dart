@@ -1,4 +1,5 @@
-
+import 'package:Gomla/shared/utils/app_values.dart';
+import 'package:Gomla/widgets/price%5E.dart';
 import 'package:Gomla/widgets/product_review_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -79,26 +80,30 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
+    double regularPrice =
+        double.tryParse(widget.product.regularPrice.toString()) ?? 0;
+    double discountedPrice =
+        double.tryParse(widget.product.price.toString()) ?? 0;
+
+// Calculate the percentage difference
+    double percentage = ((regularPrice - discountedPrice) / regularPrice) * 100;
+
+// Round the percentage to the nearest integer
+    int roundedPercentage = percentage.round();
+
     final fav = Provider.of<Fav>(context);
     final cart = Provider.of<Cart>(context);
     return Container(
       decoration: BoxDecoration(
         // shadow
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 0,
-            blurRadius: 1,
-            offset: Offset(0, 0), // changes position of shadow
-          ),
-        ],
-        color: Colors.white,
+
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(8.0),
       ),
-      padding: const EdgeInsets.all(8.0),
-      height: MediaQuery.of(context).size.height * 0.5,
+      padding: const EdgeInsets.all(4.0),
+      height: MediaQuery.of(context).size.height * 0.16,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -107,9 +112,9 @@ class _ProductCardState extends State<ProductCard> {
             children: [
               Container(
                 width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.25,
+                height: MediaQuery.of(context).size.height * 0.248,
                 decoration: BoxDecoration(
-                  color: borderColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Padding(
@@ -124,7 +129,7 @@ class _ProductCardState extends State<ProductCard> {
                             :AssetImage('assets/placeholder.png')
                                 as ImageProvider,
                         placeholder: AssetImage('assets/grey_image.jpeg'),
-                        height: MediaQuery.of(context).size.height * 0.21,
+                        height: MediaQuery.of(context).size.height * 0.195,
                         fit: BoxFit.fitHeight,
                         width: double.infinity,
                       ),
@@ -134,6 +139,37 @@ class _ProductCardState extends State<ProductCard> {
                 ),
               ),
               Positioned(
+                child: Container(
+                  width: mediaQueryWidth(context) * 0.17,
+                  height: mediaQueryWidth(context) * 0.1,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(0.0),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey,
+                          spreadRadius: -2,
+                          blurRadius: 5,
+                          offset: Offset(0, 0))
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      roundedPercentage.toString() +
+                          "%" +
+                          " " +
+                          AppLocalizations.of(context)!.off,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12),
+                    ),
+                  ),
+                ),
+                bottom: 0,
+                right: 0,
+              ),
+               Positioned(
                 top: 0,
                 right: 0,
                 child: Container(
@@ -142,13 +178,7 @@ class _ProductCardState extends State<ProductCard> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey,
-                          spreadRadius: -2,
-                          blurRadius: 5,
-                          offset: Offset(0, 0))
-                    ],
+
                   ),
                   child: IconButton(
                     onPressed: _toggleFavorite,
@@ -162,7 +192,7 @@ class _ProductCardState extends State<ProductCard> {
                   ),
                 ),
               ),
-              Positioned(
+             /* Positioned(
                 bottom: -10,
                 left: 5,
                 child: Container(
@@ -268,34 +298,34 @@ class _ProductCardState extends State<ProductCard> {
                     ],
                   ),
                 ),
-              ),
+              ),*/
             ],
           ),
-          SizedBox(height: 12.0),
+
+          Text(
+            AppLocalizations.of(context)!.limitedOffer,
+            maxLines: 1,
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+                fontWeight: FontWeight.w500, fontSize: 16.0, color: Colors.red),
+          ),
+          PriceDisplay(
+            price: widget.product.price,
+          ),
+          LastPriceDisplay(
+            price: widget.product.regularPrice,
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(6.0, 8.0, 6.0, 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 6.0,
+            ),
             child: Text(
               widget.product.name,
               maxLines: 2,
               textAlign: TextAlign.right,
               overflow: TextOverflow.visible,
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(6.0, 0.0, 6.0, 0.0),
-              child: Text(
-                '${price} ' ' ${AppLocalizations.of(context)!.egp}',
-                maxLines: 2,
-                textAlign: TextAlign.right,
-                overflow: TextOverflow.visible,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                    color: Colors.black),
-              ),
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0),
             ),
           ),
           if (variations.isNotEmpty)
@@ -391,6 +421,60 @@ class _ProductCardState extends State<ProductCard> {
 
           SizedBox(height: 8.0),
         ],
+      ),
+    );
+  }
+}
+
+class ProductCardEmpty extends StatefulWidget {
+  final Product product;
+  final String fakeProduct;
+
+  const ProductCardEmpty(
+      {Key? key, required this.product, required this.fakeProduct})
+      : super(key: key);
+
+  @override
+  State<ProductCardEmpty> createState() => _ProductCardEmptyState();
+}
+
+class _ProductCardEmptyState extends State<ProductCardEmpty> {
+  List<Variation> variations = [];
+  Variation? selectedVariation;
+  String imageUrl = '';
+  String price = '';
+
+  @override
+  void initState() {
+    super.initState();
+    imageUrl = widget.product.imageUrl;
+    price = widget.product.price.toString();
+    //fetchVariations();
+  }
+
+  int quantity = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        // shadow
+        border: Border.all(color: Colors.grey, width: .1),
+
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      padding: const EdgeInsets.all(4.0),
+      height: MediaQuery.of(context).size.height * 0.1,
+      child: Image(
+        image: (imageUrl.isNotEmpty &&
+                Uri.tryParse(imageUrl)?.hasAbsolutePath == true)
+            ? NetworkImage(imageUrl)
+            : AssetImage('assets/placeholder.png') as ImageProvider,
+        errorBuilder: (context, error, stackTrace) =>
+            Image.asset('assets/placeholder.png'),
+        height: MediaQuery.of(context).size.height * 0.1,
+        fit: BoxFit.cover,
+        width: mediaQueryWidth(context) * 0.25,
       ),
     );
   }
