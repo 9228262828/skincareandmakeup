@@ -29,7 +29,7 @@ class WebViewBottomSheet extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 16.0),
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(5.0),
+                borderRadius: BorderRadius.circular(3.0),
               ),
             ),
           ),

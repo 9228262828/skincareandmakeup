@@ -325,7 +325,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     : ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                       maximumSize:    Size(double.infinity, 50),
                       fixedSize:   Size(double.infinity, 45),

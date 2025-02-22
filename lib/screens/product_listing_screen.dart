@@ -599,7 +599,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                 color: selectedCategoryId == category.id
                     ? borderColor
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(3.0),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),

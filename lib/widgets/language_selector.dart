@@ -13,7 +13,7 @@ class LanguageSelector extends StatelessWidget {
       builder: (context, locale) {
         return DropdownButton<Locale>(
           dropdownColor:  Colors.grey.shade50,
-          borderRadius:   BorderRadius.circular(8),
+          borderRadius:   BorderRadius.circular(3),
           underline:  const Divider(color: Colors.transparent),
           value: locale, // Display the current selected locale
           items: AppLocalizations.supportedLocales.map((locale) {

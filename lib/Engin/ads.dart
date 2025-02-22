@@ -288,7 +288,7 @@ class _AdPageState extends State<AdPage> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(
                   "$_remainingTime",
@@ -303,7 +303,7 @@ class _AdPageState extends State<AdPage> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(3),
               ),
               width: mediaQueryWidth(context) * 0.9,
               height: mediaQueryHeight(context) * 0.15,
@@ -338,7 +338,7 @@ class _AdPageState extends State<AdPage> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                        ),
                   ),

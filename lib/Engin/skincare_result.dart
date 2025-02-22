@@ -475,7 +475,7 @@ class _SkincareResultState extends State<SkincareResult> {
                     Colors.grey.shade800,
                     Colors.grey.shade400,
                   ]),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(height: 5),
@@ -494,7 +494,7 @@ class _SkincareResultState extends State<SkincareResult> {
                     Colors.white,
                     Colors.grey.shade100,
                   ]),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(height: 5),
@@ -513,7 +513,7 @@ class _SkincareResultState extends State<SkincareResult> {
                     Colors.blue,
                     Colors.blueAccent,
                   ]),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
             ],
@@ -592,7 +592,7 @@ class _SkincareResultState extends State<SkincareResult> {
           height: MediaQuery.of(context).size.height * 0.3, // Adjust height as needed
           decoration: BoxDecoration(
             gradient: gradient,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(3),
           ),
         ),
         Text(
@@ -672,9 +672,9 @@ class _SkincareResultState extends State<SkincareResult> {
                     right: 20,
                     child: ElevatedButton(
                       style:  ElevatedButton.styleFrom(
-                       backgroundColor: showReport?  mainColor : Colors.grey,
+                       backgroundColor: showReport?  mainColor : Colors.grey.shade700,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       ),
                       onPressed: showReport? ()  async {

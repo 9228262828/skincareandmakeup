@@ -1,6 +1,6 @@
 {
   "bestDeals": "أفضل العروض",
-  "gomlaDeals": "عروض جوملا",
+  "gomlaDeals": "عروض Gomla",
   "shopByCategory": "تسوق حسب الفئة",
   "skinCare": "تحليل البشرة",
   "hairCare": "العناية بالشعر",
@@ -11,6 +11,7 @@
   "categories": "الأقسام",
   "brands": "البراندات",
   "offers": "العروض",
+  "buyWithUs": "التوفير عليك والعرض علينا",
   "cart": "سلة التسوق",
   "description": "معلومات اضافية",
   "addToBag": "اضف الى السلة",
@@ -120,7 +121,7 @@
   "shortDescription": "الوصف",
   "relatedProducts": "منتجات من نفس الفئة",
   "reviewProduct": "تقييم المنتج",
-  "all": "المزيد",
+  "all": "اكتشف المزيد",
   "pets": "حيوانات اليفه",
   "addToCartAll": "اضافة الى السلة",
   "frequentlyBoughtTogether": "منتجات مشابهة",
@@ -198,7 +199,7 @@
   "bestRatings":"الاعلى تقييما",
   "allNeedsGrooming":"كل احتياجات العنايه الرجاليه",
   "pleaseLogin":"من فضلك قم بتسجيل الدخول",
-  "searchForWhat":"بتدور على ايه",
+  "searchForWhat":"بحث في Gomla",
   "welcome":"اهلا بيك احنا Gomla",
   "welcomeText":"شركه تسوق الكتروني هتسهل عليك كل الشراء اون لاين",
   "settings":"الاعدادات",
@@ -218,7 +219,7 @@
     "find_reorder_purchases": "البحث وإعادة طلب المشتريات السابقة",
     "track_purchases": "تتبع مشترياتك",
     "already_customer_sign_in": "هل أنت عميل بالفعل؟ تسجيل الدخول",
-    "new_to_gomla_create_account": "جديد على جوملا؟ أنشئ حسابًا",
+    "new_to_gomla_create_account": "جديد على Gomla؟ أنشئ حسابًا",
     "skip_sign_in": "تخطي تسجيل الدخول",
     "showpdf": "عرض تفاصيل برنامج تحليل البشرة",
     "start_test":"ابدأ اختبار البشرة",
@@ -235,7 +236,7 @@
     "failedToSubmitReview": "فشل في ارسال المراجعة. من فضلك حاول مرة اخري",
     "ratingShouldBeFiveOrLess":"التقييم يجب ان يكون بين 1 و 5",
     "viewReport":"عرض التقرير",
-  "deliveryTo": "التوصيل الي",
+  "deliveryTo": "التوصيل الي السعودية",
   "locationPermissionNotRequested": "لم يتم طلب إذن الموقع",
   "locationPermissionGranted": "تم منح إذن الموقع",
   "locationPermissionDenied": "تم رفض إذن الموقع",
@@ -250,7 +251,8 @@
   "off": "خصم",
   "was": "كان",
   "limitedOffer": "عرض محدود",
-  "get": "اذهب"
+  "get": "اذهب",
+  "save":"وفر"
 
 
 

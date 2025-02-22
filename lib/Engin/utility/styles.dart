@@ -50,7 +50,7 @@ StatelessWidget lightQualityIcon(String label, String result, BuildContext conte
     width: MediaQuery.of(context).size.width * 0.29,
     height: 50,
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.0),
+      borderRadius: BorderRadius.circular(3.0),
       color: containerColor,
     ),
     child: Center(
@@ -236,7 +236,7 @@ Column functionalButton(String text, Color color, VoidCallback callback) {
                   padding: EdgeInsets.zero,
                   backgroundColor: color,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)
+                      borderRadius: BorderRadius.circular(3.0)
                   )
               ),
               child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),

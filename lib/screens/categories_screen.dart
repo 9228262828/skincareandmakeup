@@ -153,7 +153,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               Container(
                 height: MediaQuery.of(context).size.height * 0.17,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(3.0),
                   color: Colors.grey[300],
                 ),
               ),
@@ -203,7 +203,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               ? EdgeInsets.all(5.0)
               : EdgeInsets.all(4.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(3.0),
             border: Border.all(
               color: selectedCategoryId == category.id
                   ? Colors.grey.shade200
@@ -215,7 +215,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(3.0),
                 child: CachedNetworkImage(
                   imageUrl: category.imageUrl,
                   height: selectedCategoryId == category.id

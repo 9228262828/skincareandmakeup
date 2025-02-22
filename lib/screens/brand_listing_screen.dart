@@ -273,7 +273,7 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
                     baseColor: Colors.grey[200]!,
                     highlightColor: Colors.grey[50]!,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(3),
                       child: Container(
                         height: mediaQueryHeight(context) * 0.35,
                         // Match the height of the image in your ProductCard

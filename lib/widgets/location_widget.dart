@@ -48,9 +48,10 @@ class _LocationWidgetState extends State<LocationWidget> {
 
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
-
+          print(place);
+print(place.name);
           setState(() {
-            _address = "${AppLocalizations.of(context)!.deliveryTo} ${place.street}";
+            _address = "${AppLocalizations.of(context)!.deliveryTo} ${place.name}";
             _isLocationFetched = true;
           });
 
@@ -122,23 +123,24 @@ class _LocationWidgetState extends State<LocationWidget> {
     return GestureDetector(
       onTap: _getAddressFromLatLng,
       child: Container(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: mainColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10),
+          color: mainColor.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(3),
         ),
         child: Row(
           children: [
-            Icon(Icons.location_on, color: mainColor, size: 16),
-            SizedBox(width: 8),
+            Icon(Icons.location_on, color: mainColor, size: 18),
+            SizedBox(width: 2),
             Expanded(
               child: Text(
                 _address.isEmpty ? AppLocalizations.of(context)!.deliveryTo : " $_address",
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 9),
+                style: TextStyle(fontSize: 12, fontWeight:  FontWeight.w700),
               ),
             ),
+            Icon(Icons.keyboard_arrow_down_sharp, color: mainColor, size: 18),
           ],
         ),
       ),

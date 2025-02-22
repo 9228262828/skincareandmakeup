@@ -18,7 +18,7 @@ class MyShimmerScreen extends StatelessWidget {
                   height: mediaQueryHeight * 0.12,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -67,7 +67,7 @@ class MyShimmerScreen extends StatelessWidget {
                           color: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -94,7 +94,7 @@ class MyShimmerScreen extends StatelessWidget {
                     height: mediaQueryHeight * 0.078,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -112,7 +112,7 @@ class MyShimmerScreen extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -129,7 +129,7 @@ class MyShimmerScreen extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -150,7 +150,7 @@ class MyShimmerScreen extends StatelessWidget {
                     height: mediaQueryHeight * 0.2,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     child: Center(
                       child: Row(

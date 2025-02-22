@@ -96,22 +96,22 @@ ThemeData lightTheme = ThemeData(
     buttonColor: AppColors.primary,
     textTheme: ButtonTextTheme.primary,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(3.0),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(3.0),
       borderSide: BorderSide(color: AppColors.primary),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(3.0),
       borderSide: BorderSide(color: AppColors.boldGrey),
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(3.0),
       borderSide: BorderSide(color: AppColors.primary),
     ),
     labelStyle: TextStyle(
@@ -130,7 +130,7 @@ ThemeData lightTheme = ThemeData(
       foregroundColor: Colors.white,
       backgroundColor: AppColors.primary,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(3.0),
       ),
       textStyle: TextStyle(
         fontSize: FontSize.s16,
@@ -156,7 +156,7 @@ InputDecoration customInputDecoration(
     labelText: labelText,
     hintText: hintText,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(3),
       borderSide:  BorderSide(color: mainColor),
       gapPadding: 10,
     ),

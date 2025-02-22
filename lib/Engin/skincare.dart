@@ -142,7 +142,7 @@ class _SkincareDetectState extends State<SkincareDetect>
         backgroundColor: Colors.white,
         insetPadding: EdgeInsets.all(20),
         shape:  RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15)
+            borderRadius: BorderRadius.circular(3)
         ),
 
         child: Padding(
@@ -248,7 +248,7 @@ class _SkincareDetectState extends State<SkincareDetect>
                   style:  ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(3),
                         side:   BorderSide(
                             color:  mainColor
                         )

@@ -40,7 +40,7 @@ class ReviewWidget extends StatelessWidget {
                       decoration:  BoxDecoration(
                         color:  Colors.white,
                         border: Border.all(color: mainColor),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                       width: mediaQueryHeight(context) * 0.2,
                       padding: EdgeInsets.all(8),

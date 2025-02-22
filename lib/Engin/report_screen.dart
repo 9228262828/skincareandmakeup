@@ -462,7 +462,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(3),
                           border: Border.all(color: Colors.grey.shade300, width: 0.5),
                         ),
                         child: Column(
@@ -478,7 +478,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                       image: featureImage.image,
                                       fit: BoxFit.cover,
                                     ),
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(3),
                                   ),
                                 ),
                                 SizedBox(width: MediaQuery.of(context).size.width * 0.05),

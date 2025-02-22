@@ -4,10 +4,9 @@ import 'package:Gomla/widgets/product_shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+
 import '../controllers/best_deals_controller/best_deals_cubit.dart';
 import '../controllers/best_deals_controller/best_deals_states.dart';
-import '../contstants.dart';
 import '../models/product.dart';
 import '../screens/product_listing_screen.dart';
 import '../screens/product_screen.dart';
@@ -64,7 +63,7 @@ class ProductHomeWidget extends StatelessWidget {
         return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
       },
       child: Container(
-        color: Colors.grey.shade100,
+        color: Colors.grey.shade200,
         child: Column(
           children: [
             _buildHeader(context),
@@ -88,7 +87,6 @@ class ProductHomeWidget extends StatelessWidget {
                 }
               },
             ),
-            SizedBox(height: 4.0),
           ],
         ),
       ),
@@ -98,15 +96,18 @@ class ProductHomeWidget extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.w700),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Text(
+                title,
+                style:
+                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -123,20 +124,14 @@ class ProductHomeWidget extends StatelessWidget {
                   ),
                 );
               },
-              child: Container(
-                decoration:   BoxDecoration(
-                  border: Border.all(color: Colors.black,width: .5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    AppLocalizations.of(context)!.all,
-                    style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: Text(AppLocalizations.of(context)!.all,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xff4278a6),
+                    )),
               ),
             ),
           ],
@@ -153,11 +148,10 @@ class ProductHomeWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            color: Colors.white,
-            height: type != "recentlyViewedProducts" ? MediaQuery
-                .of(context)
-                .size
-                .height / 2.15 : mediaQueryHeight(context) * 0.17,
+            color: Colors.grey.shade200,
+            height: type != "recentlyViewedProducts"
+                ? mediaQueryHeight(context) * .425
+                : mediaQueryHeight(context) * 0.17,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: products.length,
@@ -181,7 +175,7 @@ class ProductHomeWidget extends StatelessWidget {
                         .size
                         .width / 2.2 : mediaQueryWidth(context) * 0.3,
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: const EdgeInsets.all(5.0),
                       child: type != "recentlyViewedProducts" ?ProductCard(
                         product: products[index], fakeProduct: "",) : ProductCardEmpty(product: products[index], fakeProduct: "",),
                     ),

@@ -3,14 +3,19 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PriceDisplay extends StatelessWidget {
   final double price;
+  final double lastPrice;
 
-  PriceDisplay({required this.price});
+  PriceDisplay({required this.price, required this.lastPrice});
 
   @override
   Widget build(BuildContext context) {
     // Convert the price to a string
     String priceString = price.toStringAsFixed(2);
     List<String> priceParts = priceString.split('.');
+
+    String lastPriceString = lastPrice.toStringAsFixed(2);
+
+    String discount = ((lastPrice - price)).toStringAsFixed(2);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,45 +83,24 @@ class PriceDisplay extends StatelessWidget {
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-
-class LastPriceDisplay extends StatelessWidget {
-  final double price;
-
-  LastPriceDisplay({required this.price});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          '${AppLocalizations.of(context)!.was} : ',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey,
-          ),
-        ),
         SizedBox(width: 2),
         RichText(
           text: TextSpan(
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black, // Color for main text
             ),
             children: [
               TextSpan(
-                text: price.toStringAsFixed(2) +
-                    " ${AppLocalizations.of(context)!.egp}",
-                style: TextStyle(
-                  decoration: TextDecoration.lineThrough,
-                  color: Colors.grey,
-                ), // Integer part
+                text:"${AppLocalizations.of(context)!.save} $discount",
+                style: const TextStyle(
+                  fontSize: 12,color: Colors.green,
+                  fontWeight: FontWeight.w600,
+                  height: 1,
+                  textBaseline: TextBaseline
+                      .ideographic,
+                ),
               ),
             ],
           ),
@@ -125,3 +109,4 @@ class LastPriceDisplay extends StatelessWidget {
     );
   }
 }
+

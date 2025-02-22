@@ -198,7 +198,7 @@
   "bestRatings": "Best Ratings",
   "allNeedsGrooming": "All men's grooming needs",
   "pleaseLogin": "Please login",
-  "searchForWhat": "Search for your products",
+  "searchForWhat": "Search in Gomla",
   "welcome": "Welcome to Gomla",
   "welcomeText": "An online shopping company that will make all your online shopping easier.",
   "settings": "Settings",
@@ -236,7 +236,7 @@
     "ratingShouldBeFiveOrLess": "Rating should be 5 or less",
     "viewReport": "View Report",
 
-      "deliveryTo": "Delivery to",
+      "deliveryTo": "Delivery to Saudi",
       "locationPermissionNotRequested": "Location Permission Not Requested",
       "locationPermissionGranted": "Location Permission Granted",
       "locationPermissionDenied": "Location Permission Denied",
@@ -251,7 +251,9 @@
       "off": "Off",
       "was": "Was",
       "limitedOffer": "Limited Time deal",
-      "get": "Get"
+      "get": "Get",
+       "buyWithUs": "Buy with us",
+        "save":"Save"
 
 
 

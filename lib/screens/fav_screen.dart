@@ -99,7 +99,7 @@ class _FavItemWidgetState extends State<FavItemWidget> {
                             backgroundColor: mainColor,
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius: BorderRadius.circular(3.0),
                             ),
                           ),
                           child: Padding(

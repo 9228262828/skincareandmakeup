@@ -1,23 +1,16 @@
 import 'package:Gomla/shared/utils/app_assets.dart';
-import 'package:Gomla/shared/utils/app_values.dart';
-import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../Engin/ads.dart';
-import '../Engin/pdf_screen.dart';
-import '../Engin/skincare.dart';
-import '../contstants.dart';
 import '../models/banner.dart';
 import '../widgets/app_bar.dart';
-import '../widgets/circleBrands.dart';
+import '../widgets/crousal_container.dart';
 import '../widgets/crousal_widget_assets.dart';
 import '../widgets/grid_offers.dart';
 import '../widgets/home_banner_slider.dart';
 import '../widgets/location_widget.dart';
 import '../widgets/product_home_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -29,7 +22,7 @@ class HomeScreen extends StatelessWidget {
     Bannerr banner;
     return Scaffold(
       appBar: CustomAppBar(title: AppLocalizations.of(context)!.home,home: true,),
-
+      backgroundColor: Colors.grey.shade200,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,24 +30,34 @@ class HomeScreen extends StatelessWidget {
 
          /*  buildCategoriesList(context),*/
             LocationWidget(),
+            SizedBox(
+              height: 6,
+            ),
             HomeBannerSlider(
               banners: banners,
             ),
 
-            Padding(
+            /*  Padding(
               padding: const EdgeInsets.all(8.0),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(3),
                 child: Image.asset(
                   'assets/banner1.png',
                   fit: BoxFit.cover,
                   width: double.infinity,
+
                   height: mediaQueryHeight(context) * 0.12,
                 ),),
+            ),*/
+            SizedBox(
+              height: 10,
             ),
-
-
+            /*  CircleBrands(),*/
             GridOffers(),
+            SizedBox(
+              height: 10,
+            ),
+            CruosalContainer(),
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.bestSellers,
               categoryId: 1214,
@@ -67,22 +70,18 @@ class HomeScreen extends StatelessWidget {
               type:  'bestSellers',
               isLink:  true,
             ),
-          //  buildProductSection("عروض جملة", homeScreenProvider.pets, 53),
-            CircleBrands(),
-            IndexedBannerWidget(index: 0, banners: banners),
-
-            /*BannerHome(
-             image:  ImageAssets.banner2  ,
-           ),*/
-            const SizedBox(height: 4.0),
-            GridOffers(),
-            ScrollingCarouselWidget(isMain:  false,),
-          //  buildProductSection("الاعلى تقييما", homeScreenProvider.pets, 53),
+            SizedBox(
+              height: 10,
+            ),
+            CruosalContainer(),
+            SizedBox(
+              height: 5,
+            ),
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.exclusiveDeals,
               categoryId: 153,
               specialProducts: false,
-                bestSellers:false ,
+              bestSellers:false ,
               bestRatings:false ,
               allNeedsGrooming:false ,
               exclusiveDeals: true,
@@ -91,19 +90,23 @@ class HomeScreen extends StatelessWidget {
               isLink: false,
 
             ),
-            const SizedBox(height: 8.0),
-
-      /*    BannerHome(banner: ), */
-            /*const SizedBox(height: 8.0),
-            BannerHome(
-              image:  ImageAssets.banner3  ,
-
+            const SizedBox(height: 10.0),
+            GridOffers(),
+            IndexedBannerWidget(index: 0, banners: banners),
+            SizedBox(
+              height: 10,
             ),
-            const SizedBox(height: 8.0),*/
+        const CruosalContainer(),
+            SizedBox(
+              height: 10,
+            ),
+          //  ScrollingCarouselWidget(isMain:  false,),
 
             if (banners.length > 1)
               IndexedBannerWidget(index: 1, banners: banners),
-            GridOffers(),           // buildProductSection("احدث منتجات بيوتي", homeScreenProvider.pets, 53),
+            const SizedBox(height: 10.0),
+
+            GridOffers(),
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.nearlyArrived,
               categoryId: 1199,
@@ -117,13 +120,10 @@ class HomeScreen extends StatelessWidget {
               isLink: true,
 
             ),
-
-
-            /*BannerHome(
-              image:  ImageAssets.banner4  ,
-            ),*/
+            const SizedBox(height: 8.0),
             if (banners.length > 2)
               IndexedBannerWidget(index: 2, banners: banners),
+            const SizedBox(height: 10.0),
             GridOffers(),
 
            // buildProductSection("احدث منتجات الجيم", homeScreenProvider.pets, 53),
@@ -140,16 +140,16 @@ class HomeScreen extends StatelessWidget {
               isLink:  true,
 
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 5.0),
             if (banners.length > 3)
               IndexedBannerWidget(index: 3, banners: banners),
           /*  BannerHome(
               image:  ImageAssets.banner3  ,
             ),*/
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 5.0),
             if (banners.length > 5)
               IndexedBannerWidget(index: 5, banners: banners),
-            SizedBox(height: 8.0),
+            SizedBox(height: 4.0),
             GridOffers(),
           //  buildProductSection("احدث منتجات بيتس", homeScreenProvider.pets, 53),
             ProductHomeWidget(
@@ -171,6 +171,8 @@ class HomeScreen extends StatelessWidget {
             /*BannerHome(
               image:  ImageAssets.banner1  ,
             ),*/
+            const SizedBox(height: 10.0),
+
             GridOffers(),
            // buildProductSection("منتجات مميزة", homeScreenProvider.pets, 53),
             ProductHomeWidget(
@@ -186,6 +188,7 @@ class HomeScreen extends StatelessWidget {
               isLink:  false,
 
             ),
+            const SizedBox(height: 5.0),
 
             if (banners.length > 5)
               IndexedBannerWidget(index: 5, banners: banners),
@@ -206,7 +209,7 @@ class HomeScreen extends StatelessWidget {
               isLink:  false,
 
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 10.0),
           ],
         ),
       ),

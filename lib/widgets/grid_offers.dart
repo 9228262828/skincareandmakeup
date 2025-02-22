@@ -16,7 +16,7 @@ class _GridOffersState extends State<GridOffers> {
   @override
   void initState() {
     super.initState();
-    _startAutoScroll();
+   // _startAutoScroll();
   }
 
   void _startAutoScroll() {
@@ -95,19 +95,23 @@ class _GridOffersState extends State<GridOffers> {
         "mainLabel": AppLocalizations.of(context)!.bestDeals,
         'label': AppLocalizations.of(context)!.brand
       },
+      {
+        'image': 'assets/app_icon.png',
+        "mainLabel": AppLocalizations.of(context)!.bestDeals,
+        'label': AppLocalizations.of(context)!.brand
+      },
     ];
 
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(5),
+          color: Colors.grey.shade200 ,
+          borderRadius: BorderRadius.circular(3),
         ),
-        height: mediaQueryHeight(context) * 0.55,
+        height: mediaQueryHeight(context) * 0.44,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          reverse: true,
           physics: BouncingScrollPhysics(),
           controller: _scrollController,
           itemCount: (products.length / 4).ceil(),
@@ -122,24 +126,24 @@ class _GridOffersState extends State<GridOffers> {
             }
 
             return Container(
-              width: mediaQueryWidth(context) * 0.95,
+              width: mediaQueryWidth(context) * 0.7,
               // Width of each main container
-              margin: EdgeInsets.symmetric(horizontal: 4),
+              margin: EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: Colors.grey.shade300, width: 1),
-                borderRadius: BorderRadius.circular(8),
+              //  border: Border.all(color: Colors.grey.shade300, width: 1),
+                borderRadius: BorderRadius.circular(3),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2.5),
                     child: Text(
                       products[start]['mainLabel'] ?? '',
                       style: TextStyle(
                         fontSize: 17,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -147,7 +151,7 @@ class _GridOffersState extends State<GridOffers> {
                     children: [
                       // First row with 2 items
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: Row(
                           children: List.generate(2, (subIndex) {
                             final productIndex = start + subIndex;
@@ -159,9 +163,9 @@ class _GridOffersState extends State<GridOffers> {
                                     print('Tapped on ${product['label']}');
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.all(4),
+                                    margin: EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
+                                      borderRadius: BorderRadius.circular(3),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -171,17 +175,17 @@ class _GridOffersState extends State<GridOffers> {
                                           decoration: BoxDecoration(
                                             color: mainColor,
                                             borderRadius:
-                                                BorderRadius.circular(5),
+                                                BorderRadius.circular(3),
                                           ),
                                           child: Image.asset(
                                             product['image']!,
                                             height: mediaQueryHeight(context) *
-                                                0.18,
+                                                0.15,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.all(2.0),
+                                          padding: const EdgeInsets.all(4.0),
                                           child: Text(
                                             product['label']!,
                                             style: TextStyle(
@@ -205,10 +209,10 @@ class _GridOffersState extends State<GridOffers> {
                       ),
                       // Second row with 2 items
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: Row(
                           children: List.generate(2, (subIndex) {
-                            final productIndex = start + 2 + subIndex;
+                            final productIndex = start + subIndex;
                             if (productIndex < end) {
                               final product = products[productIndex];
                               return Expanded(
@@ -217,29 +221,29 @@ class _GridOffersState extends State<GridOffers> {
                                     print('Tapped on ${product['label']}');
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.all(4),
+                                    margin: EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
+                                      borderRadius: BorderRadius.circular(3),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           decoration: BoxDecoration(
                                             color: mainColor,
                                             borderRadius:
-                                                BorderRadius.circular(5),
+                                            BorderRadius.circular(3),
                                           ),
                                           child: Image.asset(
                                             product['image']!,
                                             height: mediaQueryHeight(context) *
-                                                0.18,
+                                                0.15,
                                             fit: BoxFit.cover,
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.all(2.0),
+                                          padding: const EdgeInsets.all(4.0),
                                           child: Text(
                                             product['label']!,
                                             style: TextStyle(
@@ -256,27 +260,14 @@ class _GridOffersState extends State<GridOffers> {
                             } else {
                               return Expanded(
                                   child:
-                                      Container()); // Return an empty container if no product
+                                  Container()); // Return an empty container if no product
                             }
                           }),
                         ),
                       ),
                     ],
                   ),
-                  // "Show More" button at the bottom of each main container
-                  TextButton(
-                    onPressed: () {
-                      // Action to show more items
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.all,
-                      style: TextStyle(
-                        color: Colors.blue.shade600,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
+
                 ],
               ),
             );
@@ -286,3 +277,5 @@ class _GridOffersState extends State<GridOffers> {
     );
   }
 }
+
+

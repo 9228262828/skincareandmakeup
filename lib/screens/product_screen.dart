@@ -300,7 +300,7 @@ class _ProductScreenState extends State<ProductScreen>
                     minimumSize:  Size(400, 50),
 
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(3.0),
                     ),
                   ),
                   onPressed: () {
@@ -380,7 +380,7 @@ class _ProductScreenState extends State<ProductScreen>
                           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
                             cart.items.length.toString(),
@@ -509,7 +509,7 @@ class _ProductScreenState extends State<ProductScreen>
                                                 : null,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(5.0),
+                                                  BorderRadius.circular(3.0),
                                             ),
                                             showCheckmark: false,
                                             selectedShadowColor: mainColor,
@@ -630,7 +630,7 @@ class _ProductScreenState extends State<ProductScreen>
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(3),
                                         color: Colors.white,
                                         border: Border.all(
                                           color: borderColor,
@@ -643,7 +643,7 @@ class _ProductScreenState extends State<ProductScreen>
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(3),
                                         color: Colors.white,
                                         border: Border.all(
                                           color: borderColor,
@@ -793,7 +793,7 @@ class _ProductScreenState extends State<ProductScreen>
                                           horizontal: 8.0),
                                       decoration:   BoxDecoration(
                                         borderRadius:
-                                            BorderRadius.circular(12.0),
+                                            BorderRadius.circular(3.0),
                                       ),
                                       child: ElevatedButton(
                                         onPressed: _addGroupToCart,
@@ -803,7 +803,7 @@ class _ProductScreenState extends State<ProductScreen>
                                               vertical: 0.0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(12.0),
+                                                BorderRadius.circular(3.0),
                                           ),
                                         ),
                                         child: Text(
@@ -825,7 +825,7 @@ class _ProductScreenState extends State<ProductScreen>
                                   foregroundColor: Colors.white,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4.0),
+                                    borderRadius: BorderRadius.circular(3.0),
                                   ),
                                 ),
                                 onPressed: () => _openReviewModalSheet(context),
@@ -922,7 +922,7 @@ class _ProductScreenState extends State<ProductScreen>
             Container(
               height: 30.0,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(3.0),
                 border: Border.all(color: borderColor),
               ),
               child: Row(
@@ -977,7 +977,7 @@ class _ProductScreenState extends State<ProductScreen>
                   backgroundColor: mainColor,
                   padding: const EdgeInsets.symmetric(vertical: 0.0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
                 child: Text(
@@ -1009,7 +1009,7 @@ class _ProductScreenState extends State<ProductScreen>
               Container(
                 width: double.infinity,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(3),
                   child: CachedNetworkImage(
                     imageUrl: product!.images[index],
                     fit: BoxFit.cover,
@@ -1040,7 +1040,7 @@ class _ProductScreenState extends State<ProductScreen>
                 child: Container(
                   decoration:   BoxDecoration(
                     color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   width: 35.0,
                   height: 35.0,
@@ -1062,7 +1062,7 @@ class _ProductScreenState extends State<ProductScreen>
                 child: Container(
                   decoration:   BoxDecoration(
                     color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   width: 35.0,
                   height: 35.0,
@@ -1213,7 +1213,7 @@ class _ProductScreenState extends State<ProductScreen>
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0),
+                        borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
                     onPressed: () {
@@ -1239,7 +1239,7 @@ class _ProductScreenState extends State<ProductScreen>
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4.0),
+                        borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
                     onPressed: () {

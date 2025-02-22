@@ -32,8 +32,8 @@ class HomeBannerSlider extends StatelessWidget {
       width: double.infinity,
       height: mediaQueryHeight(context) * 0.23,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(3),
       ),
       child: CarouselSlider.builder(
         itemCount: featuredBanners.length,
@@ -41,27 +41,26 @@ class HomeBannerSlider extends StatelessWidget {
           final banner = featuredBanners[index];
           return GestureDetector(
             onTap: () {
-              if (banner.termType == "external") null;
+              if (banner.termType == "external") return;
               if (banner.termType == "product") {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ProductScreen(
-                              productId: int.parse(banner.termId)),
+                      builder: (context) => ProductScreen(
+                        productId: int.parse(banner.termId),
+                      ),
                     ));
               }
               if (banner.termType == "category") {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ProductListingScreen(
-                          categoryId: int.parse(banner.termId),
-                          categoryName: banner.termName!,
-                          type: "id",
-                          isLink: false,
-                        ),
+                    builder: (context) => ProductListingScreen(
+                      categoryId: int.parse(banner.termId),
+                      categoryName: banner.termName!,
+                      type: "id",
+                      isLink: false,
+                    ),
                   ),
                 );
               }
@@ -69,44 +68,43 @@ class HomeBannerSlider extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        BrandProductsScreen(
-                          isLink: false,
-                          brandName: banner.termName!,
-                          id: int.parse(banner.termId),
-                        ),
+                    builder: (context) => BrandProductsScreen(
+                      isLink: false,
+                      brandName: banner.termName!,
+                      id: int.parse(banner.termId),
+                    ),
                   ),
                 );
               }
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                banner.image,
-                width: double.infinity,
-                fit: BoxFit.fill,
-                height: mediaQueryHeight(context) * 0.3,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.error),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: Image.network(
+                  banner.image,
+                  width: double.infinity,
+                  fit: BoxFit.cover, // Updated to cover the entire space
+                  height: mediaQueryHeight(context) * 0.3,
+                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                ),
               ),
             ),
           );
         },
         options: CarouselOptions(
-          autoPlay: true,
+
           autoPlayInterval: Duration(seconds: 3),
-          enlargeCenterPage: true,
+          enlargeCenterPage: false, // Ensures no gap between banners
           enableInfiniteScroll: true,
           autoPlayAnimationDuration: Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
           pauseAutoPlayOnTouch: true,
           pauseAutoPlayOnManualNavigate: true,
-          height: mediaQueryHeight(context) * 0.35,
+          height: mediaQueryHeight(context) * 0.5,
           scrollPhysics: BouncingScrollPhysics(),
-
-          viewportFraction: .85,
-          onPageChanged: (index, reason) {
-          },
+          viewportFraction: .9,
+          onPageChanged: (index, reason) {},
         ),
       ),
     );
@@ -133,7 +131,7 @@ class IndexedBannerWidget extends StatelessWidget {
     final banner = banners[index];
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(0.0),
       child: GestureDetector(
         onTap: () {
           if (banner.termType == "external") null;
@@ -178,12 +176,12 @@ class IndexedBannerWidget extends StatelessWidget {
           height: mediaQueryHeight(context) * 0.22,
           decoration: BoxDecoration(
             color: Colors.transparent,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(3),
           ),
           child: Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(3),
                 child: CachedNetworkImage(
                   imageUrl: banner.image,
                   width: double.infinity,
@@ -211,7 +209,7 @@ class IndexedBannerWidget extends StatelessWidget {
                     width: mediaQueryWidth(context) * 0.08,
                     decoration: BoxDecoration(
                       color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     child: const Center(
                       child: Text(

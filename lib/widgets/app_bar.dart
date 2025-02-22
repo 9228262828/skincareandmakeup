@@ -1,7 +1,9 @@
 import 'package:Gomla/contstants.dart';
+import 'package:Gomla/screens/fav_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cart.dart';
 import '../screens/search_result.dart';
@@ -19,15 +21,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _startSearch(BuildContext context) {
     showSearch(context: context, delegate: ProductSearchDelegate());
   }
+  tokenFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    print(prefs.getString('auth_token'));
+    return prefs.getString('auth_token');
+  }
 
   @override
   Widget build(BuildContext context) {
-    // get cart count from provider
     final int cartCount = Provider.of<Cart>(context, listen: true).items.length;
     return AppBar(
       elevation: 0,
-      backgroundColor: Color(0xFF212224),
-      surfaceTintColor: Color(0xFF212224),
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
       title: Image.asset(
         'assets/app_icon.png',
 
@@ -43,8 +49,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: .5)),
+                  borderRadius: BorderRadius.circular(3),
+                  border: Border.all(color: Colors.grey, width: .5)),
               child: Row(
                 children: [
                   Padding(
@@ -56,7 +62,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Container(
                     decoration: BoxDecoration(
                       color: mainColor,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                     child: IconButton(
                       icon: Icon(
@@ -76,30 +82,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             _startSearch(context);
           },
         ),
-        // Stack(
-        //   children: [
-        //     Positioned(
-        //       top: 0,
-        //       right: 10,
-        //       child: Text(
-        //         cartCount.toString(),
-        //         style: TextStyle(color: mainColor, fontSize: 14, fontWeight: FontWeight.bold),
-        //       ),
-        //     ),
-        //     IconButton(
-        //       icon: Icon(
-        //         Icons.shopping_cart,
-        //         color: Colors.black,
-        //       ),
-        //       onPressed: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(builder: (context) => CartScreen()),
-        //         );
-        //       },
-        //     ),
-        //   ],
-        // ),
+        tokenFromSharedPreferences() == null ? Container() :  IconButton(
+          icon: const Icon(
+            Icons.favorite_border,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FavScreen()),
+            );
+          },
+        ),
       ],
 
       leading: home

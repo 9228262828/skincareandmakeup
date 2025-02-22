@@ -126,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
                   height: mediaQueryHeight(context) * 0.12,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -205,7 +205,7 @@ class ProfileScreen extends StatelessWidget {
                         color: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(3),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -250,21 +250,21 @@ class ProfileScreen extends StatelessWidget {
               Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: _buildLanguageSelector(context)),
               SizedBox(height: mediaQueryHeight(context) * 0.01),
               Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: _buildDeleteAccount(context)),
               SizedBox(height: mediaQueryHeight(context) * 0.01),
               Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: _buildShareApp(context)),
               SizedBox(height: mediaQueryHeight(context) * 0.06),
@@ -280,7 +280,7 @@ class ProfileScreen extends StatelessWidget {
                   height: mediaQueryHeight(context) * 0.08,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   child: Center(
                     child: Row(
@@ -303,7 +303,7 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(3),
                 ),
                 child: Column(
                   children: [

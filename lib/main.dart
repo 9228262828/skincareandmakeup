@@ -178,7 +178,7 @@ class _MainScreenState extends State<MainScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
                             cart.items.length.toString(),
@@ -406,7 +406,7 @@ class _OpenScreenState extends State<OpenScreen> {
                     // Text color
                     side: BorderSide(color: Colors.grey, width: 1),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
                   onPressed: () {
@@ -425,7 +425,7 @@ class _OpenScreenState extends State<OpenScreen> {
                     // Text color
                     side: BorderSide(color: Colors.grey, width: .5),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
                   onPressed: () {
@@ -444,7 +444,7 @@ class _OpenScreenState extends State<OpenScreen> {
                     // Text color
                     side: BorderSide(color: Colors.grey, width: .5),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
                   onPressed: () {
@@ -484,7 +484,7 @@ class _OpenScreenState extends State<OpenScreen> {
                   // Text color
                   side: BorderSide(color: Colors.grey, width: 1),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                 ),
               ),
@@ -508,7 +508,7 @@ class _OpenScreenState extends State<OpenScreen> {
                   // Text color
                   side: BorderSide(color: Colors.blue, width: 1),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(3),
                   ),
                 ),
               ),*/

@@ -34,7 +34,7 @@ class UnauthWidget extends StatelessWidget {
             height: mediaQueryHeight(context) * 0.16,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(3),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -94,14 +94,14 @@ class UnauthWidget extends StatelessWidget {
         Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(3),
             ),
             child: _buildLanguageSelector(context)),
         SizedBox(height: mediaQueryHeight(context) * 0.06),
         /*Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(3),
           ),
           child: Column(
             children: [
@@ -175,7 +175,7 @@ class UnauthWidget extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(3),
           ),
           child: Column(
             children: [
@@ -303,7 +303,7 @@ class UnauthWidget extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: mainColor,
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
         ),
         onPressed: onPressed,
         child: Text(label, style: TextStyle(color: Colors.white)),
