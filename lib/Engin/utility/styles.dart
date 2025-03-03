@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 ButtonStyle settingPageButtonStyle() {
   return TextButton.styleFrom(
@@ -27,7 +28,8 @@ Positioned backButton(BuildContext context) {
   );
 }
 
-StatelessWidget lightQualityIcon(String label, String result, BuildContext context) {
+StatelessWidget lightQualityIcon(
+    String label, String result, String resultText, BuildContext context) {
   Color containerColor;
 
   // Determine the container color based on the result
@@ -39,7 +41,7 @@ StatelessWidget lightQualityIcon(String label, String result, BuildContext conte
       containerColor = Colors.orange;
       break;
     case "Unknown":
-      containerColor = Colors.grey;
+      containerColor = Colors.white;
       break;
     default:
       containerColor = Colors.red;
@@ -50,7 +52,7 @@ StatelessWidget lightQualityIcon(String label, String result, BuildContext conte
     width: MediaQuery.of(context).size.width * 0.29,
     height: 50,
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.0),
+      borderRadius: BorderRadius.circular(3.0),
       color: containerColor,
     ),
     child: Center(
@@ -59,11 +61,11 @@ StatelessWidget lightQualityIcon(String label, String result, BuildContext conte
         children: [
           Text(
             label,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           Text(
-            result,
-            style: TextStyle(color: Colors.white),
+            resultText,
+            style: TextStyle(color: Colors.black),
           ),
         ],
       ),
@@ -84,18 +86,62 @@ Positioned lightQualityBox(String faceLighting, String faceFront, String faceAre
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Box for Lighting Quality
-          lightQualityIcon("Lighting", faceLighting, context),
+          lightQualityIcon(
+              AppLocalizations.of(context)!.lighting,
+              faceLighting,
+              faceLighting == "Good"
+                  ? AppLocalizations.of(context)!.faceArea_good
+                  : faceLighting == "Normal"
+                      ? AppLocalizations.of(context)!.normal
+                      : faceLighting == "Unknown"
+                          ? AppLocalizations.of(context)!.unknown
+                          : faceLighting == "OverExposed"
+                              ? AppLocalizations.of(context)!.overExposed
+                              : faceLighting == "Uneven"
+                                  ? AppLocalizations.of(context)!.uneven
+                                  : faceLighting == "UnderExposed"
+                                      ? AppLocalizations.of(context)!.underExposed:
+                  faceLighting == "Backlighting"?
+                  AppLocalizations.of(context)!.backlighting
+                                  : AppLocalizations.of(context)!.unknown,
+              context),
           SizedBox(width: 10),
 
 
           // Box for Face Frontal Quality
-          lightQualityIcon("Face frontal", faceFront, context),
+          lightQualityIcon(
+              AppLocalizations.of(context)!.faceFrontal,
+              faceFront,
+              faceFront == "Good"
+                  ? AppLocalizations.of(context)!.faceArea_good
+                  : faceArea == "Normal"
+                      ? AppLocalizations.of(context)!.normal
+                      : faceArea == "Unknown"
+                          ? AppLocalizations.of(context)!.unknown:
+                          faceArea == "Bad"?
+                          AppLocalizations.of(context)!.bad
+                          : AppLocalizations.of(context)!.unknown,
+              context),
           SizedBox(width: 10),
 
 
           // Box for Face Area Quality
-          lightQualityIcon("Face area", faceArea, context),
-            SizedBox(width: 10),
+          lightQualityIcon(
+              AppLocalizations.of(context)!.faceArea,
+              faceArea,
+              faceArea == "Good"
+                  ? AppLocalizations.of(context)!.faceArea_good
+                  : faceArea == "Normal"
+                      ? AppLocalizations.of(context)!.faceArea_normal
+                      : faceArea == "Unknown"
+                          ? AppLocalizations.of(context)!.faceArea_unknown:
+                          faceArea == "TooSmall"?
+                          AppLocalizations.of(context)!.tooSmall:
+                          faceArea == "OutOfBoundary"?
+                          AppLocalizations.of(context)!.outOfBoundary
+                          : AppLocalizations.of(context)!.unknown,
+              context),
+          SizedBox(width: 10),
 
         ],
       ),
@@ -120,14 +166,23 @@ Stack flashView() {
   );
 }
 
-Column scoreView(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor) {
+Column scoreView(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor, Color scoreColor, Shadow shadow) {
   return Column(children: [
     Container(
       width:scoreSize.width,
       height:scoreSize.height,
+
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isSelected ? borderColor : Colors.transparent,
+        boxShadow:  <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
         border: Border.all(
               color: borderColor,
               width:3,
@@ -136,16 +191,22 @@ Column scoreView(Size scoreSize, String score, String featureName, bool isSelect
       child: Center(
         child:
           Text(score, style: TextStyle(
-            color: Colors.white,
+            color: scoreColor,
+            fontWeight:   FontWeight.bold,
+
+            shadows:   <Shadow>[shadow ],
           ))
         ),
       ),
+      SizedBox(height: 5,),
       Text(featureName, style: TextStyle(
-        color: Colors.white
+        color: Colors.white,
+        fontSize: 12
       ))
     ],
   );
 }
+
 Column scoreViewAll(Size scoreSize, String score, String featureName, bool isSelected,Color backColor,Color borderColor) {
   return Column(children: [
     Container(
@@ -168,8 +229,11 @@ Column scoreViewAll(Size scoreSize, String score, String featureName, bool isSel
           ))
         ),
       ),
+      SizedBox(height: 5,),
       Text(featureName, style: TextStyle(
-        color: Colors.white
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.bold
       ))
     ],
   );
@@ -235,7 +299,7 @@ Column functionalButton(String text, Color color, VoidCallback callback) {
                   padding: EdgeInsets.zero,
                   backgroundColor: color,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)
+                      borderRadius: BorderRadius.circular(3.0)
                   )
               ),
               child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),

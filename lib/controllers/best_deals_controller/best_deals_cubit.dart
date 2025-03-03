@@ -14,6 +14,7 @@ class BestDealsCubit extends Cubit<BestDealsState> {
     emit(BestDealsLoading());
     try {
       List<Product> products = await wooCommerceService.fetchProducts(id, 1, context);
+      print("best deals");
       print(products);
       emit(BestDealsLoaded(products));
     } catch (e) {
@@ -22,15 +23,17 @@ class BestDealsCubit extends Cubit<BestDealsState> {
   }
 
 
-  Future<void> fetchBestDeals1(BuildContext context,String url) async {
+  Future<void> fetchBestDeals1(BuildContext context, String url) async {
     emit(BestDealsLoading());
     try {
-      List<Product> products = await wooCommerceService.fetchProductsBest( context,
-          url
+      List<Product> products = await wooCommerceService.fetchProductsBest(context, url);
+      print("Fetched products: $products");
 
-      );
-      print(products);
-      emit(BestDealsLoaded(products));
+      if (products.isEmpty) {
+        emit(BestDealsError("No products found"));
+      } else {
+        emit(BestDealsLoaded(products));
+      }
     } catch (e) {
       emit(BestDealsError(e.toString()));
     }

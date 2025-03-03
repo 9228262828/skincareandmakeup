@@ -169,7 +169,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
       // });
 
       List<Category> fetchedCategories =
-      await wooCommerceService.fetchCategories(context);
+      await wooCommerceService.fetchCategories();
       setState(() {
         categories = fetchedCategories;
       });
@@ -196,7 +196,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
 
   Future<void> fetchBrands() async {
     try {
-      List<Brand> fetchedBrands = await wooCommerceService.fetchBrands(context);
+      List<Brand> fetchedBrands = await wooCommerceService.fetchBrands();
       setState(() {
         brands = fetchedBrands;
       });
@@ -290,19 +290,20 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       children: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            textStyle: TextStyle(color: Colors.white),
+                            side:    BorderSide(color: mainColor),
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.transparent,
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                           child: Text(AppLocalizations.of(context)!.cancel,
-                              style: TextStyle(color: Colors.white)),
+                              style: TextStyle(color: Colors.black)),
                         ),
                         TextButton(
                           style: TextButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            textStyle: TextStyle(color: Colors.white),
+                            foregroundColor: Colors.white,
+                            backgroundColor: mainColor,
                           ),
                           onPressed: () {
                             setState(() {
@@ -376,21 +377,24 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       children: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            textStyle: TextStyle(color: Colors.white),
+                            side:    BorderSide(color: mainColor),
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.transparent,
+                            textStyle: TextStyle(color: Colors.black),
                           ),
+
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                           child: Text(
                             AppLocalizations.of(context)!.cancel,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
                         TextButton(
                           style: TextButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            textStyle: TextStyle(color: Colors.white),
+                            foregroundColor: Colors.white,
+                            backgroundColor: mainColor,
                           ),
                           onPressed: () {
                             setState(() {
@@ -482,7 +486,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                     gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.5,
+                      childAspectRatio: 0.45,
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
                     ),
@@ -527,7 +531,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
               width: mediaQueryWidth(context) * 0.53,
               height: mediaQueryHeight(context) * 0.05,
               decoration: BoxDecoration(
-                color: Colors.indigo,
+                color: mainColor,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
@@ -570,7 +574,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
             ),
             SizedBox(width: 10),
             CircleAvatar(
-              backgroundColor: Colors.indigo,
+              backgroundColor: mainColor,
               child: Icon(Icons.share, color: Colors.white),
             )
           ],
@@ -595,7 +599,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                 color: selectedCategoryId == category.id
                     ? borderColor
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(3.0),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),

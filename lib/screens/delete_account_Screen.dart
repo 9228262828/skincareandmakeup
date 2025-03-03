@@ -26,7 +26,7 @@ class DeleteAccount extends StatelessWidget {
                   height: mediaQueryHeight(context) * 0.135,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(15.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

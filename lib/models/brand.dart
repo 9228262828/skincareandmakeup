@@ -1,19 +1,15 @@
 class Brand {
-  final int id;
-  final String name;
-  final String imageUrl;
+  int id;
+  String name;
+  String imageUrl;
 
-  Brand({
-    required this.id,
-    required this.name,
-    required this.imageUrl,
-  });
+  Brand({required this.id, required this.name, required this.imageUrl});
 
   factory Brand.fromJson(Map<String, dynamic> json) {
     return Brand(
-      id: json['id'],
-      name: json['name'],
-      imageUrl: json['image'] != null ? json['image']['src'] : '',
+      id: int.tryParse(json['id'].toString()) ?? 0,
+      name: json['name'] ?? '',
+      imageUrl: json['brand_image'] ?? '',
     );
   }
 }

@@ -75,7 +75,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(3),
                         border: Border.all(color: Colors.black, width: 1),
                       ),
                       child: CachedNetworkImage(

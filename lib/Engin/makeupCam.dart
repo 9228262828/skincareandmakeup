@@ -325,7 +325,7 @@ class _MakeupCamState extends State<MakeupCam> {
 
     return Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(30),
             border: Border.all(
                 width: 2, color: isSelected ? Colors.red : Colors.transparent)),
         child: CircleAvatar(
@@ -406,7 +406,7 @@ class _MakeupCamState extends State<MakeupCam> {
             color: isSelected ? Colors.red : Colors.transparent,
             width: 2.0,
           ),
-          borderRadius: BorderRadius.circular(5.0)),
+          borderRadius: BorderRadius.circular(3.0)),
       child: Center(
           child: Text(wearingStyle['name'],
               overflow: TextOverflow.ellipsis,
@@ -542,7 +542,7 @@ class _MakeupCamState extends State<MakeupCam> {
           color: isSelected ? Colors.red : Colors.transparent,
           width: 2.0,
         ),
-        borderRadius: BorderRadius.circular(5.0),
+        borderRadius: BorderRadius.circular(3.0),
       ),
       child: _loadImage(pattern["thumbnail"], 40, BoxFit.cover),
     );
@@ -674,7 +674,7 @@ class _MakeupCamState extends State<MakeupCam> {
                               : Colors.transparent,
                           width: 2.0,
                         ),
-                        borderRadius: BorderRadius.circular(5.0)),
+                        borderRadius: BorderRadius.circular(3.0)),
                     child: skus[index]['thumbnail'] != ""
                         ? Column(children: [
                             _loadImage(skus[index]['thumbnail'],

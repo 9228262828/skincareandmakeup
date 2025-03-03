@@ -17,13 +17,41 @@ class CategoriesCubit extends Cubit<CategoriesState> {
 
     ));
     try {
-      List<Category> categories = await wooCommerceService.fetchCategories(context);
+      List<Category> categories = await wooCommerceService.fetchCategories();
 
       print('CategoriesLoaded');
       print(categories);
       emit(CategoriesLoaded(categories));
     } catch (e) {
       emit(CategoriesError(e.toString()));
+    }
+  }
+}
+
+
+
+class MainCategoriesCubit extends Cubit<MainCategoriesState> {
+  final WooCommerceService wooCommerceService;
+
+  MainCategoriesCubit(this.wooCommerceService) : super(MainCategoriesInitial());
+
+  Future<void> fetchMainCategories() async {
+    emit(MainCategoriesLoading());
+    try {
+      List<Category> mainCategories = await wooCommerceService.fetchCategories();
+      emit(MainCategoriesLoaded(mainCategories));
+    } catch (e) {
+      emit(MainCategoriesError(e.toString()));
+    }
+  }
+
+  Future<void> fetchSubCategories(int parentId) async {
+    emit(SubCategoriesLoading(parentId));
+    try {
+      List<Category> subCategories = await wooCommerceService.fetchSubCategories(parentId);
+      emit(SubCategoriesLoaded(parentId, subCategories));
+    } catch (e) {
+      emit(SubCategoriesError(parentId, e.toString()));
     }
   }
 }

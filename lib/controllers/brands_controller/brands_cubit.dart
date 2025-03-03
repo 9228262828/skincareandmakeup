@@ -12,20 +12,43 @@ import '../../models/product.dart';
 import '../../services/woocommerce_service.dart';
 import 'brands_states.dart';
 
+
+
 class BrandsCubit extends Cubit<BrandsState> {
   final WooCommerceService wooCommerceService;
 
   BrandsCubit(this.wooCommerceService) : super(BrandsInitial());
 
-  Future<void> fetchBrands(BuildContext context) async {
+  Future<void> fetchBrands() async {
     emit(BrandsLoading());
     try {
-      List<Brand> brands = await wooCommerceService.fetchBrands(context);
+      List<Brand> brands = await wooCommerceService.fetchBrands();
+      print(brands);
       emit(BrandsLoaded(brands));
     } catch (e) {
       emit(BrandsError(e.toString()));
     }
   }
+}
+
+// brands_state.dart
+
+abstract class BrandsState {}
+
+class BrandsInitial extends BrandsState {}
+
+class BrandsLoading extends BrandsState {}
+
+class BrandsLoaded extends BrandsState {
+  final List<Brand> brands;
+
+  BrandsLoaded(this.brands);
+}
+
+class BrandsError extends BrandsState {
+  final String error;
+
+  BrandsError(this.error);
 }
 
 

@@ -17,7 +17,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   height: 75,
                 ),
@@ -32,7 +32,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                       0.3, // 30% of screen height
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
               ),
@@ -66,7 +66,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                   height: 45,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
               ),
@@ -87,7 +87,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                         height: 50,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(3.0),
                         ),
                       ),
                     ),
@@ -99,7 +99,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                         height: 50,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(3.0),
                         ),
                       ),
                     ),
@@ -116,7 +116,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                   height: 200,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
               ),
@@ -131,7 +131,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                   width: mediaQueryWidth(context)*.5,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
               ),

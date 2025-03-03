@@ -29,14 +29,14 @@ class HomeScreenProvider with ChangeNotifier {
       if (categories.isEmpty) {
         homeCategoriesLoading = true;
         notifyListeners();
-        homeCategories = await wooCommerceService.fetchCategories(context);
+        homeCategories = await wooCommerceService.fetchCategories();
         homeCategoriesLoading = false;
         notifyListeners();
       }
       if (categories.isEmpty) {
         categoriesLoading = true;
         notifyListeners();
-        categories = await wooCommerceService.fetchCategories(context);
+        categories = await wooCommerceService.fetchCategories();
         categoriesLoading = false;
         notifyListeners();
       }
@@ -44,7 +44,7 @@ class HomeScreenProvider with ChangeNotifier {
       if (pets.isEmpty) {
         petsLoading = true;
         notifyListeners();
-        pets = await wooCommerceService.fetchProducts(53, 1, context);
+      //  pets = await wooCommerceService.fetchProducts(53, 1, context);
         petsLoading = false;
         notifyListeners();
       }
@@ -77,7 +77,7 @@ class HomeScreenProvider with ChangeNotifier {
       if (brands.isEmpty) {
         brandsLoading = true;
         notifyListeners();
-        brands = await wooCommerceService.fetchBrands(context);
+        brands = await wooCommerceService.fetchBrands();
         brandsLoading = false;
         notifyListeners();
       }

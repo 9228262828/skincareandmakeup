@@ -1,6 +1,9 @@
+import 'package:Gomla/contstants.dart';
+import 'package:Gomla/screens/fav_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cart.dart';
 import '../screens/search_result.dart';
@@ -18,41 +21,78 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _startSearch(BuildContext context) {
     showSearch(context: context, delegate: ProductSearchDelegate());
   }
+  tokenFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    print(prefs.getString('auth_token'));
+    return prefs.getString('auth_token');
+  }
 
   @override
   Widget build(BuildContext context) {
-    // get cart count from provider
     final int cartCount = Provider.of<Cart>(context, listen: true).items.length;
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-      title: Image.asset(
+      /* title: Image.asset(
         'assets/app_icon.png',
+
         width: MediaQuery.of(context).size.width * 0.35,
-      ),
+      ),*/
       // centerTitle: true,
       actions: [
+        !home
+            ? Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded, color: mainColor),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Image(
+                    image: AssetImage('assets/app_icon.png'),
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              )
+            : Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Image(
+                  image: AssetImage('assets/app_icon.png'),
+                  width: MediaQuery.of(context).size.width * 0.21,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  fit: BoxFit.contain,
+                ),
+              ),
         GestureDetector(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.60,
+              width: !home
+                  ? MediaQuery.of(context).size.width * 0.52
+                  : MediaQuery.of(context).size.width * 0.60,
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(3),
                   border: Border.all(color: Colors.grey, width: .5)),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.search,color: Colors.grey,),
-                    onPressed: () {
-                      _startSearch(context);
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
                   ),
-                  Text(AppLocalizations.of(context)!.searchForWhat, style: TextStyle(color: Colors.grey)),
-                
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Text(AppLocalizations.of(context)!.searchForWhat,
+                        style: TextStyle(color: Colors.black)),
+                  ),
                 ],
               ),
             ),
@@ -61,36 +101,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             _startSearch(context);
           },
         ),
-        // Stack(
-        //   children: [
-        //     Positioned(
-        //       top: 0,
-        //       right: 10,
-        //       child: Text(
-        //         cartCount.toString(),
-        //         style: TextStyle(color: mainColor, fontSize: 14, fontWeight: FontWeight.bold),
-        //       ),
-        //     ),
-        //     IconButton(
-        //       icon: Icon(
-        //         Icons.shopping_cart,
-        //         color: Colors.black,
-        //       ),
-        //       onPressed: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(builder: (context) => CartScreen()),
-        //         );
-        //       },
-        //     ),
-        //   ],
-        // ),
+        tokenFromSharedPreferences() == null ? Container() :  IconButton(
+          icon: const Icon(
+            Icons.favorite_border,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FavScreen()),
+            );
+          },
+        ),
       ],
 
       leading: home
           ? null
           : IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
               onPressed: () {
                 Navigator.pop(context);
               },

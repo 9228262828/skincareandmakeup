@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:Gomla/Engin/ads.dart';
+import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'channel/skincare_channel.dart';
-import 'report_screen.dart'; // Import the ReportScreen
 import 'utility/styles.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SkincareResult extends StatefulWidget {
   const SkincareResult({
@@ -206,6 +207,12 @@ class _SkincareResultState extends State<SkincareResult> {
                 selectedFeature == feature ? Colors.white : Colors.black,
                 // Text color    backgroundColor,
                 borderColor,
+                Colors.black,
+                Shadow(
+                  offset: Offset(1.0, 1.0),
+                  blurRadius: 3.0,
+                  color: Colors.transparent,
+                ),
               ),
             ],
           ),
@@ -300,7 +307,12 @@ class _SkincareResultState extends State<SkincareResult> {
                 selectedFeature == feature, // Highlight the selected item
                 selectedFeature == feature ? Colors.white : Colors.black, // Text color
                 backgroundColor,
+              selectedFeature == feature?   Colors.black :Colors.white,
 
+                  Shadow(
+                      offset: Offset(.5, .5),
+                    blurRadius: 2,
+                    color: Colors.transparent),
               ),
             ],
           ),
@@ -330,7 +342,7 @@ class _SkincareResultState extends State<SkincareResult> {
         String scoreValue = scores?[featureKey] ?? "--"; // Fetch score by key
 
         return scoreViewAll(
-          const Size(100, 75), // Fixed size for the score view
+          const Size(90, 70), // Fixed size for the score view
           scoreValue, // Displayed score value
           label, // Localized label
           false, // Highlighting (not applicable here)
@@ -459,7 +471,7 @@ class _SkincareResultState extends State<SkincareResult> {
                     Colors.grey.shade800,
                     Colors.grey.shade400,
                   ]),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(height: 5),
@@ -478,7 +490,7 @@ class _SkincareResultState extends State<SkincareResult> {
                     Colors.white,
                     Colors.grey.shade100,
                   ]),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
               const SizedBox(height: 5),
@@ -497,7 +509,7 @@ class _SkincareResultState extends State<SkincareResult> {
                     Colors.blue,
                     Colors.blueAccent,
                   ]),
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
             ],
@@ -576,7 +588,7 @@ class _SkincareResultState extends State<SkincareResult> {
           height: MediaQuery.of(context).size.height * 0.3, // Adjust height as needed
           decoration: BoxDecoration(
             gradient: gradient,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(3),
           ),
         ),
         Text(
@@ -647,30 +659,108 @@ class _SkincareResultState extends State<SkincareResult> {
               top: 40,
               left: 10,
               child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back_ios, color:mainColor  ),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
             showReport
                 ? Positioned(
-                    bottom: MediaQuery.of(context).size.height * 0.15,
+                    bottom: MediaQuery.of(context).size.height * 0.19,
                     right: 20,
                     child: ElevatedButton(
+                      style:  ElevatedButton.styleFrom(
+                        backgroundColor: mainColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
                       onPressed: () async {
-                        // Ensure all 10 features are captured
+                        print(scores);
+                        print(reports);
+                        print(capturedFeatures);
+                        if (scores == null || reports == null || capturedFeatures.isEmpty) {
+                          print("Scores, reports, or capturedFeatures are missing.");
+                          return;
+                        }
+
+                        Map<String, String> skinAnalysisData = {
+                          "dryness": reports!["moisture"] ?? "--",
+                          "redness": reports!["redness"] ?? "--",
+                          "oillness": reports!["oiliness"] ?? "--",
+                          "acne": reports!["acne"] ?? "--",
+                          "pores": reports!["pore"] ?? "--",
+                          "texture": reports!["texture"] ?? "--",
+                          "wrinkles": reports!["wrinkle"] ?? "--",
+                          "dark spots": reports!["age_spot"] ?? "--",
+                          "dark circles": reports!["dark_circle_v2"] ?? "--",
+                          "radiance": reports!["radiance"] ?? "--",
+                        };
+                        Map <String, String> scores1 = {
+                          "skinAge": scores!["skinAge"] ?? "--",
+                          "overallScore": scores!["overallScore"] ?? "--",
+                        };
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ReportScreen(
-                                capturedFeatures: capturedFeatures,
-                                reports: reports!),
+                            builder: (context) => AdPage(
+                              isbeforetest: false,
+                              capturedFeatures: capturedFeatures,
+                              reports: reports!,
+                              skinAnalysisData: skinAnalysisData,
+                              scores: scores1,
+                            ),
                           ),
                         );
                       },
-                      child: const Text("View Report"),
+                      child: Row(
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.viewReport,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          )
+                        ],
+                      ),
                     ),
                   )
-                : Container(),
+                : Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.192,
+                    right: 20,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: .1),
+                          borderRadius: BorderRadius.circular(3),
+                          color: Colors.grey),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: CircularProgressIndicator(
+                                  color: mainColor,
+                                )),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.viewReport,
+                              style: TextStyle(
+                                color: mainColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
             Positioned(
               top: MediaQuery.of(context).size.height *
                   0.15, // Adjust to your desired position

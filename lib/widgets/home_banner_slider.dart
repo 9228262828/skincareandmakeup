@@ -1,159 +1,225 @@
-import 'package:Gomla/shared/utils/app_assets.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../models/banner.dart';
+import '../providers/banner_repo.dart';
+import '../screens/brand_listing_screen.dart';
+import '../screens/product_listing_screen.dart';
+import '../screens/product_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeBannerSlider extends StatelessWidget {
-  HomeBannerSlider({super.key});
+  final List<Bannerr>? banners;
 
-  List<String> images = [
-    "assets/banner1.png",
-    "assets/The-Pathland-2400X1100-6545610.png",
-    "assets/CLARY-2400X1100-6465.png",
-    "assets/The-Pathland-2400X1100-6545610.png",
-    "assets/CLARY-2400X1100-6465.png",
-    "assets/The-Pathland-2400X1100-6545610.png",
-    "assets/CLARY-2400X1100-6465.png",
-    "assets/The-Pathland-2400X1100-6545610.png",
-  ];
+  HomeBannerSlider({super.key, this.banners});
 
   @override
   Widget build(BuildContext context) {
+    if (banners == null || banners!.isEmpty) {
+      return Center(child: Text('No banners available.'));
+    }
+
+    // Filter only the banners with featured == 1
+    List<Bannerr> featuredBanners = banners!.where((banner) => banner.featured == "1").toList();
+
+    if (featuredBanners.isEmpty) {
+      return Center(child: Text('No featured banners available.'));
+    }
+
     return Container(
       width: double.infinity,
-      height: mediaQueryHeight(context) * 0.5,
+      height: mediaQueryHeight(context) * 0.23,
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(3),
       ),
-      child: Stack(
-        children: [
-          // Background Image
-          Image(
-            image: AssetImage(
-              ImageAssets.banner1,
-            ),
-            width: double.infinity,
-            fit: BoxFit.fitHeight,
-            height: mediaQueryHeight(context) * 0.32,
-          ),
-
-          // ListView for the horizontal scrollable content
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: mediaQueryHeight(context) * 0.23,
-              // Set a fixed height for the list
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: images.length,
-                physics: const BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      width: mediaQueryWidth(context) * 0.35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
+      child: CarouselSlider.builder(
+        itemCount: featuredBanners.length,
+        itemBuilder: (context, index, realIndex) {
+          final banner = featuredBanners[index];
+          return GestureDetector(
+            onTap: () {
+              if (banner.termType == "external") return;
+              if (banner.termType == "product") {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductScreen(
+                        productId: int.parse(banner.termId),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Title Section
-                          Container(
-                            height: mediaQueryHeight(context) * 0.06,
-                            width: mediaQueryWidth(context) * 0.35,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: Text(
-                                " خصم حتي 25% \nمستلزمات الرياضة",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14),
-                              ),
-                            ),
-                          ),
-
-                          // Image Section
-                          Container(
-                            height: mediaQueryHeight(context) * 0.16,
-                            width: mediaQueryWidth(context) * 0.35,
-                            decoration: BoxDecoration(
-                              color: Colors.pinkAccent,
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            child: Image(
-                              image: AssetImage(images[index]),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
+                    ));
+              }
+              if (banner.termType == "category") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductListingScreen(
+                      categoryId: int.parse(banner.termId),
+                      categoryName: banner.termName!,
+                      type: "id",
+                      isLink: false,
                     ),
-                  );
-                },
+                  ),
+                );
+              }
+              if (banner.termType == "brand") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BrandProductsScreen(
+                      isLink: false,
+                      brandName: banner.termName!,
+                      id: int.parse(banner.termId),
+                    ),
+                  ),
+                );
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: Image.network(
+                  banner.image,
+                  width: double.infinity,
+                  fit: BoxFit.cover, // Updated to cover the entire space
+                  height: mediaQueryHeight(context) * 0.3,
+                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                ),
               ),
             ),
-          ),
-        ],
+          );
+        },
+        options: CarouselOptions(
+
+          autoPlayInterval: Duration(seconds: 3),
+          enlargeCenterPage: false, // Ensures no gap between banners
+          enableInfiniteScroll: true,
+          autoPlayAnimationDuration: Duration(milliseconds: 800),
+          autoPlayCurve: Curves.fastOutSlowIn,
+          pauseAutoPlayOnTouch: true,
+          pauseAutoPlayOnManualNavigate: true,
+          height: mediaQueryHeight(context) * 0.5,
+          scrollPhysics: BouncingScrollPhysics(),
+          viewportFraction: .9,
+          onPageChanged: (index, reason) {},
+        ),
       ),
     );
   }
 }
 
-class BannerHome extends StatelessWidget {
-  final String image;
 
-  const BannerHome({super.key, required this.image});
+class IndexedBannerWidget extends StatelessWidget {
+  final int index;
+  final List<Bannerr> banners;
+
+  const IndexedBannerWidget({
+    Key? key,
+    required this.index,
+    required this.banners,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (index < 0 || index >= banners.length) {
+      return SizedBox.shrink(); // Return an empty widget if the index is out of range
+    }
+
+    final banner = banners[index];
+
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: double.infinity,
-        height: mediaQueryHeight(context) * 0.2,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image(
-                image: AssetImage(
-                  image,
-                ),
-                width: double.infinity,
-                fit: BoxFit.cover,
-                height: mediaQueryHeight(context) * 0.5,
-              ),
-            ),
-            Positioned(
-                bottom: 0,
-                left: 0,
-                child: Container(
-                  height: mediaQueryHeight(context) * 0.03,
-                  width: mediaQueryWidth(context) * 0.08,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "AD",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+      padding: const EdgeInsets.all(0.0),
+      child: GestureDetector(
+        onTap: () {
+          if (banner.termType == "external") null;
+          if (banner.termType == "product") {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ProductScreen(
+                          productId: int.parse(banner.termId)),
+                ));
+          }
+          if (banner.termType == "category") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ProductListingScreen(
+                      categoryId: int.parse(banner.termId),
+                      categoryName: banner.termName!,
+                      type: "id",
+                      isLink: false,
                     ),
-                  ),
-                ))
-          ],
+              ),
+            );
+          }
+          if (banner.termType == "brand") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    BrandProductsScreen(
+                      isLink: false,
+                      brandName: banner.termName!,
+                      id: int.parse(banner.termId),
+                    ),
+              ),
+            );
+          }
+        },
+        child: Container(
+          height: mediaQueryHeight(context) * 0.22,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: CachedNetworkImage(
+                  imageUrl: banner.image,
+                  width: double.infinity,
+                  height: mediaQueryHeight(context) * 0.22,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Shimmer.fromColors( // Add shimmer or any other loading indicator
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
+                        child: Container(
+                          color: Colors.grey.shade200,
+                          width: double.infinity,
+                          height: mediaQueryHeight(context) * 0.22,
+                        ),
+                      ),
+                  errorWidget: (context, url, error) =>
+                  const Icon(Icons.error),
+                ),
+              ),
+              Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: Container(
+                    height: mediaQueryHeight(context) * 0.03,
+                    width: mediaQueryWidth(context) * 0.08,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "AD",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ))
+            ],
+          ),
         ),
       ),
     );

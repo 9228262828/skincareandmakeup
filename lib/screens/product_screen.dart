@@ -1,3 +1,5 @@
+import 'package:Gomla/app_locale.dart';
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
@@ -17,11 +19,12 @@ import '../models/product.dart';
 import '../models/variation.dart';
 import '../services/auth_service.dart';
 import '../services/woocommerce_service.dart';
-import '../shared/utils/app_assets.dart';
+import '../shared/global/app_theme.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/fade_image.dart';
 import '../widgets/image_viewer.dart';
 import '../widgets/product_card.dart';
+import '../widgets/product_review_widget.dart';
 import '../widgets/product_screen_shimmer.dart';
 import 'login_screen.dart';
 
@@ -48,27 +51,13 @@ class _ProductScreenState extends State<ProductScreen>
   late String price = '';
   bool isLoggedIn = false;
   final _reviewController = TextEditingController();
+  final _reviewUserNameController = TextEditingController();
+  final _reviewRateController = TextEditingController();
   late TabController _tabController;
   int quantity = 1;
   List<Product> frequentlyBoughtTogether = [];
   bool isFrequentlyBoughtTogetherLoading = true;
 
-  final List<Map<String, dynamic>> clientRatings = [
-    {
-      "rating": 5,
-      "review":
-          "خدمة ممتازة! فاقت كل توقعاتي. سأعود بالتأكيد للاستفادة من خدماتكم مرة أخرى."
-    },
-    {
-      "rating": 4,
-      "review":
-          "عمل رائع بشكل عام. كان هناك بعض التعديلات البسيطة المطلوبة، لكنها تمت بسرعة."
-    },
-    {
-      "rating": 3,
-      "review": "تجربة متوسطة. العمل كان جيدًا، لكن لم يكن مميزًا بشكل خاص."
-    },
-  ];
   // Fake data for skeleton loading
   final List<String> fakeImages = [
     'assets/testproductimge.png',
@@ -120,7 +109,7 @@ class _ProductScreenState extends State<ProductScreen>
   Future<void> _checkLoginStatus() async {
     await AuthService.isLoggedIn().then((value) {
       setState(() {
-        _isLoggedIn = value;
+        _isLoggedIn = true;
       });
     });
   }
@@ -213,17 +202,17 @@ class _ProductScreenState extends State<ProductScreen>
       final response = await wooCommerceService.submitReview(
         productId: widget.productId,
         review: _reviewController.text,
-        userName: userInfo['username'],
+        userName: _reviewUserNameController.text,
         userEmail: userInfo['email'],
+        rating: _reviewRateController.text,
       );
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Review submitted successfully')));
+       showToast(text: AppLocalizations.of(context)!.reviewSubmittedMessage, state: ToastStates.SUCCESS);
         _reviewController.clear();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to submit review')));
+             SnackBar(content: Text(AppLocalizations.of(context)!.failedToSubmitReview)));
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -311,7 +300,7 @@ class _ProductScreenState extends State<ProductScreen>
                     minimumSize:  Size(400, 50),
 
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(3.0),
                     ),
                   ),
                   onPressed: () {
@@ -356,7 +345,7 @@ class _ProductScreenState extends State<ProductScreen>
     }
 
     return Scaffold(
-      bottomNavigationBar: Consumer<Cart>(
+      /* bottomNavigationBar: Consumer<Cart>(
         builder: (context, cart, child) {
           return BottomNavigationBar(
             items: <BottomNavigationBarItem>[
@@ -391,7 +380,7 @@ class _ProductScreenState extends State<ProductScreen>
                           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
                             cart.items.length.toString(),
@@ -420,7 +409,7 @@ class _ProductScreenState extends State<ProductScreen>
             type: BottomNavigationBarType.fixed,
           );
         },
-      ),
+      ),*/
       appBar: const CustomAppBar(title: '',home: false,),
       body: isLoading
           ?
@@ -435,6 +424,8 @@ class _ProductScreenState extends State<ProductScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Product image
+
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
@@ -518,7 +509,7 @@ class _ProductScreenState extends State<ProductScreen>
                                                 : null,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(5.0),
+                                                  BorderRadius.circular(3.0),
                                             ),
                                             showCheckmark: false,
                                             selectedShadowColor: mainColor,
@@ -544,13 +535,19 @@ class _ProductScreenState extends State<ProductScreen>
                                     children: [
 
                                         Text(
-                                          '${price} ${AppLocalizations.of(context)!.egp} ',
+                                          '${price} ',
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
                                           ),
                                         ),
+                                      SizedBox(width: 5),
+                                      SvgPicture.asset(
+                                          "assets/SAR.svg",
+                                          width: 22,
+                                          height: 22
+                                      ),
                                       SizedBox(width: 5),
                                   price == product!.regularPrice.toString()? const Text(''):
                                       Text(
@@ -639,7 +636,7 @@ class _ProductScreenState extends State<ProductScreen>
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(3),
                                         color: Colors.white,
                                         border: Border.all(
                                           color: borderColor,
@@ -652,7 +649,7 @@ class _ProductScreenState extends State<ProductScreen>
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(3),
                                         color: Colors.white,
                                         border: Border.all(
                                           color: borderColor,
@@ -665,8 +662,18 @@ class _ProductScreenState extends State<ProductScreen>
                                   ],
                                 ),
                               ),
+                               Text(
+                                AppLocalizations.of(context)!.rating,
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: mediaQueryHeight(context) * 0.01,
+                              ),
+                              ReviewWidget(productId: widget.productId),
 
-      /*   const Text(
+                              /*   const Text(
                                 "مراجعة العملاء",
                                 style: TextStyle(
                                     fontSize: 16.0,
@@ -707,7 +714,7 @@ class _ProductScreenState extends State<ProductScreen>
                                   );
                                 },
                               ),*/
-                              if (!isFrequentlyBoughtTogetherLoading &&
+                             /* if (!isFrequentlyBoughtTogetherLoading &&
                                   frequentlyBoughtTogether.isNotEmpty)
                                 Column(
                                   crossAxisAlignment:   CrossAxisAlignment.start,
@@ -792,7 +799,7 @@ class _ProductScreenState extends State<ProductScreen>
                                           horizontal: 8.0),
                                       decoration:   BoxDecoration(
                                         borderRadius:
-                                            BorderRadius.circular(12.0),
+                                            BorderRadius.circular(3.0),
                                       ),
                                       child: ElevatedButton(
                                         onPressed: _addGroupToCart,
@@ -802,7 +809,7 @@ class _ProductScreenState extends State<ProductScreen>
                                               vertical: 0.0),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(12.0),
+                                                BorderRadius.circular(3.0),
                                           ),
                                         ),
                                         child: Text(
@@ -816,64 +823,22 @@ class _ProductScreenState extends State<ProductScreen>
                                       ),
                                     ),
                                   ],
-                                ),
-                              if (_isLoggedIn != false) ...[
-                                const SizedBox(height: 16),
-                                TextField(
-                                  controller: _reviewController,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: mainColor, width: 1),
-                                        borderRadius:
-                                            BorderRadius.circular(4.0)),
-                                    labelText: AppLocalizations.of(context)!
-                                        .writeReview,
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: borderColor, width: 1),
-                                        borderRadius:
-                                            BorderRadius.circular(4.0)),
+                                ),*/
+                              SizedBox(height: mediaQueryHeight(context) * 0.02),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: mainColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(3.0),
                                   ),
-                                  maxLines: 5,
                                 ),
-                                const SizedBox(height: 8),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: mainColor,
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                  ),
-                                  onPressed: _submitReview,
-                                  child: Text(AppLocalizations.of(context)!
-                                      .submitReview),
-                                ),
-                              ] else ...[
-                                const SizedBox(height: 16),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: mainColor,
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(AppLocalizations.of(context)!
-                                      .reviewProduct),
-                                ),
-                              ],
+                                onPressed: () => _openReviewModalSheet(context),
+                                child: Text(AppLocalizations.of(context)!.reviewProduct),
+                              ),
+                              const SizedBox(height: 16.0),
+
                             ],
                           ),
                         ),
@@ -963,7 +928,7 @@ class _ProductScreenState extends State<ProductScreen>
             Container(
               height: 30.0,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(3.0),
                 border: Border.all(color: borderColor),
               ),
               child: Row(
@@ -1018,7 +983,7 @@ class _ProductScreenState extends State<ProductScreen>
                   backgroundColor: mainColor,
                   padding: const EdgeInsets.symmetric(vertical: 0.0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
                 child: Text(
@@ -1050,7 +1015,7 @@ class _ProductScreenState extends State<ProductScreen>
               Container(
                 width: double.infinity,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(3),
                   child: CachedNetworkImage(
                     imageUrl: product!.images[index],
                     fit: BoxFit.cover,
@@ -1081,7 +1046,7 @@ class _ProductScreenState extends State<ProductScreen>
                 child: Container(
                   decoration:   BoxDecoration(
                     color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   width: 35.0,
                   height: 35.0,
@@ -1103,7 +1068,7 @@ class _ProductScreenState extends State<ProductScreen>
                 child: Container(
                   decoration:   BoxDecoration(
                     color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                   width: 35.0,
                   height: 35.0,
@@ -1193,8 +1158,112 @@ class _ProductScreenState extends State<ProductScreen>
       ),
     );
   }
+
+  void _openReviewModalSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_isLoggedIn) ...[
+                  TextField(
+                    controller: _reviewController,
+                    decoration: customInputDecoration(
+                      context,
+                      AppLocalizations.of(context)!.writeReview,
+                      AppLocalizations.of(context)!.writeReview,
+                    ),
+                    maxLines: 5,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _reviewUserNameController,
+                    decoration: customInputDecoration(
+                      context,
+                      AppLocalizations.of(context)!.userName,
+                      AppLocalizations.of(context)!.userName,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _reviewRateController,
+                    decoration: customInputDecoration(
+                      context,
+                      AppLocalizations.of(context)!.rating,
+                      AppLocalizations.of(context)!.rating,
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      // Validate the rating as the user types
+                      if (value.isNotEmpty) {
+                        double rating = double.tryParse(value) ?? 0;
+                        if (rating > 5) {
+                          showToast(text:  AppLocalizations.of(context)!.ratingShouldBeFiveOrLess, state: ToastStates.ERROR);
+
+                        }
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      // Validate the rating before submitting
+                      double rating =
+                          double.tryParse(_reviewRateController.text) ?? 0;
+                      if (rating > 5) {
+                        showToast(text: AppLocalizations.of(context)!.ratingShouldBeFiveOrLess, state: ToastStates.ERROR);
+
+                      } else {
+                        // Proceed with submitting the review
+                        _submitReview();
+                      }
+                    },
+                    child: Text(AppLocalizations.of(context)!.submitReview),
+                  ),
+                ] else ...[
+                  Text(AppLocalizations.of(context)!.pleaseLoginToReview),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mainColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(AppLocalizations.of(context)!.login),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
-
-
-
 

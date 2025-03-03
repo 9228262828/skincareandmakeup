@@ -80,7 +80,7 @@ class ShimmerCard extends StatelessWidget {
           ),
         ],
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(3.0),
       ),
       padding: const EdgeInsets.all(8.0),
       height: MediaQuery.of(context).size.height * 0.5,
@@ -101,7 +101,7 @@ class ShimmerCard extends StatelessWidget {
                   height: MediaQuery.of(context).size.height * 0.25,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(3.0),
                   ),
                 ),
               ),
@@ -118,7 +118,7 @@ class ShimmerCard extends StatelessWidget {
                       height: 30.0,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
                   )),
@@ -135,7 +135,7 @@ class ShimmerCard extends StatelessWidget {
                     height: 30.0,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.0),
+                      borderRadius: BorderRadius.circular(3.0),
                     ),
                   ),
                 ),
@@ -153,7 +153,7 @@ class ShimmerCard extends StatelessWidget {
                       height: 30.0,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
                   )),*/

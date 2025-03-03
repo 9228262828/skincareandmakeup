@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,25 +9,40 @@ class AuthService {
   static const String _baseUrl = '$siteUrl/wp-json/jwt-auth/v1';
   static const String _customBaseUrl = '$siteUrl/wp-json/custom/v1';
   static const String _tokenKey = 'auth_token';
+  static const String _userId = 'user_id';
   static const String _userBaseUrl = '$siteUrl/wp-json/custom/v1/user';
 
   static Future<void> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/token'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'username': username, 'password': password}),
+      Uri.parse('$siteUrl/wp-json/digits/v1/login_user'),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: {
+        'user': username,
+        'password': password,
+      },
     );
 
     print(response.body);
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      String token = data['token'];
+      if (data['success'] == true) {
+        String token = data['data']['access_token'];
+        String userId = data['data']['user_id'];
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_tokenKey, token);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_tokenKey, token);
+        await prefs.setString(_userId, userId);
+        await prefs.setBool("isLoggedIn", true);
 
-      print('Login successful: $token');
+        print('Login successful: User ID - $userId');
+        print('Login successful: Token - $token');
+      } else {
+        print('Login failed');
+        throw Exception('Failed to login');
+      }
     } else {
+      print('Error: ${response.statusCode}');
       throw Exception('Failed to login');
     }
   }
@@ -63,7 +79,7 @@ class AuthService {
 
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
+    await prefs.clear(); // Removes all keys and values in SharedPreferences
   }
 
   static Future<Map<String, dynamic>> fetchUserInfo() async {
@@ -75,31 +91,21 @@ class AuthService {
     // if (token == null) {
     //   throw Exception('Please login first');
     // }
-
-    final response = await http.post(
-      Uri.parse('$_baseUrl/token/validate'),
+print(  Uri.parse('$_userBaseUrl'));
+    final responseUser = await http.get(
+      Uri.parse('$_userBaseUrl'),
       headers: {
         'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
       },
     );
 
-    if (response.statusCode == 200) {
-      final responseUser = await http.get(
-        Uri.parse('$_userBaseUrl'),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (responseUser.statusCode == 200) {
-        return json.decode(responseUser.body);
-      } else {
-        throw Exception('Failed to fetch user info');
-      }
+    if (responseUser.statusCode == 200) {
+      print('User info fetched');
+      return json.decode(responseUser.body);
     } else {
-      throw Exception('Token validation failed');
+      throw Exception('Failed to fetch user info');
     }
+    print('Token validated');
   }
 
   // is logged in
@@ -108,3 +114,6 @@ class AuthService {
     return token != null;
   }
 }
+
+///
+

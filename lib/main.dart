@@ -1,3 +1,4 @@
+import 'package:Gomla/providers/banner_repo.dart';
 import 'package:Gomla/providers/home_screen_provider.dart';
 import 'package:Gomla/providers/locale_provider.dart';
 import 'package:Gomla/screens/brands_screen.dart';
@@ -6,18 +7,25 @@ import 'package:Gomla/screens/categories_screen.dart';
 import 'package:Gomla/screens/home_screen.dart';
 import 'package:Gomla/screens/login_screen.dart';
 import 'package:Gomla/screens/profile_screen.dart';
+import 'package:Gomla/screens/registration_screen.dart';
+import 'package:Gomla/screens/splash_screen.dart';
 import 'package:Gomla/services/woocommerce_service.dart';
 import 'package:Gomla/shared/utils/app_assets.dart';
+import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Engin/skin_cubit_and_states.dart';
 import 'Engin/skincare.dart';
+import 'controllers/categories_controller/categories_cubit.dart';
+import 'models/banner.dart';
 import 'test.dart';
 import 'Engin/utility/makeupCam.dart';
 import 'controllers/brands_controller/brands_cubit.dart';
@@ -36,9 +44,11 @@ void main() async {
     MultiProvider(
       providers: [
         BlocProvider(create: (_) => ProductsCubit()),
+        BlocProvider(create: (_) => SkinAnalysisCubit()),
+        BlocProvider(create: (_) => BrandsCubit(WooCommerceService())),
+        BlocProvider(create: (_) => MainCategoriesCubit(WooCommerceService())),
         BlocProvider(create: (_) => ProfileCubit()),
         ChangeNotifierProvider(create: (_) => Cart()),
-        ChangeNotifierProvider(create: (_) => Fav()),
         ChangeNotifierProvider(create: (_) => Fav()),
         ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
         BlocProvider(create: (_) => LocaleCubit()),
@@ -79,91 +89,16 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    Future.delayed(const Duration(seconds: 3), () async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String savedLocale = prefs.getString("locale")?? "ar";
-
-      print('Stored locale: $savedLocale'); // Debugging print
-
-     determineNavigation();
-    });
-  }
-  Future<void> determineNavigation() async {
-    final prefs = await SharedPreferences.getInstance();
-
-
-    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-    print('isFirstLaunch: $isFirstLaunch');
-
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    print('isLoggedIn: $isLoggedIn');
-
-    final token = prefs.getString('auth_token');
-    print('auth_token: $token');
-
-    if (isFirstLaunch) {
-      await prefs.setBool(
-          'isFirstLaunch', false);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => OpenScreen()),
-      );
-      return;
-    }
 
 
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
 
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    double size = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    String splashImage;
-
-    if (size < 480) {
-      splashImage = 'assets/app_icon.png';
-    } else if (size < 720) {
-      splashImage = 'assets/app_icon.png';
-    } else if (size < 960) {
-      splashImage = 'assets/app_icon.png';
-    } else {
-      splashImage = 'assets/app_icon.png';
-    }
-
-    return Scaffold(
-      body: Center(
-        child: Image.asset(
-          splashImage,
-          width: MediaQuery.of(context).size.width * .85,
-          height: MediaQuery.of(context).size.height * .2,
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
-  }
-}
 
 
 class MainScreen extends StatefulWidget {
+  final List<Bannerr>? banners;
+
+  const MainScreen({Key? key,  this.banners}) : super(key: key);
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -171,19 +106,14 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const HomeScreen(),
-    CategoriesScreen(),
-    BrandsScreen(),
-     ProfileScreen(),
-    CartScreen()
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+
+
 
   Widget _getIcon(String assetPath, bool isSelected) {
     return ColorFiltered(
@@ -201,6 +131,21 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Bannerr> banners = widget.banners ?? [];
+
+    final List<Widget> _widgetOptions = <Widget>[
+      HomeScreen(
+        banners: banners,
+        ontap: (){
+          _onItemTapped(2);        },
+      ),
+
+      CategoriesScreen(),
+      BrandsScreen(),
+      ProfileScreen(),
+      CartScreen()
+    ];
+
     return Scaffold(
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: Consumer<Cart>(
@@ -238,7 +183,7 @@ class _MainScreenState extends State<MainScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
                             cart.items.length.toString(),
@@ -376,6 +321,204 @@ class SkinPage extends StatelessWidget {
               );
             }, child:  Text("ads"))*/
           ],
+        ),
+      ),
+    );
+  }
+}
+class OpenScreen extends StatefulWidget {
+
+
+  @override
+  State<OpenScreen> createState() => _OpenScreenState();
+}
+
+class _OpenScreenState extends State<OpenScreen> {
+  List<Bannerr> _banners = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchBanners();
+  }
+  Future<void> _fetchBanners() async {
+    try {
+      List<Bannerr> banners = await BannerService().fetchBanners();
+      setState(() {
+        _banners = banners;
+      });
+      print('Fetched banners: ${banners.length}');
+    } catch (error) {
+      print('Error fetching banners: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: mediaQueryHeight(context) * 0.2),
+              Center(
+                child: Image.asset(
+                  ImageAssets.logoWhite,
+                  height: mediaQueryHeight(context) * 0.2,
+                  width: mediaQueryWidth(context) * 0.7,
+                ),
+              ),
+              SizedBox(height: 30),
+              Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.sign_in_to_account,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  )),
+              SizedBox(height: 20),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.view_wish_list,
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(height: 10),
+
+                    Text(
+                      AppLocalizations.of(context)!.find_reorder_purchases,
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      AppLocalizations.of(context)!.track_purchases,
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                  ]),
+              SizedBox(height: 20),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: mainColor,
+                    minimumSize: Size(double.infinity, 50),
+                    // Text color
+                    side: BorderSide(color: Colors.grey, width: 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.already_customer_sign_in,
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  )),
+              SizedBox(height: 10),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.grey.shade200,
+                    minimumSize: Size(double.infinity, 50),
+                    // Text color
+                    side: BorderSide(color: Colors.grey, width: .5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationScreen()));
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.new_to_gomla_create_account,
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  )),
+              SizedBox(height: 10),
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.grey.shade200,
+                    minimumSize: Size(double.infinity, 50),
+                    // Text color
+                    side: BorderSide(color: Colors.grey, width: .5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                  ),
+                  onPressed: () {
+
+                    SharedPreferences.getInstance().then((prefs) {
+                      prefs.setBool('isLoggedIn', true);
+                    });
+
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MainScreen(banners: _banners),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.skip_sign_in,
+                    style: TextStyle(color: Colors.black, fontSize: 14),
+                  )),
+              SizedBox(height: 10),
+
+              /* ElevatedButton.icon(
+                onPressed: _signInWithGoogle,
+                icon: Image.asset(
+                  ImageAssets.logoWhite,
+                  height: 24,
+                ),
+                label: Text(
+                  'Sign In with Google',
+                  style: TextStyle(fontSize: 16),
+                ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
+                  // Text color
+                  side: BorderSide(color: Colors.grey, width: 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+
+              // Facebook Sign-In Button
+              ElevatedButton.icon(
+                onPressed: signInWithFacebook,
+                icon: Image.asset(
+                  ImageAssets.logo,
+                  height: 24,
+                ),
+                label: Text(
+                  'Sign In with Facebook',
+                  style: TextStyle(fontSize: 16),
+                ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  minimumSize: Size(double.infinity, 50),
+                  // Text color
+                  side: BorderSide(color: Colors.blue, width: 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ),*/
+            ],
+          ),
         ),
       ),
     );
