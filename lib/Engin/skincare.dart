@@ -325,8 +325,10 @@ class _SkincareDetectState extends State<SkincareDetect>
     }
   }
 
+
   void updateLightQuality(
-      String faceLighting, String faceArea, String faceFront) {
+      String faceLighting, String faceArea, String faceFront)
+  {
     if (!perfectLibInited) {
       return;
     }
@@ -351,11 +353,6 @@ class _SkincareDetectState extends State<SkincareDetect>
       }
     });
   }
-
-  void onCaptureImage(Image image) {
-    analyzeImage(image);
-  }
-
   void onCheckResult(Map data) {
     if (data["faceLighting"] != null &&
         data["faceArea"] != null &&
@@ -368,6 +365,12 @@ class _SkincareDetectState extends State<SkincareDetect>
           data["faceLighting"], data["faceArea"], data["faceFront"]);
     }
   }
+
+  void onCaptureImage(Image image) {
+    analyzeImage(image);
+  }
+
+
 
   void onError(String error) {
     if (kDebugMode) {
@@ -632,11 +635,11 @@ class _SkincareDetectState extends State<SkincareDetect>
           false,
           backgroundColors[index % backgroundColors.length], // Custom color
           borderColors[index % borderColors.length],
-          Colors.black,
+          Colors.white,
           Shadow(
             offset: Offset(1.0, 1.0),
             blurRadius: 3.0,
-            color: Colors.transparent,
+            color: Colors.black.withOpacity(.3),
           ),
         );
       },
@@ -700,7 +703,7 @@ class _SkincareDetectState extends State<SkincareDetect>
             backgroundColors[index % backgroundColors.length],
             // Use custom color
             borderColors[index % borderColors.length],
-            Colors.black,
+            Colors.white,
             Shadow(
               offset: Offset(1.0, 1.0),
               blurRadius: 3.0,
@@ -738,16 +741,16 @@ class _SkincareDetectState extends State<SkincareDetect>
                         shape: BoxShape.circle,
                         color: Colors.transparent,
                         border: Border.all(
-                            color: Colors.white.withOpacity(0.5), width: 2),
+                            color: Colors.white.withOpacity(0.5), width: 1),
                       ),
                       child: Center(
                         child: Text(
                           AppLocalizations.of(context)!.adjustPosition,
                           // Localized string
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 14,
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),

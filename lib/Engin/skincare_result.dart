@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:Gomla/Engin/ads.dart';
 import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'channel/skincare_channel.dart';
-import 'report_screen.dart'; // Import the ReportScreen
 import 'utility/styles.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SkincareResult extends StatefulWidget {
   const SkincareResult({
@@ -312,11 +311,8 @@ class _SkincareResultState extends State<SkincareResult> {
 
                   Shadow(
                       offset: Offset(.5, .5),
-                      blurRadius: 1,
-                      color: Colors.white
-                  ),
-
-
+                    blurRadius: 2,
+                    color: Colors.transparent),
               ),
             ],
           ),
@@ -346,7 +342,7 @@ class _SkincareResultState extends State<SkincareResult> {
         String scoreValue = scores?[featureKey] ?? "--"; // Fetch score by key
 
         return scoreViewAll(
-          const Size(100, 75), // Fixed size for the score view
+          const Size(90, 70), // Fixed size for the score view
           scoreValue, // Displayed score value
           label, // Localized label
           false, // Highlighting (not applicable here)
@@ -667,17 +663,18 @@ class _SkincareResultState extends State<SkincareResult> {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-             Positioned(
-                    bottom: MediaQuery.of(context).size.height * 0.15,
+            showReport
+                ? Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.19,
                     right: 20,
                     child: ElevatedButton(
                       style:  ElevatedButton.styleFrom(
-                       backgroundColor: showReport?  mainColor : Colors.grey.shade700,
+                        backgroundColor: mainColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
-                      onPressed: showReport? ()  async {
+                      onPressed: () async {
                         print(scores);
                         print(reports);
                         print(capturedFeatures);
@@ -715,12 +712,55 @@ class _SkincareResultState extends State<SkincareResult> {
                             ),
                           ),
                         );
-                      } : null,
-
-                      child:  Text(AppLocalizations.of(context)!.viewReport),
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.viewReport,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          )
+                        ],
+                      ),
                     ),
                   )
-                ,
+                : Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.192,
+                    right: 20,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: .1),
+                          borderRadius: BorderRadius.circular(3),
+                          color: Colors.grey),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: CircularProgressIndicator(
+                                  color: mainColor,
+                                )),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.viewReport,
+                              style: TextStyle(
+                                color: mainColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
             Positioned(
               top: MediaQuery.of(context).size.height *
                   0.15, // Adjust to your desired position

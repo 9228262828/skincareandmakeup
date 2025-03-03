@@ -126,7 +126,7 @@ class _GridOffersState extends State<GridOffers> {
             }
 
             return Container(
-              width: mediaQueryWidth(context) * 0.7,
+              width: mediaQueryWidth(context) * 0.8,
               // Width of each main container
               margin: EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
@@ -138,12 +138,12 @@ class _GridOffersState extends State<GridOffers> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical:5),
                     child: Text(
                       products[start]['mainLabel'] ?? '',
                       style: TextStyle(
                         fontSize: 17,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

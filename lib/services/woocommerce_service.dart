@@ -164,6 +164,7 @@ class WooCommerceService {
         '$baseUrl/products/categories?lang=$language&per_page=20&page=$page&consumer_key=$consumerKey&consumer_secret=$consumerSecret');
 
     if (response.statusCode == 200) {
+      print(response.body);
       List jsonResponse = json.decode(response.body);
       return jsonResponse
           .map((category) => Category.fromJson(category))
@@ -175,7 +176,7 @@ class WooCommerceService {
 
   Future<List<Category>> fetchSubCategories(int categoryId) async {
     final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale') ;
+    String? language = prefs.getString('locale');
     language ??= 'ar';
     final response = await http.get(
       Uri.parse(
@@ -187,13 +188,12 @@ class WooCommerceService {
     );
 
     print(
-        '$baseUrl/products/categories?lang=$language&hide_empty=true&parent=0&consumer_key=$consumerKey&consumer_secret=$consumerSecret');
+        '$baseUrl/products/categories?lang=$language&hide_empty=true&parent=$categoryId&consumer_key=$consumerKey&consumer_secret=$consumerSecret');
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
-      return jsonResponse
-          .map((category) => Category.fromJson(category))
-          .toList();
+      print("Parsed Categories: $jsonResponse");
+      return jsonResponse.map((category) => Category.fromJson(category)).toList();
     } else {
       throw Exception('Failed to load categories');
     }

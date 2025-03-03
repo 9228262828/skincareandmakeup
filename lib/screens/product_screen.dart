@@ -535,13 +535,19 @@ class _ProductScreenState extends State<ProductScreen>
                                     children: [
 
                                         Text(
-                                          '${price} ${AppLocalizations.of(context)!.egp} ',
+                                          '${price} ',
                                           style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
                                           ),
                                         ),
+                                      SizedBox(width: 5),
+                                      SvgPicture.asset(
+                                          "assets/SAR.svg",
+                                          width: 22,
+                                          height: 22
+                                      ),
                                       SizedBox(width: 5),
                                   price == product!.regularPrice.toString()? const Text(''):
                                       Text(

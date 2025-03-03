@@ -1,6 +1,7 @@
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../contstants.dart';
@@ -163,11 +164,22 @@ class _CartScreenState extends State<CartScreen> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    Text(
-                                      '${cart.totalAmount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.egp}',
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          '${cart.totalAmount.toStringAsFixed(2)} ',
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+
+                                        SvgPicture.asset(
+                                            "assets/SAR.svg",
+                                            width: 20,
+                                            height: 20
+                                        ),
+
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -220,12 +232,22 @@ class _CartScreenState extends State<CartScreen> {
                                           fontSize: 14,
                                           color: Colors.white,
                                           fontWeight: FontWeight.w200)),
-                                  Text(
-                                    '${cart.totalAmount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.egp}',
-                                    style: const TextStyle(
-                                        fontSize: 14,
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${cart.totalAmount.toStringAsFixed(2)} ',
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SvgPicture.asset(
+                                          "assets/SAR.svg",
+                                          width: 20,
+                                          height: 20,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -304,9 +326,18 @@ class CartItemWidget extends StatelessWidget {
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 8),
-                        Text(
-                            '${cartItem.variation?.price ?? cartItem.product.price} ${AppLocalizations.of(context)!.egp}',
-                            style: const TextStyle(fontSize: 16)),
+                        Row(
+                          children: [
+                            Text(
+                                '${cartItem.variation?.price ?? cartItem.product.price}',
+                                style: const TextStyle(fontSize: 16)),
+                            SvgPicture.asset(
+                                "assets/SAR.svg",
+                                width: 20,
+                                height: 20
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 8),
                         // if variation attributes has color return container
                         (cartItem.variation?.attributes[0].color != null)

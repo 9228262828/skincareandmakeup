@@ -45,10 +45,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       List<Category> newCategories =
           await wooCommerceService.fetchCategories(page: page);
       if (newCategories.isEmpty) {
+        print("No more categories");
         setState(() {
           isLastPage = true;
         });
       } else {
+        print(newCategories);
         setState(() {
           mainCategories.addAll(newCategories);
           currentPage++;
@@ -71,6 +73,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     try {
       List<Category> fetchedSubCategories =
           await wooCommerceService.fetchSubCategories(parentId);
+      print(fetchedSubCategories);
       setState(() {
         subCategories[parentId] = fetchedSubCategories;
         isSubCategoryLoading[parentId] = false;
@@ -100,7 +103,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               },
               child: ListView(
                 children: [
+
                   for (int i = 0; i < mainCategories.length; i += 3)
+
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

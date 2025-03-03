@@ -140,6 +140,9 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ),
                 ),
+                roundedPercentage == 0
+                    ? Container()
+                    :
                 Positioned(
                   bottom: 0,
                   right: 0,

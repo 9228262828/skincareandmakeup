@@ -10,6 +10,7 @@
   "profile": "حسابي",
   "categories": "الأقسام",
   "brands": "البراندات",
+  "brandss": "العلامات التجارية",
   "offers": "العروض",
   "buyWithUs": "التوفير عليك والعرض علينا",
   "cart": "سلة التسوق",
@@ -131,7 +132,7 @@
   "removeMakeupInstruction": "ازيلي المكياج بصورة كاملة للحصول على ادق النتائج",
   "removeGlassesInstruction": "انزعي النظارة وتأكدي ان الغرة لا تغطي الجبهة",
   "adjustPositionInstruction": "تأكدي ان الاضاءه بالمكان مناسبة بدون ظلال على الوجه",
-  "adjustPosition": "انظري للأمام في الكاميرا مباشرة واجعلي وجهك في منتصف الدائرة",
+  "adjustPosition": "انظري للأمام في الكاميرا مباشرة \nواجعلي وجهك في منتصف الدائرة",
   "ok": "حسنا",
   "initializationFailed": "فشل في تهيئة مكتبة PerfectLib.",
   "initializationError": "خطأ في تهيئة مكتبة PerfectLib",
@@ -227,7 +228,7 @@
     "assessment":"التقييم:",
     "report":"التقرير",
     "treatments":"العلاجات",
-    "skinAnalysisReport":"تقرير تحليل البشرة",
+    "skinAnalysisReport":"تقرير تحليل البشرة بالذكاء الاصطناعي",
     "score":"النتيجة",
     "noReviews_yet": "لا يوجد تقيمات لهذا المنتج حتي الان",
     "pleaseLoginToReview":"من فضلك قم بتسجيل الدخول لتقيم المنتج",
@@ -247,12 +248,36 @@
   "locationServicesDisabled": "خدمات الموقع معطلة",
   "enableLocationServices": "الرجاء تمكين خدمات الموقع للمتابعة",
   "openSettings": "فتح الإعدادات",
-  "recentlyViewedProducts": "المنتجات التي تم مشاهدتها مؤخرًا",
+  "recentlyViewedProducts": "سجل التصفح الخاص بك",
   "off": "خصم",
   "was": "كان",
   "limitedOffer": "عرض محدود",
   "get": "اذهب",
-  "save":"وفر"
+  "save":"وفر",
+      "lighting": "الإضاءة",
+      "faceFrontal": "الوجه الأمامي",
+      "faceArea": "منطقة الوجه",
+      "faceArea_good": "جيد",
+      "faceArea_normal": "عادي",
+      "faceArea_unknown": "غير معروف",
+      "normal": "عادي",
+      "good": "جيد",
+      "unknown": "غير معروف",
+      "overExposed": "متوسطة",
+      "underExposed": "غير متوسطة",
+      "backlighting": "متوسطة",
+      "uneven": "غير متوسطة",
+      "tooSmall": "الوجه صغير",
+      "outOfBoundary": "خارج الحدود",
+      "bad": "سيء",
+      "year": "سنة",
+      "healthAndBeauty": "الصحة والجمال | خصم يصل الي 40 ٪",
+      "relatedProductss": "منتجات ذات علاقه بما تصفحته سابقاً"
+
+
+
+
+
 
 
 

@@ -34,18 +34,46 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-      title: Image.asset(
+      /* title: Image.asset(
         'assets/app_icon.png',
 
         width: MediaQuery.of(context).size.width * 0.35,
-      ),
+      ),*/
       // centerTitle: true,
       actions: [
+        !home
+            ? Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back_ios_rounded, color: mainColor),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Image(
+                    image: AssetImage('assets/app_icon.png'),
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              )
+            : Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Image(
+                  image: AssetImage('assets/app_icon.png'),
+                  width: MediaQuery.of(context).size.width * 0.21,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  fit: BoxFit.contain,
+                ),
+              ),
         GestureDetector(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.60,
+              width: !home
+                  ? MediaQuery.of(context).size.width * 0.52
+                  : MediaQuery.of(context).size.width * 0.60,
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
                   color: Colors.white,
@@ -55,24 +83,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
                     child: Text(AppLocalizations.of(context)!.searchForWhat,
                         style: TextStyle(color: Colors.black)),
-                  ),
-                  Spacer(),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: mainColor,
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        _startSearch(context);
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -99,7 +118,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: home
           ? null
           : IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded, color:mainColor),
+              icon: Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
               onPressed: () {
                 Navigator.pop(context);
               },

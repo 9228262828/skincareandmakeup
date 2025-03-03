@@ -296,8 +296,31 @@ class _AdPageState extends State<AdPage> {
                 ),
               ),
             ),
-          // Download button
           Positioned(
+            bottom: 40,
+            left: 20,
+            right: 20,
+
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () => _openURL(_externalLink!),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade600,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 50,
+                      vertical: 10,
+                    ),
+                  ),
+                  child: Text(AppLocalizations.of(context)!.get),
+                ),
+              ),
+            ),
+          ),
+          // Download button
+         /* Positioned(
             bottom: 40,
             right: 20,
             child: Container(
@@ -311,17 +334,7 @@ class _AdPageState extends State<AdPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () => _openURL(_externalLink!),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade600,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: Text(AppLocalizations.of(context)!.get),
-                    ),
-                  ),
+
                   Center(
                     child: Text(
                       AppLocalizations.of(context)!.userName,
@@ -345,7 +358,7 @@ class _AdPageState extends State<AdPage> {
                 ],
               ),
             ),
-          ),
+          ),*/
         ],
       ),
     );

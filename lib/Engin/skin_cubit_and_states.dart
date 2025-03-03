@@ -24,7 +24,21 @@ class SkinAnalysisError extends SkinAnalysisState {
 class SkinAnalysisCubit extends Cubit<SkinAnalysisState> {
   SkinAnalysisCubit() : super(SkinAnalysisLoading());
 
-  Future<void> fetchSkinAnalysis(Map<String, dynamic> skinAnalysisData) async {
+  Future<void> fetchSkinAnalysis(
+    String dryness,
+    String redness,
+    String oillness,
+    String acne,
+    String pores,
+    String texture,
+    String wrinkles,
+    String darkspots,
+    String darkcircles,
+    String radiance,
+    String skinage,
+    String overallscore
+      ) async
+  {
     emit(SkinAnalysisLoading());
 
     // Get the token from SharedPreferences
@@ -35,7 +49,29 @@ class SkinAnalysisCubit extends Cubit<SkinAnalysisState> {
 print("token");
 print(token);
 print(userId);
+print(userId);
+print(userId);
+print(userId);
 print("token");
+    // Prepare the data to be sent
+    var requestData = {
+      "user_id": userId,
+      "dryness": dryness,
+      "redness": redness,
+      "oillness": oillness,
+      "acne": acne,
+      "pores": pores,
+      "texture": texture,
+      "wrinkles": wrinkles,
+      "dark spots": darkspots,
+      "dark circles": darkcircles,
+      "radiance": radiance,
+      "skinage": skinage,
+      "overall score": overallscore,
+    };
+
+    // Print the data before sending the request
+    print("Request data: $requestData");
     try {
       final response = await Dio().post(
         'https://gomla.sa/wp-json/skin-analysis/v1/skinscoretest',
@@ -45,21 +81,8 @@ print("token");
             "Authorization": "Bearer $token",
           },
         ),
-        data: {
-          "user_id": userId,
-          "dryness": 90,
-          "redness": 90,
-          "oillness": 80,
-          "acne": 75,
-          "pores": 78,
-          "texture": 80,
-          "wrinkles": 85,
-          "dark spots": 84,
-          "dark circles": 84,
-          "radiance": 84,
-          "skinage": 60,
-          "overall score": 30,
-        },
+        data:requestData
+
       );
 
       // Log the raw response

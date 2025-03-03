@@ -8,7 +8,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../contstants.dart';
 import '../main.dart';
@@ -453,7 +452,6 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _shareApp() {
-    Share.share('https://play.google.com/store/apps/details?id=com.perfectcorp.mcsdkapp');
   }
 }
 

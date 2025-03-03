@@ -112,6 +112,9 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
   }
+
+
+
   Widget _getIcon(String assetPath, bool isSelected) {
     return ColorFiltered(
       colorFilter: ColorFilter.mode(
@@ -133,6 +136,8 @@ class _MainScreenState extends State<MainScreen> {
     final List<Widget> _widgetOptions = <Widget>[
       HomeScreen(
         banners: banners,
+        ontap: (){
+          _onItemTapped(2);        },
       ),
 
       CategoriesScreen(),

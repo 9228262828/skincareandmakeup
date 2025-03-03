@@ -10,6 +10,7 @@
   "profile": "Profile",
   "categories": "Categories",
   "brands": "Brands",
+  "brandss": "Brands",
   "offers": "Offers",
   "cart": "Cart",
   "description": "Additional information",
@@ -132,7 +133,7 @@
   "removeMakeupInstruction": "Remove makeup to get more accurate result",
   "removeGlassesInstruction": "Take off your glasses and make sure bangs are not covering your forehead",
   "adjustPositionInstruction": "Make sure that you are in will-lit environment",
-  "adjustPosition": "Look straight into the camera and give your face in the circle",
+  "adjustPosition": "Look straight into the camera \n and give your face in the circle",
   "ok": "OK",
   "initializationFailed": "Failed to initialize PerfectLib.",
   "initializationError": "Error initializing PerfectLib",
@@ -226,7 +227,7 @@
     "assessment":"Assessment:",
     "report":"Report:",
     "treatments":"Treatments:",
-    "skinAnalysisReport":"Skin Analysis Report",
+    "skinAnalysisReport":"Skin Analysis Report with AI",
     "score":"Score",
     "noReviews_yet": "No reviews yet for this product",
     "rating": "Rating",
@@ -253,7 +254,29 @@
       "limitedOffer": "Limited Time deal",
       "get": "Get",
        "buyWithUs": "Buy with us",
-        "save":"Save"
+        "save":"Save",
+
+          "lighting": "Lighting",
+          "faceFrontal": "Face Frontal",
+          "faceArea": "Face Area",
+          "faceArea_good": "Good",
+          "faceArea_normal": "Normal",
+          "faceArea_unknown": "Unknown",
+          "normal": "Normal",
+          "good": "Good",
+          "unknown": "Unknown",
+          "overExposed": "OverExposed",
+          "underExposed": "UnderExposed",
+          "uneven": "Uneven",
+          "backlighting": "Backlighting",
+          "tooSmall": "TooSmall",
+          "outOfBoundary": "OutOfBoundary",
+          "bad": "Bad",
+          "year" : "Year",
+          "healthAndBeauty": "Health & Beauty | Up to 40% off",
+          "relatedProductss": "Related Products"
+
+
 
 
 

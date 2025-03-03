@@ -33,7 +33,7 @@ class CustomProgressBar extends StatelessWidget {
             Icon(
               Icons.location_on,
               color: gradientColors.last,
-              size: 24,
+              size: 18,
             ),
             Spacer(flex: (100 - progress * 100).toInt()), // Remaining space
           ],
@@ -82,7 +82,12 @@ class CustomProgressBar extends StatelessWidget {
                               score != 93 &&
                               score != 92 &&
                               score != 91 &&
-                              score != 90
+                              score != 90 &&
+                              score != 89 &&
+                              score != 88 &&
+                              score != 87 &&
+                              score != 86 &&
+                              score != 85
                               ? "100"
                               : "",
                           style: const TextStyle(

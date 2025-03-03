@@ -28,7 +28,7 @@ dependencies:
   intl: any
   dio:
   provider: ^6.0.0
-  share_plus: ^10.1.2
+
   shared_preferences: ^2.0.6
   skeletonizer: ^1.4.2
   url_launcher: ^6.3.0
@@ -53,6 +53,10 @@ dependencies:
   geolocator:
   geocoding:
   image:
+  flutter_radar_chart:
+  flutter_charts:
+  flutter_neumorphic:
+
 
 
 ## open_filex: ^3.2.1

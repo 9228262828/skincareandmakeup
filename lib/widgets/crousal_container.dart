@@ -52,7 +52,7 @@ class _CruosalContainerState extends State<CruosalContainer> {
                 AppLocalizations.of(context)!.buyWithUs,
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
 

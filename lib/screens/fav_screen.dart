@@ -1,5 +1,6 @@
 import 'package:Gomla/screens/product_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import '../contstants.dart';
 import '../models/cart.dart';
@@ -65,6 +66,7 @@ class _FavItemWidgetState extends State<FavItemWidget> {
     final fav = Provider.of<Fav>(context, listen: false);
 
     return Card(
+      color: Colors.white70.withOpacity(.8),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -87,7 +89,16 @@ class _FavItemWidgetState extends State<FavItemWidget> {
                   children: [
                     Text(widget.favItem.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
                     const SizedBox(height: 8),
-                    Text('${widget.favItem.price} ${AppLocalizations.of(context)!.egp}', style: TextStyle(fontSize: 16)),
+                    Row(
+                      children: [
+                        Text('${widget.favItem.price} ', style: TextStyle(fontSize: 16)),
+                        SvgPicture.asset(
+                            "assets/SAR.svg",
+                            width: 20,
+                            height: 20
+                        ),
+                      ],
+                    ),
                     const SizedBox(
                       height: 8,
                     ),

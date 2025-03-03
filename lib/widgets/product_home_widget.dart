@@ -58,6 +58,11 @@ class ProductHomeWidget extends StatelessWidget {
           return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
           return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
         }
+        else if (type == "healthAndBeauty") {
+          print("healthAndBeauty");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
+        }
 
         print("else");
         return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
@@ -106,7 +111,10 @@ class ProductHomeWidget extends StatelessWidget {
               child: Text(
                 title,
                 style:
-                    const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                     TextStyle(
+
+                        fontSize:
+                            type == "healthAndBeauty" || type == "relatedProducts" ? 15 : 17, fontWeight: FontWeight.w700),
               ),
             ),
             TextButton(
@@ -149,7 +157,7 @@ class ProductHomeWidget extends StatelessWidget {
         children: [
           Container(
             color: Colors.grey.shade200,
-            height: type != "recentlyViewedProducts"
+            height: type != "recentlyViewedProducts" && type != "healthAndBeauty"
                 ? mediaQueryHeight(context) * .425
                 : mediaQueryHeight(context) * 0.17,
             child: ListView.builder(
@@ -170,13 +178,13 @@ class ProductHomeWidget extends StatelessWidget {
                     );
                   },
                   child: SizedBox(
-                    width: type != "recentlyViewedProducts" ? MediaQuery
+                    width: type != "recentlyViewedProducts" && type != "healthAndBeauty"? MediaQuery
                         .of(context)
                         .size
                         .width / 2.2 : mediaQueryWidth(context) * 0.3,
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),
-                      child: type != "recentlyViewedProducts" ?ProductCard(
+                      child: type != "recentlyViewedProducts"&& type != "healthAndBeauty" ?ProductCard(
                         product: products[index], fakeProduct: "",) : ProductCardEmpty(product: products[index], fakeProduct: "",),
                     ),
                   ),
