@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Gomla/screens/verifyphone_screen.dart';
 import 'package:Gomla/shared/global/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ import '../shared/utils/app_assets.dart';
 import '../shared/utils/app_values.dart';
 import '../widgets/app_bar.dart';
 import 'login_screen.dart';
-
+import 'package:http/http.dart' as http;
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
@@ -32,6 +33,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController(); // Phone number controller
+  final _otpController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _register() async {
@@ -80,8 +82,58 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
+  Future<void> _checkPhone() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+      try {
+        final response = await http.post(
+          Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/check-phone'),
+          body: {'phone': _phoneController.text},
+        );
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(response.body);
+          print(data); // طباعة البيانات لفحصها
+
+          if (data['success'] == true) {
+            String otp = data['otp'].toString(); // حفظ OTP
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
+            );
+            _otpController.text = otp;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyPhoneScreen(
+                phone: _phoneController.text,
+                email: _emailController.text,
+               userName: _usernameController.text,
+              password:   _passwordController.text,
+               )));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Phone verification failed')),
+          );
+        }
+      } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+ /* final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Google Sign-In method
   Future<void> _signInWithGoogle() async {
@@ -124,10 +176,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     } catch (error) {
       print("Google sign-in error: $error");
     }
-  }
+  }*/
 
   // Facebook Sign-In method
-  Future<void> signInWithFacebook() async {
+/*  Future<void> signInWithFacebook() async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
 
@@ -198,7 +250,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
       print('Facebook sign-in error: $error');
     }
-  }
+  }*/
 
 
   @override
@@ -258,8 +310,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-
-                /*TextFormField(
+                SizedBox(height: 20),
+                TextFormField(
                   controller: _emailController,
                   decoration: customInputDecoration(
                       context
@@ -274,9 +326,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),*/
+                ),
                 SizedBox(height: 20),
-               /* TextFormField(
+                TextFormField(
                   controller: _phoneController,
                   decoration: customInputDecoration(
                       context
@@ -289,8 +341,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),*/
-                /*SizedBox(height: 20),*/TextFormField(
+                ),
+                SizedBox(height: 20),
+                TextFormField(
                   controller: _passwordController,
                   decoration: customInputDecoration(
                       context
@@ -304,7 +357,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                /*SizedBox(height: 20),
+                SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: customInputDecoration(
@@ -318,7 +371,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     }
                     return null;
                   },
-                ),*/
+                ),
                 SizedBox(height: 20),
                 _isLoading
                     ? CircularProgressIndicator(color: mainColor)
@@ -331,7 +384,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       fixedSize:   Size(double.infinity, 45),
                       minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
                       backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
-                  onPressed: _register,
+                  onPressed: _checkPhone,
                   child: Text(AppLocalizations.of(context)!.register),
                 ),
                 SizedBox(height: 20),

@@ -1,17 +1,13 @@
 import UIKit
 import Flutter
-import FBSDKCoreKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
 
-    // Override to handle application launch
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Facebook SDK initialization
-        ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
 
         // Register Flutter plugins
         GeneratedPluginRegistrant.register(with: self)
@@ -27,14 +23,4 @@ import FBSDKCoreKit
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
-
-    override func application(
-        _ application: UIApplication,
-        open url: URL,
-        sourceApplication: String?,
-        annotation: Any
-    ) -> Bool {
-        return ApplicationDelegate.shared.application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
-    }
-
 }

@@ -30,37 +30,24 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
          /*  buildCategoriesList(context),*/
             LocationWidget(),
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
             HomeBannerSlider(
               banners: banners,
             ),
 
-            /*  Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: Image.asset(
-                  'assets/banner1.png',
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-
-                  height: mediaQueryHeight(context) * 0.12,
-                ),),
-            ),*/
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             /*  CircleBrands(),*/
-            GridOffers(),
-            SizedBox(
+           GridOffers(),
+            const SizedBox(
               height: 10,
             ),
-            CruosalContainer(),
+           const CruosalContainer(),
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.bestSellers,
               categoryId: 1214,
@@ -73,11 +60,11 @@ class HomeScreen extends StatelessWidget {
               type:  'bestSellers',
               isLink:  true,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            CruosalContainer(),
-            SizedBox(
+            const CruosalContainer2(),
+            const SizedBox(
               height: 5,
             ),
             ProductHomeWidget(
@@ -94,10 +81,7 @@ class HomeScreen extends StatelessWidget {
 
             ),
             const SizedBox(height: 10.0),
-            GridOffers(),
-
-            //
-
+            GridOffers2(),
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.healthAndBeauty,
               categoryId: 53,
@@ -110,21 +94,20 @@ class HomeScreen extends StatelessWidget {
               type: 'healthAndBeauty',
               isLink: false,
             ),
-
-            IndexedBannerWidget(index: 0, banners: banners),
-            SizedBox(
+            if (banners.length > 4)
+            IndexedBannerWidget(index: 5, banners: banners),
+            const SizedBox(
               height: 10,
             ),
-            if (banners.length > 2)
-              IndexedBannerWidget(index: 3, banners: banners),
 
-            SizedBox(
+              IndexedBannerWidget(index: 4, banners: banners),
+
+            const SizedBox(
               height: 10,
             ),
-          //  ScrollingCarouselWidget(isMain:  false,),
 
             if (banners.length > 1)
-              IndexedBannerWidget(index: 1, banners: banners),
+              IndexedBannerWidget(index: 3, banners: banners),
             const SizedBox(height: 10.0),
 //
             ProductHomeWidget(
@@ -142,19 +125,19 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 8.0),
 
-            if (banners.length > 3)
-              IndexedBannerWidget(index: 3, banners: banners),
+            if (banners.length > 1)
+              IndexedBannerWidget(index: 2, banners: banners),
             const SizedBox(height: 10.0),
             const SizedBox(height: 8.0),
             if (banners.length > 2)
-              IndexedBannerWidget(index: 2, banners: banners),
+              IndexedBannerWidget(index: 1, banners: banners),
             const SizedBox(height: 8.0),
             CircleBrands(
               ontap: ontap,
             ),
 
-            if (banners.length > 3)
-              IndexedBannerWidget(index: 3, banners: banners),
+
+              IndexedBannerWidget(index: 0, banners: banners),
             const SizedBox(height: 5.0),
 
             ProductHomeWidget(
@@ -170,21 +153,6 @@ class HomeScreen extends StatelessWidget {
               isLink: false,
             ),
 
-            // buildCategoriesList(context),
-            /*    ProductHomeWidget(
-              title: AppLocalizations.of(context)!.nearlyArrived,
-              categoryId: 1199,
-              specialProducts:false ,
-              bestSellers: false,
-              bestRatings: false,
-              allNeedsGrooming:false ,
-              exclusiveDeals: false,
-              nearlyArrived: true,
-              type:  'nearlyArrived',
-              isLink: true,
-
-            ),
-            const SizedBox(height: 8.0),*/
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.recentlyViewedProducts,
               categoryId: 53,
@@ -211,39 +179,6 @@ class HomeScreen extends StatelessWidget {
               isLink:  false,
 
             ),
-            /* const SizedBox(height: 8.0),
-            if (banners.length > 4)
-              IndexedBannerWidget(index: 4, banners: banners),
-            */ /*BannerHome(
-              image:  ImageAssets.banner1  ,
-            ),*/ /*
-            const SizedBox(height: 10.0),
-
-            GridOffers(),
-           // buildProductSection("منتجات مميزة", homeScreenProvider.pets, 53),
-            ProductHomeWidget(
-              title: AppLocalizations.of(context)!.specialProducts,
-              categoryId: 53,
-              specialProducts:true ,
-              bestSellers: false,
-              bestRatings: false,
-              allNeedsGrooming:false ,
-              exclusiveDeals: false,
-              nearlyArrived: false,
-              type:  'specialProducts',
-              isLink:  false,
-
-            ),
-            const SizedBox(height: 5.0),
-
-            if (banners.length > 5)
-              IndexedBannerWidget(index: 5, banners: banners),
-            */ /*BannerHome(
-              image:  ImageAssets.banner1  ,
-            ),*/ /*
-            GridOffers(),
-
-            const SizedBox(height: 10.0),*/
           ],
         ),
       ),
@@ -276,7 +211,7 @@ class HomeScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AdPage(
+                  builder: (context) => const AdPage(
                     isbeforetest: true,
                     reports: {},
                     skinAnalysisData: {},

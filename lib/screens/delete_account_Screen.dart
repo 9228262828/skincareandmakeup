@@ -1,10 +1,40 @@
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 class DeleteAccount extends StatelessWidget {
   const DeleteAccount({super.key});
-
+  void deleteAccount(context) {
+    // Delete account
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.grey.shade100,
+          title: Text(AppLocalizations.of(context)!.deleteAccount),
+          content: Text(AppLocalizations.of(context)!.deleteAccountWarning),
+          actions: [
+            TextButton(
+              child: Text(AppLocalizations.of(context)!.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                AppLocalizations.of(context)!.deleteAccount,
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                deleteAccountServer();
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,31 +87,55 @@ class DeleteAccount extends StatelessWidget {
         ));
   }
 
-  void deleteAccount(context) {
-    // Delete account
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: Colors.grey.shade100,
-              title: Text(AppLocalizations.of(context)!.deleteAccount),
-              content: Text(AppLocalizations.of(context)!.deleteAccountWarning),
-              actions: [
-                TextButton(
-                  child: Text(AppLocalizations.of(context)!.cancel),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text(
-                    AppLocalizations.of(context)!.deleteAccount,
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            ));
+
+
+  Future<void> deleteAccountServer() async {
+    String _tokenKey = 'auth_token';
+    String _userIdKey = 'user_id';
+
+    final String url = "https://gomla.sa/wp-json/custom-auth/v1/delete-account";
+    var prefs = await SharedPreferences.getInstance();
+
+    String? token = prefs.getString(_tokenKey);
+    int? userId = prefs.getInt(_userIdKey);
+
+    print("Token: $token");
+    print("User ID: $userId");
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "user_id": userId,
+        }),
+      );
+
+      final responseData = json.decode(response.body);
+      print("Response: $responseData");
+
+      if (response.statusCode == 200 && responseData["success"] == true) {
+        print("Account deleted successfully!");
+        showToast(text: responseData['message'], state: ToastStates.SUCCESS);
+
+        // Clear token and user ID from SharedPreferences
+        await prefs.remove(_tokenKey);
+        await prefs.remove(_userIdKey);
+        await prefs.setBool(  "isLoggedIn", false);
+
+        print("User credentials cleared from storage.");
+      } else {
+        print("Failed to delete account: ${responseData['message'] ?? 'Unknown error'}");
+        showToast(text: responseData['message'], state: ToastStates.ERROR);
+      }
+    } catch (e) {
+      print("Error deleting account: $e");
+    }
   }
+
+
+
 }

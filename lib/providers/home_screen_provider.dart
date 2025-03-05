@@ -77,8 +77,7 @@ class HomeScreenProvider with ChangeNotifier {
       if (brands.isEmpty) {
         brandsLoading = true;
         notifyListeners();
-        brands = await wooCommerceService.fetchBrands();
-        brandsLoading = false;
+
         notifyListeners();
       }
     });

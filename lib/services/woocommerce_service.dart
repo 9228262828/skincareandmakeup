@@ -295,28 +295,40 @@ class WooCommerceService {
 
   Future<List<Brand>> fetchBrands() async {
     final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale') ;
-    language ??= 'ar';
+    String? language = prefs.getString('locale') ?? 'ar';
+
     try {
       final response = await http.get(
-        // fetch all brands without pagination
         Uri.parse('$siteUrl/wp-json/wp/v2/product_brand'),
-
       );
 
       if (response.statusCode == 200) {
-        List jsonResponse = json.decode(response.body);
-          print(jsonResponse);
-        return jsonResponse.map((brand) => Brand.fromJson(brand)).toList();
+        final decodedData = json.decode(response.body);
+
+        // تحقق مما إذا كان `decodedData` قائمة
+        if (decodedData is List) {
+          print(decodedData);
+
+          return decodedData.map((brand) {
+            return Brand(
+              id: brand['id'] ?? 0,
+              name: brand['name'] ?? "Unknown",
+              imageUrl: brand['brand_image']?['sizes']?['full']?['url'] ?? "",
+            );
+          }).toList();
+        }
+
+        throw Exception('Unexpected response format');
       } else {
-        throw Exception('Failed to load brands');
+        throw Exception('Failed to load brands, Status Code: ${response.statusCode}');
       }
-    }catch (e) {
-      print(e);
+    } catch (e) {
+      print("Error fetching brands: $e");
     }
     return [];
-
   }
+
+
 
   Future<List<PaymentMethod>> fetchPaymentMethods(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();

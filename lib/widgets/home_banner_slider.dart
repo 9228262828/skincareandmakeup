@@ -1,8 +1,8 @@
+import 'package:Gomla/contstants.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../models/banner.dart';
 import '../providers/banner_repo.dart';
 import '../screens/brand_listing_screen.dart';
@@ -10,19 +10,65 @@ import '../screens/product_listing_screen.dart';
 import '../screens/product_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class HomeBannerSlider extends StatelessWidget {
+class HomeBannerSlider extends StatefulWidget {
   final List<Bannerr>? banners;
-
   HomeBannerSlider({super.key, this.banners});
 
   @override
+  _HomeBannerSliderState createState() => _HomeBannerSliderState();
+}
+
+class _HomeBannerSliderState extends State<HomeBannerSlider> {
+  List<Bannerr> _banners = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBanners();
+  }
+
+  Future<void> _fetchBanners() async {
+    try {
+      List<Bannerr> banners = await BannerService().fetchBanners();
+      if (banners.isEmpty) {
+        print('No banners found, retrying...');
+        await Future.delayed(Duration(seconds: 2));
+        await _fetchBanners();
+      } else {
+        setState(() {
+          _banners = banners;
+          _isLoading = false;
+        });
+      }
+      print('Fetched banners: ${banners.length}');
+    } catch (error) {
+      print('Error fetching banners: $error');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (banners == null || banners!.isEmpty) {
-      return Center(child: Text('No banners available.'));
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
     }
 
-    // Filter only the banners with featured == 1
-    List<Bannerr> featuredBanners = banners!.where((banner) => banner.featured == "1").toList();
+    if (_banners.isEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("No banners available, retrying..."),
+          SizedBox(height: 10),
+          CircularProgressIndicator(color: mainColor,),
+        ],
+      );
+    }
+
+    // تصفية البنرات المميزة فقط
+    List<Bannerr> featuredBanners = _banners.where((banner) => banner.featured == "1").toList();
 
     if (featuredBanners.isEmpty) {
       return Center(child: Text('No featured banners available.'));
@@ -81,21 +127,25 @@ class HomeBannerSlider extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(3),
-                child: Image.network(
-                  banner.image,
+                child: CachedNetworkImage(
+                  imageUrl: banner.image,
                   width: double.infinity,
-                  fit: BoxFit.cover, // Updated to cover the entire space
+                  fit: BoxFit.cover,
                   height: mediaQueryHeight(context) * 0.3,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                  placeholder: (context, url) => Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(color: Colors.grey.shade200),
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
               ),
             ),
           );
         },
         options: CarouselOptions(
-
           autoPlayInterval: Duration(seconds: 3),
-          enlargeCenterPage: false, // Ensures no gap between banners
+          enlargeCenterPage: false,
           enableInfiniteScroll: true,
           autoPlayAnimationDuration: Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,

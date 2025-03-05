@@ -169,6 +169,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>OrderedSet-OrderedSet_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>OrderedSet.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>PayTabsSDK.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -209,6 +219,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>device_info_plus.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>firebase_auth.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -234,6 +249,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>flutter_inappwebview_ios-flutter_inappwebview_ios_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>flutter_inappwebview_ios.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>flutter_local_notifications-flutter_local_notifications_privacy.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -245,6 +270,11 @@
 			<false/>
 		</dict>
 		<key>flutter_paytabs_bridge.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>flutter_pdfview.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -265,6 +295,26 @@
 			<false/>
 		</dict>
 		<key>fluttertoast.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>geocoding_ios-geocoding_ios_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>geocoding_ios.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>geolocator_apple-geolocator_apple_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>geolocator_apple.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -309,17 +359,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>pdfx.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>permission_handler_apple.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>share_plus-share_plus_privacy.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>share_plus.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -360,6 +405,16 @@
 			<false/>
 		</dict>
 		<key>video_player_avfoundation.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>webview_flutter_wkwebview-webview_flutter_wkwebview_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>webview_flutter_wkwebview.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

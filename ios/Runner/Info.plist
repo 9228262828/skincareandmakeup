@@ -2,112 +2,85 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- General App Information -->
-    <key>CADisableMinimumFrameDurationOnPhone</key>
-    <true/>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>$(DEVELOPMENT_LANGUAGE)</string>
-    <key>CFBundleDisplayName</key>
-    <string>Gomla</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>Gomla</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$(FLUTTER_BUILD_NAME)</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleVersion</key>
-    <string>$(FLUTTER_BUILD_NUMBER)</string>
-
-    <!-- Facebook Integration -->
-    <key>FacebookAppID</key>
-    <string>1737921733600227</string>
-    <key>FacebookDisplayName</key>
-    <string>Gomla</string>
-
-    <!-- Facebook URL Scheme -->
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>fb1737921733600227</string>
-            </array>
-        </dict>
-
-        <!-- Google Sign-In URL Scheme -->
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.googleusercontent.apps.1056794039802-90hluq52hqig6slcuffufnr3fe4vdoc1</string>
-            </array>
-        </dict>
-
-        <!-- Apple Sign-In URL Scheme -->
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.apple.identity.appleid.authentication</string>
-            </array>
-        </dict>
-    </array>
-
-    <!-- Apple Sign-In Specific Permissions (if needed) -->
-    <key>NSAppleMusicUsageDescription</key>
-    <string>We need access to your Apple Music library.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>We need access to your microphone for Apple Sign-In verification.</string>
-
-    <!-- Permissions Descriptions -->
-    <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera to take photos for sharing on Facebook.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>We need access to your microphone to record videos for sharing on Facebook.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>We need access to your photo library to select photos for sharing on Facebook.</string>
-
-    <!-- Supported Interface Orientations -->
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-    </array>
-
-    <!-- App Launch Configuration -->
-    <key>UIApplicationSupportsIndirectInputEvents</key>
-    <true/>
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-    <key>UIMainStoryboardFile</key>
-    <string>Main</string>
-
-    <!-- Querying Facebook APIs -->
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>fbapi</string>
-        <string>fb-messenger-share-api</string>
-    </array>
-
-    <!-- Required for iPhone -->
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
-
-    <!-- Firebase & Google Sign-In Configuration -->
-    <key>GIDClientID</key>
-    <string>1056794039802-90hluq52hqig6slcuffufnr3fe4vdoc1.apps.googleusercontent.com</string>
-
-    <!-- Push Notification Configuration -->
-    <key>aps-environment</key>
-    <string>development</string> <!-- Change to "production" when you're ready for production -->
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Gomla</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Gomla</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb1737921733600227</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1056794039802-90hluq52hqig6slcuffufnr3fe4vdoc1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.apple.identity.appleid.authentication</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FacebookAppID</key>
+	<string>1737921733600227</string>
+	<key>FacebookDisplayName</key>
+	<string>Gomla</string>
+	<key>GIDClientID</key>
+	<string>1056794039802-90hluq52hqig6slcuffufnr3fe4vdoc1.apps.googleusercontent.com</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+	</array>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>We need access to your Apple Music library.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to take photos for sharing on Facebook.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone to record videos for sharing on Facebook.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to select photos for sharing on Facebook.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>aps-environment</key>
+	<string>development</string>
 </dict>
 </plist>

@@ -64,8 +64,9 @@ class _BrandsScreenState extends State<BrandsScreen> {
           if (state is BrandsInitial || state is BrandsLoading) {
             return _buildShimmerGrid(context); // Show shimmer while loading
           } else if (state is BrandsError) {
+
             return Center(
-              child: Text(AppLocalizations.of(context)!.noProductsAvailable),
+              child: Text(AppLocalizations.of(context)!.noProductsAvailable , ),
             );
           } else if (state is BrandsLoaded) {
             final brands = state.brands;

@@ -274,10 +274,20 @@
           "bad": "Bad",
           "year" : "Year",
           "healthAndBeauty": "Health & Beauty | Up to 40% off",
-          "relatedProductss": "Related Products"
-
-
-
+          "relatedProductss": "Related Products",
+          "please_enter_6_numbers":"Please enter a valid 6-digit OTP",
+          "resend_otp":"Resend OTP",
+"verifyPhone"   : "Verify Phone",
+  "moisturizingtheskin":"Moisturizing the skin",
+  "diapers":"Diapers",
+  "makeupdiscounts":"Makeup Discounts",
+  "sunscreenDiscounts":"Sunscreen Discounts",
+  "worldofdiscounts":"World of Discounts",
+  "worldofwashes":"World of Washes",
+    "exfoliants":"Exfoliants",
+    "dryskincleansers":"Dry Skin Cleansers",
+    "sensitiveskincleansers":"Sensitive Skin Cleansers",
+    "oilyskincleansers":"Oily Skin Cleansers"
 
 
 

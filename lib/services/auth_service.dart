@@ -14,10 +14,10 @@ class AuthService {
 
   static Future<void> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('$siteUrl/wp-json/digits/v1/login_user'),
+      Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/login'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {
-        'user': username,
+        'email_or_phone': username,
         'password': password,
       },
     );
@@ -27,17 +27,18 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data['success'] == true) {
-        String token = data['data']['access_token'];
-        String userId = data['data']['user_id'];
+        String token = data['data']['token'];
+        int userId = data['data']['user_id'];
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(_tokenKey, token);
-        await prefs.setString(_userId, userId);
+        await prefs.setInt(_userId, userId);
         await prefs.setBool("isLoggedIn", true);
 
         print('Login successful: User ID - $userId');
         print('Login successful: Token - $token');
       } else {
+
         print('Login failed');
         throw Exception('Failed to login');
       }
@@ -82,18 +83,18 @@ class AuthService {
     await prefs.clear(); // Removes all keys and values in SharedPreferences
   }
 
-  static Future<Map<String, dynamic>> fetchUserInfo() async {
+  static Future<Map<String, dynamic>>   fetchUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString(_tokenKey);
 
-    // print(prefs.getString(_tokenKey));
+    print(prefs.getString(_tokenKey));
 
-    // if (token == null) {
-    //   throw Exception('Please login first');
-    // }
-print(  Uri.parse('$_userBaseUrl'));
+    if (token == null) {
+      throw Exception('Please login first');
+    }
+    print(  Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/profile'));
     final responseUser = await http.get(
-      Uri.parse('$_userBaseUrl'),
+      Uri.parse("https://gomla.sa/wp-json/custom-auth/v1/profile"),
       headers: {
         'Authorization': 'Bearer $token',
       },

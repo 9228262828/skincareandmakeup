@@ -41,13 +41,17 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> fetchUserInfo(context) async {
     try {
       emit(ProfileState(isLoading: true));
+
       final userInfo = await AuthService.fetchUserInfo();
-      emit(ProfileState(
-          isLoading: false, userInfo: userInfo)); // Show fetched data
+      print("Fetched User Info: $userInfo"); // تحقق من البيانات المسترجعة
+
+      emit(ProfileState(isLoading: false, userInfo: userInfo));
     } catch (e) {
+      print("Error fetching user info: $e"); // طباعة أي أخطاء
       emit(ProfileState(
-          isLoading: false,
-          errorMessage: AppLocalizations.of(context)!.pleaseLogin));
+        isLoading: false,
+        errorMessage: AppLocalizations.of(context)!.pleaseLogin,
+      ));
     }
   }
 
@@ -66,8 +70,6 @@ class ProfileScreen extends StatelessWidget {
       create: (_) => ProfileCubit()..fetchUserInfo(context),
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
-        /* appBar: CustomAppBar(
-            title: AppLocalizations.of(context)!.profile, home: true),*/
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
             if (state.isLoading) {
@@ -81,11 +83,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildProfileScreen(
-      BuildContext context, Map<String, dynamic>? userInfo)
-  {
+      BuildContext context, Map<String, dynamic>? userInfo) {
     // List of items that can contain either icons or image paths
     final List<Map<String, dynamic>> gridItems = [
       {
@@ -113,16 +112,15 @@ class ProfileScreen extends StatelessWidget {
           children: [
             if (userInfo == null) ...[
               UnauthWidget(),
-            ]
-            else ...[
+            ] else ...[
               SizedBox(
-                height: mediaQueryHeight(context) * 0.02,
+                height: mediaQueryHeight(context) * 0.04,
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4),
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4),
                 child: Container(
-                  height: mediaQueryHeight(context) * 0.12,
+                  height: 80,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3),
@@ -133,46 +131,31 @@ class ProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: 25,
-                            child: Text(userInfo['username'][0],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          ),
+                        CircleAvatar(
+                          backgroundColor: Colors.grey,
+                          radius: 25,
+                          child: Text(userInfo["data"]['name']?[0] ?? "G",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              )),
                         ),
+                        SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+
                             Text(
-                              AppLocalizations.of(context)!.welcome,
+                              userInfo["data"]['name'] ?? 'Guest User',
                               style: TextStyle(
-                                color: mainColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w100,
-                              ),
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              userInfo['username'],
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w100,
-                              ),
-                            ),
-                            Text(
-                              userInfo['email'],
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w100,
-                              ),
+                              userInfo["data"]['email'] ?? 'No Email Available',
+                              style:
+                              TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                           ],
                         )
@@ -240,6 +223,8 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(
                 height: mediaQueryHeight(context) * 0.02,
               ),
+              SizedBox(height: 20),
+
               SizedBox(height: mediaQueryHeight(context) * 0.02),
               Text(
                 AppLocalizations.of(context)!.settings,
@@ -282,20 +267,22 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(AppLocalizations.of(context)!.logout,
-                            style: TextStyle(
-                              color: mainColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w100,
-                            )),
-                        Icon(Icons.logout, color: mainColor, size: 25,)
-
-                      ],
-                    )
-                  ),
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(AppLocalizations.of(context)!.logout,
+                          style: TextStyle(
+                            color: mainColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w100,
+                          )),
+                      Icon(
+                        Icons.logout,
+                        color: mainColor,
+                        size: 25,
+                      )
+                    ],
+                  )),
                 ),
               ),
               SizedBox(height: mediaQueryHeight(context) * 0.02),
@@ -311,110 +298,119 @@ class ProfileScreen extends StatelessWidget {
                         AppLocalizations.of(context)!.sellwithus,
                         style: TextStyle(
                             color: mainColor,
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     SizedBox(height: mediaQueryHeight(context) * 0.01),
                     Divider(
                       color: Colors.grey.shade300,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TermsAndConditionsPage()),
-                            );
-                          },
-                          child: Text(
-                            AppLocalizations.of(context)!.termsOfUse,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            TermsAndConditionsPage()),
+                                  );
+                                },
+                                child: Text(
+                                  AppLocalizations.of(context)!.termsOfUse,
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey.shade500),
+                                ),
+                              ),  TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PrivacyPolicyPage()),
+                                  );
+                                },
+                                child: Text(
+                                    AppLocalizations.of(context)!.privacyPolicy,
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.grey.shade500)),
+                              ),
+                            ],
                           ),
-                        ),
-                        /*TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.helpSupport,
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade500),
-                          ),
-                        ),*/
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PrivacyPolicyPage()),
-                            );
-                          },
-                          child: Text(
-                              AppLocalizations.of(context)!.privacyPolicy,
+                          /*TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              AppLocalizations.of(context)!.helpSupport,
                               style: TextStyle(
-                                  fontSize: 14, color: Colors.grey.shade500)),
-                        ),
-                        /*TextButton(
-                          onPressed: () {},
-                          child: Text(
-                              AppLocalizations.of(context)!.delveryPolicy,
+                                  fontSize: 14, color: Colors.grey.shade500),
+                            ),
+                          ),*/
+
+                          /*TextButton(
+                            onPressed: () {},
+                            child: Text(
+                                AppLocalizations.of(context)!.delveryPolicy,
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.grey.shade500)),
+                          ),*/
+                          SizedBox(height: mediaQueryHeight(context) * 0.02),
+                          Center(
+                              child: Text(
+                                AppLocalizations.of(context)!.version,
+                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                              )),
+                          Center(
+                              child: Text(
+                                AppLocalizations.of(context)!.all_rights_reserved,
+                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                              )),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              /*  TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              AppLocalizations.of(context)!.termsOfUse,
                               style: TextStyle(
-                                  fontSize: 14, color: Colors.grey.shade500)),
-                        ),*/
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                      /*  TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.termsOfUse,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
+                                  fontSize: 12, color: Colors.grey.shade500),
+                            ),
+                          ),*/
+                              /*TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              AppLocalizations.of(context)!.faqs,
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade500),
+                            ),
                           ),
-                        ),*/
-                        /*TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.faqs,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              AppLocalizations.of(context)!.shareApp,
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade500),
+                            ),
+                          ),*/
+                            ],
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.shareApp,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
-                          ),
-                        ),*/
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: mediaQueryHeight(context) * 0.02),
-              Center(
-                  child: Text(
-                    AppLocalizations.of(context)!.version,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  )),
-              Center(
-                  child: Text(
-                    AppLocalizations.of(context)!.all_rights_reserved,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  )),
             ],
           ],
         ),
       ),
     );
   }
-
 
   Widget _buildLanguageSelector(BuildContext context) {
     return ListTile(
@@ -425,6 +421,7 @@ class ProfileScreen extends StatelessWidget {
       onTap: () {},
     );
   }
+
   Widget _buildDeleteAccount(BuildContext context) {
     return ListTile(
       tileColor: Colors.grey.shade100,
@@ -439,6 +436,7 @@ class ProfileScreen extends StatelessWidget {
       },
     );
   }
+
   Widget _buildShareApp(BuildContext context) {
     return ListTile(
       tileColor: Colors.grey.shade100,
@@ -451,8 +449,5 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _shareApp() {
-  }
+  void _shareApp() {}
 }
-
-

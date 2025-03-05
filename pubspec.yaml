@@ -56,10 +56,12 @@ dependencies:
   flutter_radar_chart:
   flutter_charts:
   flutter_neumorphic:
+  pinput:
+  device_info_plus: ^9.0.3 # Ensure you have the latest version
 
 
 
-## open_filex: ^3.2.1
+    ## open_filex: ^3.2.1
   ##image_gallery_saver:
  ##  path: ./image_gallery_saver-master
     #gallery_saver:
