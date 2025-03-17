@@ -803,8 +803,6 @@ class _SkincareDetectState extends State<SkincareDetect>
   }
 
 
-// In your onPlatformViewCreated method
-// Declare the channel without late keyword
   SkincareViewChannel? skincareViewChannel;
 
   void onPlatformViewCreated(int id) {

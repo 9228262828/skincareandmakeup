@@ -41,6 +41,7 @@
   "loginSuccessful": "تم تسجيل الدخول بنجاح",
   "loginFailed": "فشل تسجيل الدخول",
   "register": "تسجيل حساب",
+  "registerAccount": "تسجيل حساب جديد",
   "registerSuccessful": "تم التسجيل بنجاح",
   "registerFailed": "فشل التسجيل",
   "userName": "اسم المستخدم",
@@ -284,7 +285,11 @@
   "exfoliants":"المقشرات",
   "dryskincleansers":"غسول البشرة الجافة",
   "sensitiveskincleansers":"غسول البشرة الحساسة",
-  "oilyskincleansers":"غسول البشرة الدهنية"
+  "oilyskincleansers":"غسول البشرة الدهنية",
+  "forgotPassword":"نسيت كلمة المرور",
+  "resetPassword":"اعادة تعيين كلمة المرور",
+  "newPassword":"كلمة المرور الجديدة",
+  "password_reset_successfully":"تم اعادة تعيين كلمة المرور بنجاح"
 
 
 

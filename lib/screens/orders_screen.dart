@@ -13,7 +13,7 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  late Future<List<Order>> futureOrders;
+  late Future<List<Order>> futureOrders;  // Change Order? to List<Order>
 
   @override
   void initState() {
@@ -24,9 +24,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'My Orders',home: false,),
+      appBar: CustomAppBar(title: 'My Orders', home: false),
       body: FutureBuilder<List<Order>>(
-        future: futureOrders,
+        future: futureOrders,  // ✅ Use initialized futureOrders
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return FadeInOutImage(height: MediaQuery.of(context).size.height);

@@ -1,7 +1,7 @@
 name: Gomla
 description: Gomla is a E-commerce app.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: '>=3.1.3 <4.0.0'
@@ -57,7 +57,9 @@ dependencies:
   flutter_charts:
   flutter_neumorphic:
   pinput:
-  device_info_plus: ^9.0.3 # Ensure you have the latest version
+  device_info_plus: ^9.0.3
+  syncfusion_flutter_pdfviewer: ^24.1.41
+
 
 
 

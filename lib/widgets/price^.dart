@@ -21,30 +21,37 @@ class PriceDisplay extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         RichText(
           text: TextSpan(
             style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+
+              fontSize: priceParts .length > 3 ? 20 : 16,
+              fontWeight: FontWeight.w500,
               color: Colors.black, // Color for main text
             ),
             children: [
               TextSpan(
-                text: priceParts[1], // Decimal part (in superscript)
-                style: TextStyle(
-                  fontSize: 14,
-                  // Smaller font size for the decimal part
-                  fontWeight: FontWeight.w400,
-                  height: 1.2,
-                  // Raises the decimal part to look like a superscript
-                  textBaseline: TextBaseline
-                      .ideographic, // Ensure correct alignment (raise it)
-                ),
+                text: priceParts[1], // Integer part
               ),
             ],
           ),
         ),
-        SizedBox(width: 2),
+        RichText(
+          text: TextSpan(
+            style: TextStyle(
+
+              fontSize: priceParts .length > 3 ? 20 : 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.black, // Color for main text
+            ),
+            children: [
+              TextSpan(
+                text: ".", // Integer part
+              ),
+            ],
+          ),
+        ),
         RichText(
           text: TextSpan(
             style: TextStyle(
@@ -60,6 +67,7 @@ class PriceDisplay extends StatelessWidget {
             ],
           ),
         ),
+
         SizedBox(width: 2),
         SvgPicture.asset(
           "assets/SAR.svg",

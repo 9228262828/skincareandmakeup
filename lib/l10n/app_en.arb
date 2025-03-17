@@ -40,6 +40,7 @@
   "loginSuccessful": "Login Successful",
   "loginFailed": "Login Failed",
   "register": "Register",
+  "registerAccount": "Register",
   "registerSuccessful": "Registration Successful",
   "registerFailed": "Registration Failed",
   "userName": "Username",
@@ -279,16 +280,19 @@
           "resend_otp":"Resend OTP",
 "verifyPhone"   : "Verify Phone",
   "moisturizingtheskin":"Moisturizing the skin",
-  "diapers":"Diapers",
+  "diapers":"Diapering",
   "makeupdiscounts":"Makeup Discounts",
   "sunscreenDiscounts":"Sunscreen Discounts",
-  "worldofdiscounts":"World of Discounts",
+  "worldofdiscounts":"Discount World",
   "worldofwashes":"World of Washes",
     "exfoliants":"Exfoliants",
     "dryskincleansers":"Dry Skin Cleansers",
     "sensitiveskincleansers":"Sensitive Skin Cleansers",
-    "oilyskincleansers":"Oily Skin Cleansers"
-
+    "oilyskincleansers":"Oily Skin Cleansers",
+     "forgotPassword":"Forgot Password",
+      "resetPassword":"Reset Password",
+      "newPassword":"New Password",
+      "password_reset_successfully":"Password reset successfully"
 
 
 }

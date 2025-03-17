@@ -44,7 +44,7 @@ class SkinAnalysisCubit extends Cubit<SkinAnalysisState> {
     // Get the token from SharedPreferences
     Future<SharedPreferences> prefs = SharedPreferences.getInstance();
     String? token = await prefs.then((value) => value.getString('auth_token'));
-    String? userId = await prefs.then((value) => value.getString('user_id'));
+    int? userId = await prefs.then((value) => value.getInt('user_id'));
 
 print("token");
 print(token);
@@ -78,7 +78,7 @@ print("token");
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            "Authorization": "Bearer $token",
+            "gomla_autherization": "Bearer $token",
           },
         ),
         data:requestData

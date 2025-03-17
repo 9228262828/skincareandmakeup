@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import '../models/banner.dart';
 
 class BannerService {
-  // URL of the API
   static const String apiUrl = 'https://gomla.sa/wp-json/banner-slider/v1/banners';
 
   Future<List<Bannerr>> fetchBanners() async {
@@ -17,6 +16,8 @@ class BannerService {
 
       return data.map((json) => Bannerr.fromJson(json)).toList();
     } else {
+      print(response.statusCode);
+      print(response.body);
       throw Exception('Failed to load banners');
     }
   }

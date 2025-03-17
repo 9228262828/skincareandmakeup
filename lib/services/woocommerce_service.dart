@@ -153,7 +153,7 @@ class WooCommerceService {
     language ??= 'ar';
 
     final response = await http.get(
-      Uri.parse('$baseUrl/products/categories?lang=$language&per_page=18&page=$page'),
+      Uri.parse('$baseUrl/products/categories?lang=$language&per_page=18&page=$page&parent=0'),
       headers: {
         'Authorization': 'Basic ' +
             base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -293,40 +293,36 @@ class WooCommerceService {
     }
   }
 
-  Future<List<Brand>> fetchBrands() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale') ?? 'ar';
 
-    try {
-      final response = await http.get(
-        Uri.parse('$siteUrl/wp-json/wp/v2/product_brand'),
-      );
+  Future<List<Brand>> fetchBrands({int page = 1, int perPage = 21}) async {
+  final prefs = await SharedPreferences.getInstance();
+  String? language = prefs.getString('locale') ?? 'ar';
 
-      if (response.statusCode == 200) {
-        final decodedData = json.decode(response.body);
+  try {
+  final response = await http.get(
+  Uri.parse('https://gomla.sa/wp-json/wp/v2/product_brand?lang=$language&per_page=$perPage&page=$page'),
+  );
 
-        // تحقق مما إذا كان `decodedData` قائمة
-        if (decodedData is List) {
-          print(decodedData);
+  if (response.statusCode == 200) {
+  final decodedData = json.decode(response.body);
 
-          return decodedData.map((brand) {
-            return Brand(
-              id: brand['id'] ?? 0,
-              name: brand['name'] ?? "Unknown",
-              imageUrl: brand['brand_image']?['sizes']?['full']?['url'] ?? "",
-            );
-          }).toList();
-        }
-
-        throw Exception('Unexpected response format');
-      } else {
-        throw Exception('Failed to load brands, Status Code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print("Error fetching brands: $e");
-    }
-    return [];
+  // Ensure that decodedData is a list
+  if (decodedData is List) {
+  return decodedData.map((brand) {
+  return Brand.fromJson(brand); // Parse each brand correctly
+  }).toList();
   }
+
+  throw Exception('Unexpected response format');
+  } else {
+  throw Exception('Failed to load brands, Status Code: ${response.statusCode}');
+  }
+  } catch (e) {
+  print("Error fetching brands: $e");
+  return [];
+  }
+  }
+
 
 
 
@@ -400,32 +396,52 @@ class WooCommerceService {
     }
   }
 
+
   Future<List<Order>> fetchUserOrders(BuildContext context) async {
-    final pref = await SharedPreferences.getInstance();
-    final String jwtToken = pref.getString('auth_token') ?? '';
-    final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale') ;
-    language ??= 'ar';
+    try {
+      // Fetch the JWT token from SharedPreferences
+      final pref = await SharedPreferences.getInstance();
+      final String jwtToken = pref.getString('auth_token') ?? '';
 
-    final userInfo = await AuthService.fetchUserInfo();
+      // Fetch user info to get the userId
+      final userInfo = await AuthService.fetchUserInfo();
+      final userId = userInfo["data"]['id'];
 
-    final userId = await userInfo['id'];
+      print("Fetching orders for user ID: $userId");
 
-    final response = await http.get(
-      Uri.parse('$siteUrl/wp-json/custom/v1/orders/$userId'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $jwtToken',
-      },
-    );
+      // Encode consumer key and secret for WooCommerce authentication
+      String auth = 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
 
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
-      return jsonResponse.map((order) => Order.fromJson(order)).toList();
-    } else {
+      final response = await http.get(
+        Uri.parse('https://gomla.sa/wp-json/wc/v3/orders?customer=$userId'), // ✅ Correct API format
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': auth, // ✅ Use only one Authorization header
+          'gomla_autherization': 'Bearer $jwtToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        print("Orders Response: $jsonResponse");
+
+        if (jsonResponse is List) {
+          return jsonResponse.map((order) => Order.fromJson(order)).toList(); // ✅ Return a list of orders
+        } else {
+          print("Unexpected response format");
+          return [];
+        }
+      } else {
+        print('Failed to fetch orders: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching orders: $e');
       return [];
     }
   }
+
 
   Future<bool> createOrder({
     required String firstName,
@@ -444,9 +460,11 @@ class WooCommerceService {
     required bool setPaid,
     required int userId,
     String couponCode = '',
-  }) async {
+  }) async
+  {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale') ;
+    String? token = prefs.getString('auth_token') ;
     language ??= 'ar';
     final url = Uri.parse('$baseUrl/orders?lang=$language');
 
@@ -457,6 +475,7 @@ class WooCommerceService {
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': auth,
+      'gomla_autherization': "Bearer $token",
     };
 
     final body = jsonEncode({
@@ -511,10 +530,12 @@ class WooCommerceService {
     final response = await http.post(url, headers: headers, body: body);
 
     if (response.statusCode == 201) {
+      print('Order created successfully');
       return true;
     } else {
+      String responseBody = utf8.decode(response.bodyBytes);
       print(
-          'Failed to create order: ${response.statusCode} - ${response.body}');
+          'Failed to create order: ${response.statusCode} - ${responseBody}');
       return false;
     }
   }
@@ -524,7 +545,8 @@ class WooCommerceService {
   }
 
   Future<List<Product>> searchProducts(
-      String query, int page, BuildContext context) async {
+      String query, int page, BuildContext context) async
+  {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale') ;
     language ??= 'ar';
@@ -566,7 +588,8 @@ class WooCommerceService {
   }
 
   Future<List<dynamic>> fetchShippingMethods(
-      int zoneId, BuildContext context) async {
+      int zoneId, BuildContext context) async
+  {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale') ;
     language ??= 'ar';

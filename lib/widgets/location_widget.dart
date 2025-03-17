@@ -1,10 +1,12 @@
-import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../contstants.dart';
+import '../shared/components/toast_component.dart';
 
 class LocationWidget extends StatefulWidget {
   @override
@@ -34,69 +36,94 @@ class _LocationWidgetState extends State<LocationWidget> {
   }
 
   Future<void> _getAddressFromLatLng() async {
-    if (_isLocationFetched) return; // Stop execution if location is already fetched
+    if (_isLocationFetched) return;
 
-    await _requestLocationPermission();
+    try {
+      // ✅ التحقق من صلاحية الموقع
+      Position position = await checkLocationPermission();
 
-    if (_permissionStatus == AppLocalizations.of(context)!.locationPermissionGranted) {
-      try {
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        );
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
 
-        List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
-
-        if (placemarks.isNotEmpty) {
-          final place = placemarks.first;
-          print(place);
-print(place.name);
-          setState(() {
-            _address = "${AppLocalizations.of(context)!.deliveryTo} ${place.name}";
-            _isLocationFetched = true;
-          });
-
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('saved_address', _address);
-        } else {
-          setState(() {
-            _address = AppLocalizations.of(context)!.addressNotAvailable;
-          });
-        }
-      } catch (e) {
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
         setState(() {
-          _address = "${AppLocalizations.of(context)!.errorRetrievingAddress}: $e";
+          _address = "${AppLocalizations.of(context)!.deliveryTo} ${place.name}";
+          _isLocationFetched = true;
+        });
+
+        // ✅ حفظ العنوان في SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('saved_address', _address);
+      } else {
+        setState(() {
+          _address = AppLocalizations.of(context)!.addressNotAvailable;
         });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        _address = AppLocalizations.of(context)!.pleaseAllowLocationAccess;
+        _address = "${AppLocalizations.of(context)!.errorRetrievingAddress}: $e";
       });
     }
   }
 
-  Future<void> _requestLocationPermission() async {
+  Future<Position> checkLocationPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
-      _showLocationServiceDialog();
-      return;
+      _showLocationServiceDialog(); // ✅ فتح الإعدادات لو الخدمة غير مفعلة
+      throw "${AppLocalizations.of(context)!.locationServicesDisabled}";
     }
-    PermissionStatus status = await Permission.location.request();
+    print("checkLocationPermission");
 
-    if (status.isGranted) {
-      setState(() {
-        _permissionStatus = AppLocalizations.of(context)!.locationPermissionGranted;
-      });
-    } else if (status.isDenied) {
-      setState(() {
-        _permissionStatus = AppLocalizations.of(context)!.locationPermissionDenied;
-      });
-    } else if (status.isPermanentlyDenied) {
-      setState(() {
-        _permissionStatus = AppLocalizations.of(context)!.locationPermissionPermanentlyDenied;
-      });
-      openAppSettings();
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        showToast(
+          text: AppLocalizations.of(context)!.locationPermissionDenied,
+          state: ToastStates.WARNING,
+        );
+        print("locationPermissionDenied");
+        // ✅ فتح الإعدادات تلقائياً إذا تم الرفض
+        await Geolocator.openAppSettings();
+        throw "${AppLocalizations.of(context)!.locationPermissionDenied}";
+      }
+    }print("locationPermissionDenied");
+
+
+    if (permission == LocationPermission.deniedForever) {
+      showToast(
+        text: AppLocalizations.of(context)!.locationPermissionPermanentlyDenied,
+        state: ToastStates.ERROR,
+      );
+      print("locationPermissionPermanentlyDenied");
+      // ✅ فتح إعدادات التطبيق في حالة رفض دائم
+      await openAppSettings();
+      throw "${AppLocalizations.of(context)!.locationPermissionPermanentlyDenied}";
     }
+print("locationPermissionPermanentlyDenied");
+    // ✅ الحصول على الموقع الحالي أو آخر موقع محفوظ
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    ).catchError((e) async {
+
+      final lastPosition = await Geolocator.getLastKnownPosition();
+      if (lastPosition != null) {
+        print("lastPosition");
+        print(lastPosition);
+        return lastPosition;
+      } else {
+        showToast(
+          text: AppLocalizations.of(context)!.locationPermissionDenied,
+          state: ToastStates.ERROR,
+        );
+        throw "${AppLocalizations.of(context)!.locationPermissionPermanentlyDenied}";
+      }
+    });
   }
 
   void _showLocationServiceDialog() {
@@ -109,19 +136,27 @@ print(place.name);
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Geolocator.openLocationSettings();
+              Geolocator.openLocationSettings(); // ✅ فتح إعدادات الموقع
             },
-            child: Text(AppLocalizations.of(context)!.openSettings, style: TextStyle(color: mainColor)),
+            child: Text(
+              AppLocalizations.of(context)!.openSettings,
+              style: TextStyle(color: Colors.blue),
+            ),
           ),
         ],
       ),
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _getAddressFromLatLng,
+      onTap: (){
+        print("onTap");
+        _getAddressFromLatLng();
+      },
       child: Container(
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(

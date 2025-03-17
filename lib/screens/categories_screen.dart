@@ -129,7 +129,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ),
                   if (isLoadingMore)
                     SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.23,
+                        height: MediaQuery.of(context).size.height * 0.24,
                         child: _buildMainCategoryShimmer())
                 ],
               ),
@@ -144,7 +144,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         crossAxisCount: 3, // Three items in a row
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
-        childAspectRatio: 0.8, // Adjust to ensure image and text fit well
+        childAspectRatio: 0.82, // Adjust to ensure image and text fit well
       ),
       itemCount: 12, // Number of shimmer placeholders
       itemBuilder: (context, index) {
@@ -156,7 +156,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             children: [
               // Placeholder for image
               Container(
-                height: MediaQuery.of(context).size.height * 0.17,
+                height: MediaQuery.of(context).size.height * 0.142,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(3.0),
                   color: Colors.grey[300],
@@ -206,14 +206,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
           padding: selectedCategoryId == category.id
               ? EdgeInsets.all(5.0)
-              : EdgeInsets.all(4.0),
+              : EdgeInsets.all(2.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3.0),
             border: Border.all(
               color: selectedCategoryId == category.id
                   ? Colors.grey.shade200
                   : Colors.transparent,
-              width: 2.0,
+              width: 1.0,
             ),
           ),
           child: Column(
@@ -224,8 +224,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 child: CachedNetworkImage(
                   imageUrl: category.imageUrl,
                   height: selectedCategoryId == category.id
-                      ? MediaQuery.of(context).size.height * 0.12
-                      : mediaQueryHeight(context) * 0.13,
+                      ? MediaQuery.of(context).size.height * 0.14
+                      : mediaQueryHeight(context) * 0.145,
                   fit: BoxFit.fill,
                   placeholder: (context, url) => Center(
                     child: FadeInOutImage(height: MediaQuery.of(context).size.height * 0.15),
@@ -235,7 +235,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               ),
               const SizedBox(height: 4.0),
               Container(
-                height:   mediaQueryHeight(context) * 0.05,
+                height:   mediaQueryHeight(context) * 0.02,
                 child: Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Text(
@@ -259,7 +259,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   Widget _buildSubCategories(Category category) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
         children: subCategories[category.id]?.map((subCategory) {
           return Padding(

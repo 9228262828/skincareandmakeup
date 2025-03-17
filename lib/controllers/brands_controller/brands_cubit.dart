@@ -16,17 +16,30 @@ import 'brands_states.dart';
 
 class BrandsCubit extends Cubit<BrandsState> {
   final WooCommerceService wooCommerceService;
+  int currentPage = 1; // Track the current page
+  bool hasMore = true; // Flag to track if more data is available
+  List<Brand> allBrands = []; // Store all brands fetched
 
   BrandsCubit(this.wooCommerceService) : super(BrandsInitial());
 
   Future<void> fetchBrands() async {
-    emit(BrandsLoading());
+    if (isClosed || !hasMore) return; // Avoid emitting states if the Bloc is closed or no more brands
+
+    emit(BrandsLoading()); // Show loading state
     try {
-      List<Brand> brands = await wooCommerceService.fetchBrands();
-      print(brands);
-      emit(BrandsLoaded(brands));
+      List<Brand> brands = await wooCommerceService.fetchBrands(page: currentPage);
+
+      if (brands.isNotEmpty) {
+        allBrands.addAll(brands); // Append new brands
+        currentPage++; // Increment the page for the next fetch
+      }
+
+      // If the number of fetched brands is less than perPage, there's no more data
+      hasMore = brands.length == 21; // Update the flag based on the response length
+
+      emit(BrandsLoaded(allBrands)); // Emit the loaded brands
     } catch (e) {
-      emit(BrandsError(e.toString()));
+      emit(BrandsError(e.toString())); // Handle errors
     }
   }
 }

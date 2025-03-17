@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/cart.dart';
 import '../screens/search_result.dart';
 
@@ -18,58 +17,66 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.home,
   }) : super(key: key);
 
+  // ✅ استرجاع التوكن مباشرة
+  Future<bool> _hasToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token') != null;
+  }
+
   void _startSearch(BuildContext context) {
     showSearch(context: context, delegate: ProductSearchDelegate());
-  }
-  tokenFromSharedPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    print(prefs.getString('auth_token'));
-    return prefs.getString('auth_token');
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final int cartCount = Provider.of<Cart>(context, listen: true).items.length;
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-      /* title: Image.asset(
-        'assets/app_icon.png',
-
-        width: MediaQuery.of(context).size.width * 0.35,
-      ),*/
-      // centerTitle: true,
       actions: [
         !home
             ? Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios_rounded, color: mainColor),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  Image(
-                    image: AssetImage('assets/app_icon.png'),
-                    width: MediaQuery.of(context).size.width * 0.15,
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    fit: BoxFit.contain,
-                  ),
-                ],
-              )
+          children: [
+            IconButton(
+              icon: Icon(Icons.arrow_back_ios_rounded, color: mainColor),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Image(
+              image: AssetImage('assets/app_icon.png'),
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.09,
+              fit: BoxFit.contain,
+            ),
+          ],
+        )
             : Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Image(
-                  image: AssetImage('assets/app_icon.png'),
-                  width: MediaQuery.of(context).size.width * 0.21,
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  fit: BoxFit.contain,
-                ),
-              ),
+          padding: const EdgeInsets.all(4.0),
+          child: Image(
+            image: AssetImage('assets/app_icon.png'),
+            width: MediaQuery.of(context).size.width * 0.21,
+            height: MediaQuery.of(context).size.height * 0.1,
+            fit: BoxFit.contain,
+          ),
+        ),
+        FutureBuilder<bool>(
+          future: _hasToken(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.data == true) {
+              return Spacer();
+            } else {
+              return const SizedBox(
+                width: 0,
+              ); // ✅ عدم عرض الأيقونة لو مفيش توكن
+            }
+          },
+        ),
         GestureDetector(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: Container(
               width: !home
                   ? MediaQuery.of(context).size.width * 0.52
@@ -101,16 +108,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             _startSearch(context);
           },
         ),
-        tokenFromSharedPreferences() == null ? Container() :  IconButton(
-          icon: const Icon(
-            Icons.favorite_border,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FavScreen()),
-            );
+
+        // ✅ التحقق من حالة التوكن
+        FutureBuilder<bool>(
+          future: _hasToken(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.data == true) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.favorite_border,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FavScreen()),
+                  );
+                },
+              );
+            } else {
+              return const SizedBox(
+                width: 15,
+              ); // ✅ عدم عرض الأيقونة لو مفيش توكن
+            }
           },
         ),
       ],
@@ -118,11 +139,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: home
           ? null
           : IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+        icon: Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 

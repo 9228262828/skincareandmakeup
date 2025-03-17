@@ -6,6 +6,7 @@ import 'package:flutter_paytabs_bridge/flutter_paytabs_bridge.dart';
 
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../contstants.dart';
 import '../env.dart';
@@ -140,7 +141,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       _email,
       _phone,
       _address,
-      'EG',
+      'SA',
       _city,
       _state,
       '11411',
@@ -162,7 +163,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       serverKey: serverKey,
       clientKey: clientKey,
       cartId: "cart_id",
-      cartDescription: "Purchase from Mskra",
+      cartDescription: "Purchase from Gomla",
       merchantName: "Mskra",
       screentTitle: "Pay with Card",
       billingDetails: billingDetails,
@@ -392,14 +393,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _submitOrder(BuildContext context, Cart cart, bool setPaid) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Placing order...')),
-    );
 
-    if (!_formKey.currentState!.validate()) return;
+    final prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('user_Id') ;
+    print(userId);
+    print(_userInfo!["data"]["id"]);
+
+    print(" _formKey.currentState!.validate()");
     _formKey.currentState!.save();
 
     WooCommerceService wooCommerceService = WooCommerceService();
+
     bool orderCreated = await wooCommerceService.createOrder(
       firstName: _firstName,
       lastName: _lastName,
@@ -407,7 +411,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       address: _address,
       city: _city,
       state: _state,
-      userId: _userInfo?['id'],
+      userId: _userInfo!["data"]["id"],
       phone: _phone,
       email: _email,
       orderNotes: _orderNotes,
@@ -420,13 +424,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
 
     if (orderCreated) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MainScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order placed successfully')),
       );
 
       cart.clear();
     } else {
+      print('Failed to place order');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to place order')),
       );

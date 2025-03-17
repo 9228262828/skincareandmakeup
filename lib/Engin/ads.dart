@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
-
 import '../Engin/report_screen.dart';
 import '../Engin/skincare.dart';
 
@@ -364,7 +361,6 @@ class _AdPageState extends State<AdPage> {
     );
   }
 
-  // Open an external URL (for example, external link in the ad)
   Future<void> _openURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);

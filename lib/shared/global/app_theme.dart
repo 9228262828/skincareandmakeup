@@ -151,6 +151,7 @@ InputDecoration customInputDecoration(
     String labelText,
     String hintText, {
       Widget? suffixIcon,
+      Widget? suffix,
     }) {
   return InputDecoration(
     labelText: labelText,
@@ -167,5 +168,6 @@ InputDecoration customInputDecoration(
         .copyWith(color: mainColor),
     contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
     suffixIcon: suffixIcon,
+    suffix: suffix,
   );
 }

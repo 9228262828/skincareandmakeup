@@ -100,72 +100,76 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
       appBar: AppBar(title: Text(AppLocalizations.of(context)!.verifyPhone),),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
 
-          children: [
-            SizedBox(
-              height: mediaQueryHeight(context) * 0.1,
-            ),
-            Image.asset(ImageAssets.logoWhite,
-                height: mediaQueryHeight(context) * 0.15,
-                width: mediaQueryWidth(context) * 0.7),
+          child: Column(
+
+            children: [
               SizedBox(
                 height: mediaQueryHeight(context) * 0.1,
               ),
-            Text("${AppLocalizations.of(context)!.please_enter_6_numbers}${widget.phone}",
-          style:  TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-          ),
-            ),
-            SizedBox(height: 20),
-            Pinput(
-              length: 6,
-              controller: _otpController,
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              defaultPinTheme: PinTheme(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
+              Image.asset(ImageAssets.logoWhite,
+                  height: mediaQueryHeight(context) * 0.15,
+                  width: mediaQueryWidth(context) * 0.7),
+                SizedBox(
+                  height: mediaQueryHeight(context) * 0.1,
                 ),
-                textStyle: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  locale: Localizations.localeOf(context),
+              Text("${AppLocalizations.of(context)!.please_enter_6_numbers}${widget.phone}",
+            style:  TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+              ),
+              SizedBox(height: 20),
+              Pinput(
+                length: 6,
+                controller: _otpController,
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                defaultPinTheme: PinTheme(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  textStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    locale: Localizations.localeOf(context),
+                  ),
                 ),
               ),
-            ),
 
 
-            SizedBox(height: 20),
-            _isLoading
-                ? CircularProgressIndicator()
-                : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    maximumSize:    Size(mediaQueryWidth(context)*.9, 50),
-                    fixedSize:   Size(mediaQueryWidth(context)*.7, 45),
-                    minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
-                    backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
-                                onPressed: _register,
-                                child: Text('Verify & Register'),
-                              ),
-                ),
+              SizedBox(height: 20),
+              _isLoading
+                  ? CircularProgressIndicator()
+                  : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      maximumSize:    Size(mediaQueryWidth(context)*.9, 50),
+                      fixedSize:   Size(mediaQueryWidth(context)*.7, 45),
+                      minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
+                      backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
+                                  onPressed: _register,
+                                  child: Text('Verify & Register'),
+                                ),
+                  ),
 
-TextButton(onPressed:
-    (){
-  _otpController.clear();
-      _checkPhone();
-    }
-    , child: Text(AppLocalizations.of(context)!.resend_otp))
-          ],
+          TextButton(onPressed:
+              (){
+            _otpController.clear();
+                _checkPhone();
+              }
+              , child: Text(AppLocalizations.of(context)!.resend_otp))
+            ],
+          ),
         ),
       ),
     );

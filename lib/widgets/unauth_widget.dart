@@ -37,7 +37,7 @@ class UnauthWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(3),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(3.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -179,18 +179,7 @@ class UnauthWidget extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Center(
-                child: Text(
-                  AppLocalizations.of(context)!.sellwithus,
-                  style: TextStyle(
-                      color: mainColor,
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(height: mediaQueryHeight(context) * 0.01),
-              Divider(
-                color: Colors.grey.shade300,
-              ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

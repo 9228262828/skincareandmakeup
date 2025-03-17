@@ -2,8 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
+	<!-- Basic App Info -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -19,9 +18,40 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>1.0.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+
+	<!-- Launch Settings -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<!-- Supported Interface Orientations -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+
+	<!-- Facebook Configuration -->
+	<key>FacebookAppID</key>
+	<string>1737921733600227</string>
+	<key>FacebookDisplayName</key>
+	<string>Gomla</string>
+
+	<!-- Google Sign-In -->
+	<key>GIDClientID</key>
+	<string>1056794039802-90hluq52hqig6slcuffufnr3fe4vdoc1.apps.googleusercontent.com</string>
+
+	<!-- Apple Sign-In -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -47,40 +77,89 @@
 			</array>
 		</dict>
 	</array>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>FacebookAppID</key>
-	<string>1737921733600227</string>
-	<key>FacebookDisplayName</key>
-	<string>Gomla</string>
-	<key>GIDClientID</key>
-	<string>1056794039802-90hluq52hqig6slcuffufnr3fe4vdoc1.apps.googleusercontent.com</string>
+
+	<!-- App Transport Security (Networking) -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+
+	<!-- Facebook Permissions -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>
 		<string>fb-messenger-share-api</string>
 	</array>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>We need access to your Apple Music library.</string>
+
+	<!-- Camera and Microphone Permissions -->
 	<key>NSCameraUsageDescription</key>
-	<string>We need access to your camera to take photos for sharing on Facebook.</string>
+	<string>We need access to your camera to take photos and videos.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>We need access to your microphone to record videos for sharing on Facebook.</string>
+	<string>We need access to your microphone to record audio.</string>
+
+	<!-- Photo Library Permissions -->
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photo library to select photos for sharing on Facebook.</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
+	<string>We need access to your photo library to select and save media.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need access to your photo library to save photos and videos.</string>
+
+	<!-- Location Permissions -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need access to your location to provide better service.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need access to your location even when the app is running in the background.</string>
+
+	<!-- Push Notifications -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>We need to send you notifications for updates and alerts.</string>
+
+	<!-- NFC -->
+	<key>NFCReaderUsageDescription</key>
+	<string>We need access to NFC to read NFC tags.</string>
+
+	<!-- HealthKit -->
+	<key>NSHealthShareUsageDescription</key>
+	<string>We need access to your health data to track your progress.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>We need access to your health data to update your health status.</string>
+
+	<!-- Face ID -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>We need to use Face ID to securely authenticate your identity.</string>
+
+
+
+	<!-- Siri -->
+	<key>NSSiriUsageDescription</key>
+	<string>We need access to Siri to perform voice commands and provide a better user experience.</string>
+
+	<!-- Audio Sessions -->
+	<key>NSAudioSessionCategory</key>
+	<string>AVAudioSessionCategoryPlayAndRecord</string>
+
+	<!-- Environment (Development or Production) -->
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+
+
+
+<key>NSAppTransportSecurity</key>
+<dict>
+	<key>NSAllowsArbitraryLoads</key>
+	<true/>
+</dict>
+<key>LSSupportsOpeningDocumentsInPlace</key>
+<true/>
+<key>UIFileSharingEnabled</key>
+<true/>
+<key>NSDocumentsFolderUsageDescription</key>
+<string>App needs access to files to display PDF.</string>
+<key>NSFileProviderUsageDescription</key>
+<string>App needs access to files to display PDF.</string>
+
+
 </dict>
 </plist>

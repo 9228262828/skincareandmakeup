@@ -1,3 +1,4 @@
+import 'package:Gomla/main.dart';
 import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class DeleteAccount extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () {
-                deleteAccountServer();
+                deleteAccountServer(context);
                 Navigator.of(context).pop();
               },
             )
@@ -89,7 +90,7 @@ class DeleteAccount extends StatelessWidget {
 
 
 
-  Future<void> deleteAccountServer() async {
+  Future<void> deleteAccountServer(context) async {
     String _tokenKey = 'auth_token';
     String _userIdKey = 'user_id';
 
@@ -106,7 +107,7 @@ class DeleteAccount extends StatelessWidget {
       final response = await http.post(
         Uri.parse(url),
         headers: {
-          'Authorization': 'Bearer $token',
+          'gomla_autherization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -120,6 +121,7 @@ class DeleteAccount extends StatelessWidget {
       if (response.statusCode == 200 && responseData["success"] == true) {
         print("Account deleted successfully!");
         showToast(text: responseData['message'], state: ToastStates.SUCCESS);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreen()));
 
         // Clear token and user ID from SharedPreferences
         await prefs.remove(_tokenKey);

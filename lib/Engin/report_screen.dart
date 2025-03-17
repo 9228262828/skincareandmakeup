@@ -74,6 +74,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
       body: RefreshIndicator(
         onRefresh: () async {
+          await SkinAnalysisCubit().fetchSkinAnalysis("20", "56", "3" , "3", "2", "20", "95", "85", '75', "48", "38", "35");
         },
         child: SingleChildScrollView(
           child: Column(
@@ -355,7 +356,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           state.response.data.categories);
 
                       if (categories.isEmpty) {
-                        return const Center(child: Text('No valid products found'));
+                        return const Center(child: Text('no product now'));
                       }
 
                       return Padding(
@@ -670,8 +671,7 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  final String pdfUrl =
-      'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+
   bool isDownloading = false;
   String progress = '';
 

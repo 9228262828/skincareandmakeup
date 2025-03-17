@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Gomla/screens/registration_screen.dart';
+import 'package:Gomla/screens/reset_pass_screen.dart';
 import 'package:Gomla/shared/utils/app_assets.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Image.asset(ImageAssets.logoWhite,
                     height: mediaQueryHeight(context) * 0.2,
                     width: mediaQueryWidth(context) * 0.7),
+                Text(AppLocalizations.of(context)!.login, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+                SizedBox(
+                  height: mediaQueryHeight(context) * 0.05,
+                ),
                 TextFormField(
                   controller: _usernameController,
                   decoration: customInputDecoration(
@@ -99,6 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 20),
                 _isLoading
                     ?  CircularProgressIndicator( color: mainColor  ,)
@@ -116,7 +122,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: _login,
                         child: Text(AppLocalizations.of(context)!.login),
                       ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 0),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(onPressed: (){
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>  ResetPassScreen(),
+                        ),
+                      );
+                    }, child: Text(AppLocalizations.of(context)!.resetPassword,style:   TextStyle(color: Colors.blue,fontSize: 12  ,),))),
                 /*Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -82,48 +82,77 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
+
+
+
   Future<void> _checkPhone() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
+      // Check if phone number is in valid format
+      print("+966${_phoneController.text}");
+
       try {
         final response = await http.post(
           Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/check-phone'),
-          body: {'phone': _phoneController.text},
+          body: {
+            'phone': "+966${_phoneController.text}" // Corrected line to send the phone as a string
+          },
         );
 
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> data = json.decode(response.body);
-          print(data); // طباعة البيانات لفحصها
+        // Print the raw response body for inspection
+        print('Response body: ${response.body}');
 
-          if (data['success'] == true) {
-            String otp = data['otp'].toString(); // حفظ OTP
+        // Check if the response is valid JSON or not
+        if (response.statusCode == 200) {
+          try {
+            // Attempt to decode the response if it is in JSON format
+            final Map<String, dynamic> data = json.decode(response.body);
+            print('Decoded data: $data');
+
+            if (data['success'] == true) {
+              String otp = data['otp'].toString(); // حفظ OTP
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
+              );
+              _otpController.text = otp;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VerifyPhoneScreen(
+                    phone: _phoneController.text,
+                    email: _emailController.text,
+                    userName: _usernameController.text,
+                    password: _passwordController.text,
+                  ),
+                ),
+              );
+            } else {
+              print('Error response: ${response.body}');
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
+              );
+            }
+          } catch (e) {
+            // Catching FormatException or any other decoding issues
+            print('Error decoding JSON: $e');
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
-            );
-            _otpController.text = otp;
-            Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyPhoneScreen(
-                phone: _phoneController.text,
-                email: _emailController.text,
-               userName: _usernameController.text,
-              password:   _passwordController.text,
-               )));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
+              SnackBar(content: Text('Error decoding response: $e')),
             );
           }
         } else {
+          print('Error: Received status code ${response.statusCode}');
+          print('Response body: ${response.body}');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Phone verification failed')),
+            SnackBar(content: Text('Phone verification failed with status: ${response.statusCode}')),
           );
         }
       } catch (e) {
         print('Error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          SnackBar(content: Text('Network error: ${e.toString()}')),
         );
       } finally {
         setState(() {
@@ -132,125 +161,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
     }
   }
-
- /* final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  // Google Sign-In method
-  Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-        final OAuthCredential googleCredential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(googleCredential);
-
-        if (userCredential.user != null) {
-          print(userCredential.user!.photoURL);
-          print(userCredential.user!.phoneNumber);
-          // Populate form fields with user data
-          _emailController.text = userCredential.user!.email!;
-          _phoneController.text = userCredential.user!.phoneNumber ?? '';
-          // Extract first and last name from displayName (if available)
-          String displayName = userCredential.user!.displayName ?? '';
-          List<String> nameParts = displayName.split(' ');
-          if (nameParts.isNotEmpty) {
-            _firstNameController.text = nameParts[0];  // First part of the display name is first name
-          }
-          if (nameParts.length > 1) {
-            _lastNameController.text = nameParts.sublist(1).join(' '); // The rest is considered last name
-          }
-
-          // Save user data to SharedPreferences
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString('userEmail', _emailController.text);
-          prefs.setString('userPhone', _phoneController.text);
-          prefs.setString('userFirstName', _firstNameController.text);
-          prefs.setString('userPhoto', userCredential.user!.photoURL ?? ''); // Save photo URL if available
-
-        }
-      }
-    } catch (error) {
-      print("Google sign-in error: $error");
-    }
-  }*/
-
-  // Facebook Sign-In method
-/*  Future<void> signInWithFacebook() async {
-    try {
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-
-      if (loginResult.status == LoginStatus.success) {
-        final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
-
-        UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-
-        if (userCredential.user != null) {
-          // If the user is already signed in, populate the fields
-          _emailController.text = userCredential.user!.email!;
-
-          // Check if the email already exists with a different sign-in method
-          if (userCredential.user!.email != null) {
-            try {
-              List<String> providers =
-              await FirebaseAuth.instance.fetchSignInMethodsForEmail(userCredential.user!.email!);
-
-              // If the email is already associated with another provider, just fill the email and proceed
-              if (providers.isNotEmpty) {
-                // Fill the email field automatically
-                _emailController.text = userCredential.user!.email!;
-                // You can populate other fields as needed (e.g., phone, display name, etc.)
-                _phoneController.text = userCredential.user!.phoneNumber ?? '';
-                _firstNameController.text = userCredential.user!.displayName ?? '';
-              }
-            } catch (e) {
-              print('Error fetching providers for email: $e');
-            }
-          }
-
-          // Save user data to SharedPreferences
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString('userEmail', _emailController.text);
-          prefs.setString('userPhone', _phoneController.text);
-          prefs.setString('userFirstName', _firstNameController.text);
-          prefs.setString('userPhoto', userCredential.user!.photoURL ?? ''); // Save photo URL if available
-
-          // Navigate to the main screen
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => MainScreen()));
-        }
-      } else {
-        print('Facebook login failed: ${loginResult.message}');
-      }
-    } catch (error) {
-      if (error is FirebaseAuthException) {
-        if (error.code == 'account-exists-with-different-credential') {
-          // Handle error where email exists with a different provider, no dialog is shown
-          final FirebaseAuthException e = error as FirebaseAuthException;
-          String email = e.email!;
-          print('Email: $email');
-
-          // Fetch the list of providers for the email
-          List<String> providers = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-
-          // Just populate the email field and proceed with the flow
-          _emailController.text = email;
-          if (providers.contains('google.com')) {
-            // Handle specific logic for Google sign-in if necessary
-          } else if (providers.contains('password')) {
-            // Handle specific logic for Email/Password sign-in if necessary
-          }
-          // Add other provider checks as needed
-        }
-      }
-      print('Facebook sign-in error: $error');
-    }
-  }*/
 
 
   @override
@@ -269,6 +179,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 Image.asset(ImageAssets.logoWhite,
                     height: mediaQueryHeight(context) * 0.15,
                     width: mediaQueryWidth(context) * 0.7),
+                Text(AppLocalizations.of(context)!.registerAccount, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+                SizedBox(
+                  height: mediaQueryHeight(context) * 0.05,
+                ),
                 /*TextFormField(
                   controller: _firstNameController,
                   decoration: customInputDecoration(
@@ -329,10 +243,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
+                  textDirection: TextDirection.ltr,
                   controller: _phoneController,
+                  maxLength: 9,
                   decoration: customInputDecoration(
                       context
-                      , AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.phoneNumber),
+                      , AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.phoneNumber,suffixIcon: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      '+966',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -342,7 +264,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: _passwordController,
                   decoration: customInputDecoration(
@@ -363,7 +285,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   decoration: customInputDecoration(
                       context
                       , AppLocalizations.of(context)!.confirmPassword, AppLocalizations.of(context)!.confirmPassword),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.visiblePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
@@ -460,3 +382,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 }
+
+
+

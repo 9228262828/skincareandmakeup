@@ -2,7 +2,6 @@ import 'package:Gomla/Engin/skincare.dart';
 import 'package:Gomla/screens/delete_account_Screen.dart';
 import 'package:Gomla/screens/policy_screen.dart';
 import 'package:Gomla/screens/terms_screen.dart';
-import 'package:Gomla/shared/utils/app_assets.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -231,13 +230,13 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: mediaQueryHeight(context) * 0.02),
-              Container(
+           /*   Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: _buildLanguageSelector(context)),
-              SizedBox(height: mediaQueryHeight(context) * 0.01),
+              SizedBox(height: mediaQueryHeight(context) * 0.01),*/
               Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -245,17 +244,17 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   child: _buildDeleteAccount(context)),
               SizedBox(height: mediaQueryHeight(context) * 0.01),
-              Container(
+             /* Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3),
                   ),
-                  child: _buildShareApp(context)),
+                  child: _buildShareApp(context)),*/
               SizedBox(height: mediaQueryHeight(context) * 0.06),
               GestureDetector(
                 onTap: () {
                   context.read<ProfileCubit>().logout();
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => MainScreen()),
                   );
@@ -293,19 +292,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Center(
-                      child: Text(
-                        AppLocalizations.of(context)!.sellwithus,
-                        style: TextStyle(
-                            color: mainColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(height: mediaQueryHeight(context) * 0.01),
-                    Divider(
-                      color: Colors.grey.shade300,
-                    ),
+
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(

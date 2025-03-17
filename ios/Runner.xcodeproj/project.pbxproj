@@ -11,8 +11,6 @@
 		2213E26BF7659C22F4622110 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D4F706D05C13D16E1504C72 /* Pods_RunnerTests.framework */; };
 		3100E7612B736D6B00CC9BB5 /* FLTPerfectLibHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3100E7602B736D6B00CC9BB5 /* FLTPerfectLibHandler.swift */; };
 		317981362B6CEDBE0087BB6E /* PerfectLibFaceTrackingPlus.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 317981312B6CEDBE0087BB6E /* PerfectLibFaceTrackingPlus.xcframework */; };
-		3179813A2B6CEDBE0087BB6E /* PerfectLibSkinCarePlus.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 317981332B6CEDBE0087BB6E /* PerfectLibSkinCarePlus.xcframework */; };
-		3179813E2B6CEDBE0087BB6E /* PerfectLibCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 317981352B6CEDBE0087BB6E /* PerfectLibCore.xcframework */; };
 		3179814A2B6CEECC0087BB6E /* FLTSkinCarePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 317981452B6CEECC0087BB6E /* FLTSkinCarePlugin.swift */; };
 		3179814C2B6CEECC0087BB6E /* FLTSkincareCamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 317981472B6CEECC0087BB6E /* FLTSkincareCamView.swift */; };
 		3179814E2B6CEECC0087BB6E /* SynchronousTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 317981492B6CEECC0087BB6E /* SynchronousTool.swift */; };
@@ -23,7 +21,6 @@
 		809677092D088F7F00AD897B /* PerfectLibCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 809677032D088F7D00AD897B /* PerfectLibCore.xcframework */; };
 		8096770A2D088F7F00AD897B /* PerfectLibRecommendationHandler.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 809677042D088F7E00AD897B /* PerfectLibRecommendationHandler.xcframework */; };
 		8096770B2D088F7F00AD897B /* PerfectLibSkinCarePlus.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 809677052D088F7E00AD897B /* PerfectLibSkinCarePlus.xcframework */; };
-		8096770C2D088F7F00AD897B /* PerfectLibFaceTrackingPlus.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 809677062D088F7F00AD897B /* PerfectLibFaceTrackingPlus.xcframework */; };
 		8096770D2D088F7F00AD897B /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 809677072D088F7F00AD897B /* CoreMotion.framework */; };
 		8096772C2D088F9400AD897B /* acne_20210507_blackhead.mnn in Resources */ = {isa = PBXBuildFile; fileRef = 8096770E2D088F9400AD897B /* acne_20210507_blackhead.mnn */; };
 		8096772D2D088F9400AD897B /* acne_20210507_blackhead.mnn in Resources */ = {isa = PBXBuildFile; fileRef = 8096770E2D088F9400AD897B /* acne_20210507_blackhead.mnn */; };
@@ -186,13 +183,10 @@
 			files = (
 				809677092D088F7F00AD897B /* PerfectLibCore.xcframework in Frameworks */,
 				8096770B2D088F7F00AD897B /* PerfectLibSkinCarePlus.xcframework in Frameworks */,
-				3179813E2B6CEDBE0087BB6E /* PerfectLibCore.xcframework in Frameworks */,
 				8096770D2D088F7F00AD897B /* CoreMotion.framework in Frameworks */,
-				3179813A2B6CEDBE0087BB6E /* PerfectLibSkinCarePlus.xcframework in Frameworks */,
 				A8579CD36107640449D3FED7 /* Pods_Runner.framework in Frameworks */,
 				809677082D088F7F00AD897B /* PerfectLibHandlerCore.xcframework in Frameworks */,
 				317981362B6CEDBE0087BB6E /* PerfectLibFaceTrackingPlus.xcframework in Frameworks */,
-				8096770C2D088F7F00AD897B /* PerfectLibFaceTrackingPlus.xcframework in Frameworks */,
 				8096770A2D088F7F00AD897B /* PerfectLibRecommendationHandler.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -688,6 +682,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -698,6 +693,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -724,17 +720,18 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 86021521;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = PNLA87W3HP;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.7.1;
+				MARKETING_VERSION = 1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -827,6 +824,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -837,6 +835,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -882,6 +881,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -892,6 +892,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -920,17 +921,18 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 86021521;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = PNLA87W3HP;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.7.1;
+				MARKETING_VERSION = 1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -960,17 +962,18 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 86021521;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = PNLA87W3HP;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.7.1;
+				MARKETING_VERSION = 1.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",

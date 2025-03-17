@@ -96,7 +96,7 @@ class AuthService {
     final responseUser = await http.get(
       Uri.parse("https://gomla.sa/wp-json/custom-auth/v1/profile"),
       headers: {
-        'Authorization': 'Bearer $token',
+        "gomla_autherization": 'Bearer $token',
       },
     );
 

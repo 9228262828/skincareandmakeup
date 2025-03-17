@@ -19,6 +19,61 @@ class BrandsScreen extends StatefulWidget {
 }
 
 class _BrandsScreenState extends State<BrandsScreen> {
+  ScrollController _scrollController = ScrollController();
+  bool isLoading = true;
+  bool isLoadingMore = false;
+  bool isLastPage = false;
+  int currentPage = 1;
+  late WooCommerceService wooCommerceService;
+  List<Brand> mainBrands = [];
+
+  @override
+  void initState() {
+    super.initState();
+    wooCommerceService = WooCommerceService();
+    fetchMainBrands(); // Initial fetch
+    _scrollController.addListener(_scrollListener);
+  }
+
+  // Fetch the next page of categories (brands)
+  Future<void> fetchMainBrands({int page = 1}) async {
+    if (isLoadingMore || isLastPage) return; // Prevent multiple requests
+
+    setState(() {
+      isLoadingMore = true;
+    });
+
+    try {
+      List<Brand> newBrands = await wooCommerceService.fetchBrands(page: page);
+
+      if (newBrands.isEmpty) {
+        setState(() {
+          isLastPage = true;
+        });
+      } else {
+        setState(() {
+          mainBrands.addAll(newBrands); // Add the new brands to the list
+          currentPage++;
+        });
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+        isLoadingMore = false;
+      });
+    }
+  }
+
+  // Listener for when the user scrolls to the bottom
+  void _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      fetchMainBrands(page: currentPage); // Fetch more brands when reaching the bottom
+    }
+  }
+
+  // Build shimmer effect grid while loading
   Widget _buildShimmerGrid(BuildContext context) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
@@ -32,8 +87,8 @@ class _BrandsScreenState extends State<BrandsScreen> {
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: Container(
-                  width: mediaQueryHeight(context) * 0.15,
-                  height: mediaQueryWidth(context) * 0.15,
+                  width: double.infinity, // Make shimmer take up the full width
+                  height: mediaQueryWidth(context) * 0.15, // Adjust the height as needed
                   color: Colors.grey[300],
                 ),
               ),
@@ -43,7 +98,7 @@ class _BrandsScreenState extends State<BrandsScreen> {
                 highlightColor: Colors.grey[100]!,
                 child: Container(
                   height: 10,
-                  width: mediaQueryWidth(context) * 0.2,
+                  width: double.infinity, // Full width for shimmer effect
                   color: Colors.grey[300],
                 ),
               ),
@@ -58,76 +113,84 @@ class _BrandsScreenState extends State<BrandsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: '', home: true),
-      body: BlocBuilder<BrandsCubit, BrandsState>(
-        bloc: BrandsCubit(WooCommerceService())..fetchBrands(),
-        builder: (context, state) {
-          if (state is BrandsInitial || state is BrandsLoading) {
-            return _buildShimmerGrid(context); // Show shimmer while loading
-          } else if (state is BrandsError) {
-
-            return Center(
-              child: Text(AppLocalizations.of(context)!.noProductsAvailable , ),
-            );
-          } else if (state is BrandsLoaded) {
-            final brands = state.brands;
-
-            print(brands);
-if (brands.isEmpty) {
-              return Center(
-                child: Text(AppLocalizations.of(context)!.noBrandsAvailable),
+      body: isLoading
+          ? _buildShimmerGrid(context) // Show shimmer effect while loading
+          : NotificationListener<ScrollNotification>(
+        onNotification: (scrollNotification) {
+          if (scrollNotification is ScrollEndNotification &&
+              scrollNotification.metrics.pixels == scrollNotification.metrics.maxScrollExtent) {
+            fetchMainBrands(page: currentPage); // Trigger pagination when reaching the end
+          }
+          return false;
+        },
+        child: GridView.builder(
+          controller: _scrollController, // Attach scroll controller
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+          itemCount: mainBrands.length + (isLoadingMore && !isLastPage ? 1 : 0),
+          itemBuilder: (context, index) {
+            // Show shimmer only when more brands are being loaded and we are not at the last page
+            if (index == mainBrands.length && isLoadingMore && !isLastPage) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: double.infinity, // Full width shimmer
+                    height: 50, // Adjust height for loading shimmer
+                    color: Colors.grey[300],
+                  ),
+                ),
               );
             }
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-              itemCount: brands.length,
-              itemBuilder: (context, index) {
-                final brand = brands[index];
-                final brandId = brand.id is String
-                    ? brand.id ?? 0 // If it's a string, try to parse it to int
-                    : brand.id;
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BrandProductsScreen(
-                                brandName: brand.name,
-                                id:  brandId,
-                                isLink: false,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CachedNetworkImage(
-                              imageUrl: brand.imageUrl,
-                              width: mediaQueryHeight(context) * 0.15,
-                              height: mediaQueryWidth(context) * 0.15,
-                              fit: BoxFit.contain,
-                              errorWidget: (context, url, error) => Image.asset(
-                                  "assets/placeholder.png") // Use an icon or any fallback widget
-                            ),
-                            SizedBox(width: 10),
-                            Text(brand.name),
-                          ],
+
+            // If we reached the end and are done loading, don't show the shimmer
+            if (index == mainBrands.length && isLastPage) {
+              return SizedBox();
+            }
+
+            final brand = mainBrands[index];
+            final brandId = brand.id is String ? brand.id ?? 0 : brand.id;
+
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BrandProductsScreen(
+                            brandName: brand.name,
+                            id: brandId,
+                            isLink: false,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                    ],
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: brand.imageUrl,
+                          width: mediaQueryHeight(context) * 0.15,
+                          height: mediaQueryWidth(context) * 0.15,
+                          fit: BoxFit.contain,
+                          errorWidget: (context, url, error) => Image.asset("assets/placeholder.png"), // Fallback image
+                        ),
+                        SizedBox(width: 10),
+                        Text(brand.name),
+                      ],
+                    ),
                   ),
-                );
-              },
+                  SizedBox(height: 10),
+                ],
+              ),
             );
-          }
-          return SizedBox(); // Fallback for unexpected states
-        },
+          },
+        ),
       ),
     );
   }

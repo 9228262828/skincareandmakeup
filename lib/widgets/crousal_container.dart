@@ -26,10 +26,11 @@ class _CruosalContainerState extends State<CruosalContainer> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> products = [
+
+    final List<Map<String, String>> productsAr = [
       {
         'image': 'assets/13.png',
-        'label': "أفكار جديدة في عالم الصبغات",
+        'label': "أفكار جديدة للصبغات",
           "id": "4817"
       },{
         'image': 'assets/14.png',
@@ -46,14 +47,34 @@ class _CruosalContainerState extends State<CruosalContainer> {
       },
 
     ];
+    final List<Map<String, String>> productsEn = [
+      {
+        'image': 'assets/13.png',
+        'label': "New Hair Coloring Ideas",
+          "id": "5288"
+      },{
+        'image': 'assets/14.png',
+        'label': "Top Current Deals",
+          "id": "5288"
+      },{
+        'image': 'assets/15.png',
+        'label':"Makeup Trend","id": "5288"
+      },{
+        'image': 'assets/16.png',
+        'label': "Celebrity Lenses",
+          "id": "5191"
+      },
 
+    ];
+
+    final String locale = Localizations.localeOf(context).languageCode;
+    final List<Map<String, dynamic>> products = locale == 'ar' ? productsAr : productsEn;
     return Column(
       crossAxisAlignment:   CrossAxisAlignment.start,
       mainAxisAlignment:  MainAxisAlignment.start,
       children: [
-
         Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 3.0),
+          padding:  const EdgeInsets.symmetric(horizontal: 3.0),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.grey.shade200,
@@ -62,7 +83,7 @@ class _CruosalContainerState extends State<CruosalContainer> {
             height: mediaQueryHeight(context) * 0.23,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
 
               itemCount: products.length ,
               itemBuilder: (context, index) {
@@ -150,7 +171,7 @@ class _CruosalContainer2State extends State<CruosalContainer2> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> products = [
+    final List<Map<String, String>> productsAr = [
       {
         'image': 'assets/17.png',
         'label': "استمتع بالدايت",
@@ -170,7 +191,28 @@ class _CruosalContainer2State extends State<CruosalContainer2> {
       },
 
     ];
+    final List<Map<String, String>> productsEn = [
+      {
+        'image': 'assets/17.png',
+        'label': "Enjoy Dieting",
+          "id": "5377"
+      },{
+        'image': 'assets/18.png',
+        'label': "Health Starts Here",
+          "id": "5335"
+      },{
+        'image': 'assets/19.png',
+        'label':"Fitness Proteins",
+          "id": "5140"
+      },{
+        'image': 'assets/20.png',
+        'label': "Diet Challenge",
+          "id": "5150"
+      },
 
+    ];
+    final String locale = Localizations.localeOf(context).languageCode;
+    final List<Map<String, dynamic>> products = locale == 'ar' ? productsAr : productsEn;
     return Column(
       crossAxisAlignment:   CrossAxisAlignment.start,
       mainAxisAlignment:  MainAxisAlignment.start,

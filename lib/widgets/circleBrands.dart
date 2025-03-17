@@ -86,7 +86,7 @@ class CircleBrands extends StatelessWidget {
                                             imageUrl: brand.imageUrl,
                                             width: mediaQueryHeight(context) * 0.1,
                                             height: mediaQueryWidth(context) * 0.1,
-                                            fit: BoxFit.cover,
+                                            fit: BoxFit.contain,
                                             // Use cover to fill the circular area
                                             errorWidget: (context, url, error) =>
                                                 Image.asset(
