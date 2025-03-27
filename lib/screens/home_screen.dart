@@ -320,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             onPressed: () async {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => OnboardingScreen()));
+                  MaterialPageRoute(builder: (context) => SkincareDetect()));
               /*  // Check for token before navigating
               final pref = await SharedPreferences.getInstance();
               final String? jwtToken = pref.getString('auth_token');
