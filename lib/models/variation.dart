@@ -1,4 +1,4 @@
-class Variation {
+class   Variation {
   final int id;
   final String price;
   final String regularPrice;

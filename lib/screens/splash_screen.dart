@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 import '../models/banner.dart';
 import '../providers/banner_repo.dart';
+import 'lang_screen.dart';
+import 'main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -70,31 +73,25 @@ class _SplashScreenState extends State<SplashScreen> {
       await prefs.setBool('isFirstLaunch', false);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OpenScreen()),
+        MaterialPageRoute(builder: (context) => OnboardingScreen()),
       );
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(banners: _banners),
-        ),
-      );
+      Navigator.pushAndRemoveUntil(context,  (MaterialPageRoute(builder: (context) => MainScreen(banners: _banners,index: 0))), (route) => false);
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    String splashImage = 'assets/app_icon.png';
-
     return Scaffold(
+backgroundColor:  Color(0xFF212224),
       body: Center(
-        child: Image.asset(
-          splashImage,
-          width: MediaQuery.of(context).size.width * .85,
-          height: MediaQuery.of(context).size.height * .2,
+        child:Image.asset(
+          'assets/logo Gomla Gif 3.gif',
+          width: MediaQuery.of(context).size.width * 0.85,
+          height: MediaQuery.of(context).size.height * 0.4,
           fit: BoxFit.contain,
         ),
       ),
-    );
-  }
+    );  }
 }

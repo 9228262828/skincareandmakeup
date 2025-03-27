@@ -111,13 +111,17 @@ class PriceDisplay extends StatelessWidget {
             ),
             children: [
               TextSpan(
-                text:"${AppLocalizations.of(context)!.save} $discount",
+                text:lastPrice.toString(),
+
                 style: const TextStyle(
-                  fontSize: 12,color: Colors.green,
+                  fontSize: 12,color: Colors.red,
+
+                  decoration:
+                  TextDecoration.lineThrough,
                   fontWeight: FontWeight.w600,
                   height: 1,
-                  textBaseline: TextBaseline
-                      .ideographic,
+                  textBaseline: TextBaseline.ideographic,
+                  decorationColor: Colors.red,
                 ),
               ),
 
@@ -137,7 +141,7 @@ class PriceDisplay extends StatelessWidget {
             "assets/SAR.svg",
             width: 20,
             height: 12,
-          color: Colors.green,
+          color: Colors.red,
         ),
 
       ],

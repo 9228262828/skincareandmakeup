@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../contstants.dart';
+
 class ImageViewerScreen extends StatefulWidget {
   final List<String> images;
   final int initialIndex;
@@ -31,7 +33,21 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
+appBar:   AppBar(
+  backgroundColor: Colors.white,
+  surfaceTintColor: Colors.white,
+  centerTitle:  true,
+  title: Image.asset(
+    'assets/app_icon.png',
+    height:   MediaQuery.of(context).size.height * 0.1,
+      width:  MediaQuery.of(context).size.width * 0.35,
+  ),
+  leading:  GestureDetector(
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Icon(Icons.arrow_back_ios, color:mainColor, size: 25),
+  ),
+),),
       body: Column(
         children: [
           // PageView for main image
@@ -76,15 +92,18 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3),
-                        border: Border.all(color: Colors.black, width: 1),
+                        border: Border.all(color: Color(0xFFF7F7F7), width: 1),
                       ),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.images[index],
-                        fit: BoxFit.cover,
-                        width: 80,
-                        height: 80,
-                        placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.images[index],
+                          fit: BoxFit.contain,
+                          width: 80,
+                          height: 80,
+                          placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.white),
+                        ),
                       ),
                     ),
                   );

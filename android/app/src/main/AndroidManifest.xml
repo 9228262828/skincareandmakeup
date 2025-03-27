@@ -31,6 +31,10 @@
         android:label="Gomla"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAJr2jWZ_YLhxb-wpzxb43HoX92qfCP6jA" />
 
         <!-- Main Activity -->
         <activity

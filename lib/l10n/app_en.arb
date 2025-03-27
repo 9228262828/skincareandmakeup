@@ -104,8 +104,8 @@
   "pleaseEnterYourAddress": "Please enter your address",
   "pleaseEnterYourCity": "Please enter your city",
   "pleaseEnterYourState": "Please enter your state",
-  "dontHaveAccount": "Don't have an account? Register",
-  "alreadyHaveAnAccount": "Already have an account? Login",
+  "dontHaveAccount": "Don't have an account?",
+  "alreadyHaveAnAccount": "Already have an account?",
   "confirmPassword": "Confirm Password",
   "passwordsDoNotMatch": "Passwords do not match",
   "searchResults": "Search Results",
@@ -292,7 +292,24 @@
      "forgotPassword":"Forgot Password",
       "resetPassword":"Reset Password",
       "newPassword":"New Password",
-      "password_reset_successfully":"Password reset successfully"
+      "password_reset_successfully":"Password reset successfully",
+      "select_language":"Select Language",
+      "english":"English",
+      "arabic":"العربية",
+      "save":"Save",
+      "lang_notes":"*You can change language later from menu bar*",
+      "visitAsGuest":"Skip",
+      "forgetPassword":"Forget Password?",
+      "send_otp":"Send OTP",
+      "verifyOtp":"Verify OTP",
+      "createAccount":"Create an Account",
+      "cancel":"Cancel",
+      "confirm_location":"Confirm Location",
+      "find_my_location":"My Location",
+      "how_to_use":"How to use",
+      "categoryOfProducts":"Category of Product",
+      "hazards_cautions":"Hazards & Cautions"
+
 
 
 }

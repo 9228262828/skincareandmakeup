@@ -5,11 +5,18 @@ import 'package:Gomla/screens/reset_pass_screen.dart';
 import 'package:Gomla/shared/utils/app_assets.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../contstants.dart';
 import '../main.dart';
+import '../models/banner.dart';
+import '../providers/banner_repo.dart';
 import '../services/auth_service.dart';
 import '../shared/global/app_theme.dart';
+import '../widgets/pass_fiels.dart';
+import '../widgets/phone_field.dart';
+import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -24,7 +31,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
+  List<Bannerr> _banners = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchBanners();
+  }
+  Future<void> _fetchBanners() async {
+    try {
+      List<Bannerr> banners = await BannerService().fetchBanners();
+      setState(() {
+        _banners = banners;
+      });
+      print('Fetched banners: ${banners.length}');
+    } catch (error) {
+      print('Error fetching banners: $error');
+    }
+  }
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -33,20 +57,31 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       try {
+        // Prepend +966 to the username (phone number)
+        String phoneNumber = '+966${_usernameController.text.replaceFirst(RegExp(r'^[+966]+'), '')}'; // Make sure to clean existing +966 if there is any
+
         await AuthService.login(
-          _usernameController.text,
-          _passwordController.text,
+         "shefo",
+        "123456",
         );
         // Navigate to the home screen or wherever
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen(index: 0)),
+        );
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.loginSuccessful), backgroundColor: Colors.green),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.loginSuccessful),
+            backgroundColor: Colors.green,
+          ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(
-                  '${AppLocalizations.of(context)!.loginFailed}: ${e.toString()}')),
+            content: Text(
+              '${AppLocalizations.of(context)!.loginFailed}: ${e.toString()}',
+            ),
+          ),
         );
       } finally {
         setState(() {
@@ -67,132 +102,118 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: mediaQueryHeight(context) * 0.2,
+                  height: mediaQueryHeight(context) * 0.04,
                 ),
                 Image.asset(ImageAssets.logoWhite,
-                    height: mediaQueryHeight(context) * 0.2,
-                    width: mediaQueryWidth(context) * 0.7),
+                    height: mediaQueryHeight(context) * 0.08,
+                    width: mediaQueryWidth(context) * 0.9),
+                 SizedBox(height: mediaQueryHeight(context) * 0.14,),
                 Text(AppLocalizations.of(context)!.login, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
                 SizedBox(
-                  height: mediaQueryHeight(context) * 0.05,
-                ),
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: customInputDecoration(
-                      context,
-                      AppLocalizations.of(context)!.userName,
-                      AppLocalizations.of(context)!.userName),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!.pleaseEnterYourUsername;
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: customInputDecoration(
-                      context,
-                      AppLocalizations.of(context)!.password,
-                      AppLocalizations.of(context)!.password),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!.pleaseEnterYourPassword;
-                    }
-                    return null;
-                  },
+                  height: mediaQueryHeight(context) * 0.04,
                 ),
 
-                const SizedBox(height: 20),
+                PhoneNumberField(
+                  phoneController: _usernameController,
+                ),
+
+
+
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: PasswordField(
+                    passwordController: _passwordController,
+                    name:   AppLocalizations.of(context)!.password,
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child:  GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>  ResetPassScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.forgetPassword,style:   TextStyle(color: mainColor,fontSize: 12  ,),))),
+                const SizedBox(height: 15),
                 _isLoading
                     ?  CircularProgressIndicator( color: mainColor  ,)
                     : ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(3),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             maximumSize: Size(double.infinity, 50),
                             fixedSize: Size(double.infinity, 45),
                             minimumSize: Size(mediaQueryWidth(context) * .9, 40),
-                            backgroundColor: mainColor,
+                            backgroundColor: Color(0xFF212224 ),
                             foregroundColor: Colors.white,
                             elevation: 0),
                         onPressed: _login,
-                        child: Text(AppLocalizations.of(context)!.login),
-                      ),
-                const SizedBox(height: 0),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(onPressed: (){
+                        child: Text(AppLocalizations.of(context)!.login,style:   TextStyle(color: Colors.white,fontWeight: FontWeight.w600 ,),
+                      ),),
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>  ResetPassScreen(),
-                        ),
-                      );
-                    }, child: Text(AppLocalizations.of(context)!.resetPassword,style:   TextStyle(color: Colors.blue,fontSize: 12  ,),))),
-                /*Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                const SizedBox(height: 17),
+
+                Row(
+                  crossAxisAlignment:   CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      onPressed: () {
-                        signInWithGoogle1();
-
-                        // _deleteAccount();
-                      },
-                      icon: Icon(
-                        Icons.g_mobiledata,
-                        size: 25,
+                    Text(
+                      AppLocalizations.of(context)!.dontHaveAccount,  // Make sure this matches the text you want
+                      style: TextStyle(
+                        fontSize: 14, // Adjust font size
+                        fontWeight: FontWeight.w400, // Make the text bold
+                        color: Colors.black, // Default color
                       ),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          maximumSize: Size(40, 40),
-                          // Text color
-                          side: BorderSide(color: Colors.grey, width: 1),
-                          shape: CircleBorder(
-                            side: BorderSide(color: Colors.grey, width: 1),
-                          )),
                     ),
-                    SizedBox(width: 10),
-
-                    // Facebook Sign-In Button
-                    IconButton(
-                      onPressed: (){
-                        signInWithFacebook();
-                      },
-                      icon: Icon(
-                        Icons.facebook,
-                        size: 25,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          animationDuration: Duration(milliseconds: 1000),
-                          backgroundColor: Colors.blue,
-
-                          // Text color
-                          side: BorderSide(color: Colors.blue, width: 1),
-                          shape: CircleBorder(
-                            side: BorderSide(color: Colors.blue, width: 1),
-                          )),
+                    SizedBox(
+                      width: 5,
                     ),
-                  ],
-                ),*/
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RegistrationScreen(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegistrationScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        AppLocalizations.of(context)!.register,
+                        style:   TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: mainColor,
+                          decoration: TextDecoration.underline,
+                          decorationColor:  mainColor
+                        ),
                       ),
-                    );
-                  },
-                  child: Text(AppLocalizations.of(context)!.dontHaveAccount),
+                    ),
+
+                    ]
                 ),
+
+
+                SizedBox(height: mediaQueryHeight(context) * 0.1),
+                TextButton(onPressed: (){
+                  Navigator.pushAndRemoveUntil(context,  (MaterialPageRoute(builder: (context) => MainScreen(banners: _banners,index: 0))), (route) => false);
+
+                }, child: Row(
+                  mainAxisAlignment:  MainAxisAlignment.center,
+
+                  children: [
+                    Text(AppLocalizations.of(context)!.visitAsGuest,style: TextStyle(color: Colors.grey.shade600,fontWeight: FontWeight.w500),),
+                    SizedBox(width: 0,),
+                    Icon(Icons.arrow_forward_ios_outlined,color:  Colors.grey.shade600,size: 14,)
+                  ],
+                ))
               ],
             ),
           ),
@@ -208,3 +229,5 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 }
+
+

@@ -1,22 +1,21 @@
 import 'dart:convert';
-
 import 'package:Gomla/screens/verifyphone_screen.dart';
 import 'package:Gomla/shared/global/app_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../contstants.dart';
-import '../main.dart';
 import '../services/auth_service.dart';
 import '../shared/utils/app_assets.dart';
 import '../shared/utils/app_values.dart';
-import '../widgets/app_bar.dart';
+import '../widgets/pass_fiels.dart';
+import '../widgets/phone_field.dart';
 import 'login_screen.dart';
 import 'package:http/http.dart' as http;
+
+import 'main_screen.dart';
+
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
@@ -32,7 +31,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _confirmPasswordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _phoneController = TextEditingController(); // Phone number controller
+  final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
   bool _isLoading = false;
 
@@ -40,7 +39,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch)),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch)),
         );
         return;
       }
@@ -66,10 +66,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         prefs.setString('userPhone', _phoneController.text);
         prefs.setString('userFirstName', _firstNameController.text);
         prefs.setString('userLastName', _lastNameController.text);
-        prefs.setString('userPhoto', ''); // You can store the photo URL here if available
+        prefs.setString(
+            'userPhoto', ''); // You can store the photo URL here if available
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainScreen()));
+            context, MaterialPageRoute(builder: (context) => MainScreen(index: 0)));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${e.toString()}')),
@@ -81,9 +82,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
     }
   }
-
-
-
 
   Future<void> _checkPhone() async {
     if (_formKey.currentState!.validate()) {
@@ -98,7 +96,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         final response = await http.post(
           Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/check-phone'),
           body: {
-            'phone': "+966${_phoneController.text}" // Corrected line to send the phone as a string
+            'phone':
+                "+966${_phoneController.text}" // Corrected line to send the phone as a string
           },
         );
 
@@ -115,7 +114,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             if (data['success'] == true) {
               String otp = data['otp'].toString(); // حفظ OTP
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
+                SnackBar(
+                    content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
               );
               _otpController.text = otp;
               Navigator.push(
@@ -132,7 +132,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             } else {
               print('Error response: ${response.body}');
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
+                SnackBar(
+                    content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
               );
             }
           } catch (e) {
@@ -146,7 +147,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           print('Error: Received status code ${response.statusCode}');
           print('Response body: ${response.body}');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Phone verification failed with status: ${response.statusCode}')),
+            SnackBar(
+                content: Text(
+                    'Phone verification failed with status: ${response.statusCode}')),
           );
         }
       } catch (e) {
@@ -162,7 +165,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,48 +176,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: mediaQueryHeight(context) * 0.06,
+                  height: mediaQueryHeight(context) * 0.04,
                 ),
                 Image.asset(ImageAssets.logoWhite,
-                    height: mediaQueryHeight(context) * 0.15,
-                    width: mediaQueryWidth(context) * 0.7),
-                Text(AppLocalizations.of(context)!.registerAccount, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+                    height: mediaQueryHeight(context) * 0.08,
+                    width: mediaQueryWidth(context) * 0.9),
+                SizedBox(height: mediaQueryHeight(context) * 0.14,),
+                Text(AppLocalizations.of(context)!.createAccount, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
                 SizedBox(
-                  height: mediaQueryHeight(context) * 0.05,
+                  height: mediaQueryHeight(context) * 0.04,
                 ),
-                /*TextFormField(
-                  controller: _firstNameController,
-                  decoration: customInputDecoration(
-                    context
-                  , AppLocalizations.of(context)!.firstName, AppLocalizations.of(context)!.firstName),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourFirstName;
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.lastName, AppLocalizations.of(context)!.lastName),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourLastName;
-                    }
-                    return null;
-                  },
-                ),*/
-                SizedBox(height: 20),
+
                 TextFormField(
                   controller: _usernameController,
                   decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.userName, AppLocalizations.of(context)!.userName),
+                      prefixIcon: Localizations.localeOf(context)
+                                  .languageCode ==
+                              'ar'
+                          ? Icon(Icons.person, size: 20,color:  Color(0xFFDC9D1E),) // Prefix for Arabic
+                          : Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Icon(Icons.person_2_rounded, size: 20,color:   Color(0xFFDC9D1E),),
+                            ),
+                      context,
+                      AppLocalizations.of(context)!.userName,
+                      AppLocalizations.of(context)!.userName),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
@@ -224,12 +209,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 TextFormField(
                   controller: _emailController,
                   decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.email, AppLocalizations.of(context)!.email),
+                      prefixIcon:
+                          Localizations.localeOf(context).languageCode == 'ar'
+                              ? Icon(Icons.email_outlined,
+                                  size: 20,color:   Color(0xFFDC9D1E),) // Prefix for Arabic
+                              : Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: Icon(Icons.email_outlined, size: 20, color:  Color(0xFFDC9D1E),),
+                                ),
+                      context,
+                      AppLocalizations.of(context)!.email,
+                      AppLocalizations.of(context)!.email),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -241,127 +235,84 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
-                TextFormField(
-                  textDirection: TextDirection.ltr,
-                  controller: _phoneController,
-                  maxLength: 9,
-                  decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.phoneNumber,suffixIcon: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      '+966',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourPhoneNumber;
-                    }
-                    return null;
-                  },
+                SizedBox(height: 10),
+                PhoneNumberField(
+                  phoneController: _phoneController,
                 ),
                 SizedBox(height: 10),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.password, AppLocalizations.of(context)!.password),
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourPhoneNumber;
-                    }
-                    return null;
-                  },
+                PasswordField(
+                  passwordController: _passwordController,
+                  name: AppLocalizations.of(context)!.password,
                 ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.confirmPassword, AppLocalizations.of(context)!.confirmPassword),
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourPhoneNumber;
-                    }
-                    return null;
-                  },
+                SizedBox(height: 10),
+                PasswordField(
+                  passwordController: _confirmPasswordController,
+                  name: AppLocalizations.of(context)!.confirmPassword,
                 ),
                 SizedBox(height: 20),
                 _isLoading
                     ? CircularProgressIndicator(color: mainColor)
                     : ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3),
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            maximumSize: Size(double.infinity, 50),
+                            fixedSize: Size(double.infinity, 45),
+                            minimumSize:
+                                Size(mediaQueryWidth(context) * .9, 40),
+                            backgroundColor: Color(0xFF212224),
+                            foregroundColor: Colors.white,
+                            elevation: 0),
+                        onPressed: _checkPhone,
+                        child: Text(
+                          AppLocalizations.of(context)!.register,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                      maximumSize:    Size(double.infinity, 50),
-                      fixedSize:   Size(double.infinity, 45),
-                      minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
-                      backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
-                  onPressed: _checkPhone,
-                  child: Text(AppLocalizations.of(context)!.register),
-                ),
                 SizedBox(height: 20),
-             /*   Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: _signInWithGoogle,
-                      icon: Icon(
-                        Icons.g_mobiledata,
-                        size: 25,
+                Row(
+                    crossAxisAlignment:   CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.alreadyHaveAnAccount,
+                        style: TextStyle(
+                          fontSize: 14, // Adjust font size
+                          fontWeight: FontWeight.w400, // Make the text bold
+                          color: Colors.black, // Default color
+                        ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          maximumSize: Size(40, 40),
-                          // Text color
-                          side: BorderSide(color: Colors.grey, width: 1),
-                          shape: CircleBorder(
-                            side: BorderSide(color: Colors.grey, width: 1),
-                          )),
-                    ),
-                    SizedBox(width: 10),
-                    // Facebook Sign-In Button
-                    IconButton(
-                      onPressed: signInWithFacebook,
-                      icon: Icon(
-                        Icons.facebook,
-                        size: 25,
+                      SizedBox(
+                        width: 5,
                       ),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          animationDuration: Duration(milliseconds: 1000),
-                          backgroundColor: Colors.blue,
-                          // Text color
-                          side: BorderSide(color: Colors.blue, width: 1),
-                          shape: CircleBorder(
-                            side: BorderSide(color: Colors.blue, width: 1),
-                          )),
-                    ),
-                  ],
-                ),*/
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.login,
+                          style:   TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: mainColor,
+                              decoration: TextDecoration.underline,
+                              decorationColor:  mainColor
+                          ),
+                        ),
                       ),
-                    );
-                  },
-                  child: Text(AppLocalizations.of(context)!
-                      .alreadyHaveAnAccount),
+
+                    ]
                 ),
+
               ],
             ),
           ),
@@ -382,6 +333,3 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 }
-
-
-

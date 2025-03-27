@@ -85,7 +85,8 @@ class ProductHomeWidget extends StatelessWidget {
                   }
                   return _buildProductList(context, state.products , type);
                 } else if (state is BestDealsError) {
-                  print("Error: ${state.error}");
+
+                  print("Error:     ${state.error}");
                   return _buildError(state.error);
                 } else {
                   return const SizedBox.shrink();
@@ -201,7 +202,7 @@ class ProductHomeWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
-        'Error: $message',
+        '  $message',
         style: const TextStyle(color: Colors.red),
       ),
     );

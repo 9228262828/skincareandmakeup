@@ -52,7 +52,7 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: CustomAppBar(title: widget.brandName,home: false,),
+        appBar: CustomPagesAppBar(title: widget.brandName,home: false,),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: BlocBuilder<ProductsCubit, ProductsState>(

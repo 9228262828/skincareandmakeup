@@ -1,8 +1,10 @@
 import 'package:Gomla/Engin/skincare.dart';
 import 'package:Gomla/contstants.dart';
+import 'package:Gomla/main.dart';
 import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -21,54 +23,156 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'lang_screen.dart';
 import 'login_screen.dart';
+import 'map_picker.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final Function ontap;
   final List<Bannerr> banners;
 
   const HomeScreen({super.key, required this.banners, required this.ontap});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _isLoading = false;
+
+  Future<void> _getCurrentLocation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showLocationServiceDialog();
+        return;
+      }
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          showToast(
+            text: 'Location permission denied!',
+            state: ToastStates.WARNING,
+          );
+          await Geolocator.openAppSettings();
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        showToast(
+          text: 'Location permission permanently denied!',
+          state: ToastStates.ERROR,
+        );
+        await openAppSettings();
+        return;
+      }
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      if (position != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MapPicker(
+              onLocationPicked: (address) {
+                print('Selected Address: $address');
+              },
+            ),
+          ),
+        );
+      } else {
+        showToast(
+          text: 'Failed to get location!',
+          state: ToastStates.ERROR,
+        );
+      }
+    } catch (e) {
+      showToast(
+        text: 'Failed to get location!',
+        state: ToastStates.ERROR,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+  void _showLocationServiceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.locationServicesDisabled),
+        content: Text(AppLocalizations.of(context)!.enableLocationServices),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Geolocator.openLocationSettings(); // ✅ فتح إعدادات الموقع
+            },
+            child: Text(
+              AppLocalizations.of(context)!.openSettings,
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     Bannerr banner;
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.home,home: true,),
+      appBar: CustomAppBar(
+        title: "",
+        home: true,
+      ),
       backgroundColor: Colors.grey.shade200,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-         /*  buildCategoriesList(context),*/
+            /*  buildCategoriesList(context),*/
 
-            LocationWidget(),
+
+            GestureDetector(
+                onTap: () {
+                  _getCurrentLocation();
+                },
+                child: LocationWidget()),
             const SizedBox(
               height: 6,
             ),
             HomeBannerSlider(
-              banners: banners,
+              banners: widget.banners,
             ),
 
             const SizedBox(
               height: 10,
             ),
             /*  CircleBrands(),*/
-           GridOffers(),
+            GridOffers(),
             const SizedBox(
               height: 10,
             ),
-           const CruosalContainer(),
+            const CruosalContainer(),
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.bestSellers,
               categoryId: 1214,
               specialProducts: false,
               bestSellers: true,
               bestRatings: false,
-              allNeedsGrooming:false ,
+              allNeedsGrooming: false,
               exclusiveDeals: false,
               nearlyArrived: false,
-              type:  'bestSellers',
-              isLink:  true,
+              type: 'bestSellers',
+              isLink: true,
             ),
             const SizedBox(
               height: 10,
@@ -81,14 +185,13 @@ class HomeScreen extends StatelessWidget {
               title: AppLocalizations.of(context)!.exclusiveDeals,
               categoryId: 153,
               specialProducts: false,
-              bestSellers:false ,
-              bestRatings:false ,
-              allNeedsGrooming:false ,
+              bestSellers: false,
+              bestRatings: false,
+              allNeedsGrooming: false,
               exclusiveDeals: true,
               nearlyArrived: false,
-              type:  'exclusiveDeals',
+              type: 'exclusiveDeals',
               isLink: false,
-
             ),
             const SizedBox(height: 10.0),
             GridOffers2(),
@@ -104,20 +207,19 @@ class HomeScreen extends StatelessWidget {
               type: 'healthAndBeauty',
               isLink: false,
             ),
-            if (banners.length > 4)
-            IndexedBannerWidget(index: 8, banners: banners),
+            if (widget.banners.length > 4)
+              IndexedBannerWidget(index: 8, banners: widget.banners),
             const SizedBox(
               height: 10,
             ),
 
-              IndexedBannerWidget(index: 7, banners: banners),
+            IndexedBannerWidget(index: 7, banners: widget.banners),
 
             const SizedBox(
               height: 10,
             ),
 
-
-              IndexedBannerWidget(index: 6, banners: banners),
+            IndexedBannerWidget(index: 6, banners: widget.banners),
             const SizedBox(height: 10.0),
 //
             ProductHomeWidget(
@@ -135,21 +237,19 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 8.0),
 
-            if (banners.length > 1)
-              IndexedBannerWidget(index: 5, banners: banners),
+            if (widget.banners.length > 1)
+              IndexedBannerWidget(index: 5, banners: widget.banners),
             const SizedBox(height: 10.0),
 
-            if (banners.length > 2)
-              IndexedBannerWidget(index: 4, banners: banners),
+            if (widget.banners.length > 2)
+              IndexedBannerWidget(index: 4, banners: widget.banners),
             const SizedBox(height: 8.0),
 
-
             CircleBrands(
-              ontap: ontap,
+              ontap: widget.ontap,
             ),
 
-
-              IndexedBannerWidget(index: 2, banners: banners),
+            IndexedBannerWidget(index: 2, banners: widget.banners),
             const SizedBox(height: 5.0),
 
             ProductHomeWidget(
@@ -181,20 +281,19 @@ class HomeScreen extends StatelessWidget {
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.relatedProductss,
               categoryId: 53,
-              specialProducts:false ,
-              bestSellers:false ,
-              bestRatings:false ,
-              allNeedsGrooming:true ,
+              specialProducts: false,
+              bestSellers: false,
+              bestRatings: false,
+              allNeedsGrooming: true,
               exclusiveDeals: false,
               nearlyArrived: false,
               type: 'relatedProducts',
-              isLink:  false,
-
+              isLink: false,
             ),
           ],
         ),
       ),
-      floatingActionButton:Stack(
+      floatingActionButton: Stack(
         alignment: Alignment.center,
         children: [
           // Shimmer effect in the background
@@ -220,8 +319,9 @@ class HomeScreen extends StatelessWidget {
               width: 55,
             ),
             onPressed: () async {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> SkincareDetect()));
-            /*  // Check for token before navigating
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => OnboardingScreen()));
+              /*  // Check for token before navigating
               final pref = await SharedPreferences.getInstance();
               final String? jwtToken = pref.getString('auth_token');
 
@@ -245,88 +345,7 @@ class HomeScreen extends StatelessWidget {
               }*/
             },
           ),
-
         ],
-      ),
-    );
-  }
-}
-
-
-class CameraScreen extends StatefulWidget {
-  @override
-  State<CameraScreen> createState() => _CameraScreenState();
-}
-
-class _CameraScreenState extends State<CameraScreen> {
-  File? _image;
-
-  // ✅ دالة لطلب إذن الكاميرا
-  Future<void> _requestCameraPermission() async {
-    PermissionStatus status = await Permission.camera.request();
-
-    if (status.isGranted) {
-      _openCamera(); // ✅ إذا تمت الموافقة → افتح الكاميرا
-    } else if (status.isDenied) {
-      _showPermissionDeniedDialog(); // ✅ عرض رسالة عند الرفض
-    } else if (status.isPermanentlyDenied) {
-      _openCamera(); // ✅ فتح إعدادات التطبيق مباشرة في حالة رفض دائم
-    }
-  }
-
-  // ✅ دالة لفتح الكاميرا باستخدام image_picker
-  Future<void> _openCamera() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
-  // ✅ دالة لعرض رسالة عند رفض الإذن
-  void _showPermissionDeniedDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Permission Denied"),
-        content: const Text("Please allow camera permission to use this feature."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _openCamera(); // ✅ فتح إعدادات التطبيق مباشرة
-            },
-            child: const Text("Open Settings"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Camera Example")),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _image != null
-                ? Image.file(
-              _image!,
-              width: 200,
-              height: 200,
-              fit: BoxFit.cover,
-            )
-                : const Icon(Icons.camera_alt, size: 100),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _requestCameraPermission,
-              child: const Text("Open Camera"),
-            ),
-          ],
-        ),
       ),
     );
   }

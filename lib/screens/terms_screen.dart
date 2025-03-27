@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class TermsAndConditionsPage extends StatefulWidget {
@@ -20,13 +21,23 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
   }
 
   Future<void> fetchPrivacyPolicyData() async {
-    final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/1877');
-    final response = await http.get(url);
+    String _tokenKey = 'auth_token';
+
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(_tokenKey);
+
+    print(prefs.getString(_tokenKey));
+    final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/1877',);
+    final response = await http.get(url,
+        headers: {
+          "gomla_auth": 'Bearer $token',
+
+        });
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
-        slug = data['title']["rendered"];
+        slug = data['slug'];
         content = stripHtmlTags(data['content']['rendered']);
       });
     } else {

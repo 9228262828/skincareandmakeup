@@ -59,8 +59,10 @@ dependencies:
   pinput:
   device_info_plus: ^9.0.3
   syncfusion_flutter_pdfviewer: ^24.1.41
-
-
+  sms_autofill: ^2.2.0
+  intl_phone_number_input:
+  lottie:
+  google_maps_flutter:
 
 
     ## open_filex: ^3.2.1
@@ -87,3 +89,5 @@ flutter:
     - assets/
     - assets/images/ved.mp4
     - assets/pdf.pdf
+    - assets/data.json
+    - assets/splash.GIF

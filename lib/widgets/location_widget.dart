@@ -21,7 +21,7 @@ class _LocationWidgetState extends State<LocationWidget> {
   @override
   void initState() {
     super.initState();
-    _loadSavedLocation();
+
   }
 
   Future<void> _loadSavedLocation() async {
@@ -152,32 +152,26 @@ print("locationPermissionPermanentlyDenied");
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        print("onTap");
-        _getAddressFromLatLng();
-      },
-      child: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: mainColor.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.location_on, color: mainColor, size: 18),
-            SizedBox(width: 2),
-            Expanded(
-              child: Text(
-                _address.isEmpty ? AppLocalizations.of(context)!.deliveryTo : " $_address",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12, fontWeight:  FontWeight.w700),
-              ),
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: mainColor.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.location_on, color: mainColor, size: 18),
+          SizedBox(width: 2),
+          Expanded(
+            child: Text(
+              _address.isEmpty ? AppLocalizations.of(context)!.deliveryTo : " $_address",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, fontWeight:  FontWeight.w700),
             ),
-            Icon(Icons.keyboard_arrow_down_sharp, color: mainColor, size: 18),
-          ],
-        ),
+          ),
+          Icon(Icons.keyboard_arrow_down_sharp, color: mainColor, size: 18),
+        ],
       ),
     );
   }

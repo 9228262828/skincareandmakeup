@@ -1,5 +1,6 @@
 import 'package:Gomla/contstants.dart';
 import 'package:Gomla/screens/fav_screen.dart';
+import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.home,
   }) : super(key: key);
 
-  // ✅ استرجاع التوكن مباشرة
   Future<bool> _hasToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token') != null;
@@ -25,7 +25,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _startSearch(BuildContext context) {
     showSearch(context: context, delegate: ProductSearchDelegate());
-
   }
 
   @override
@@ -34,116 +33,209 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
-      actions: [
-        !home
-            ? Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back_ios_rounded, color: mainColor),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            Image(
+      leading: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Image(
               image: AssetImage('assets/app_icon.png'),
-              width: MediaQuery.of(context).size.width * 0.1,
-              height: MediaQuery.of(context).size.height * 0.09,
+              width: MediaQuery.of(context).size.width * 0.22,
+              height: MediaQuery.of(context).size.height * 0.1,
               fit: BoxFit.contain,
             ),
-          ],
-        )
-            : Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Image(
-            image: AssetImage('assets/app_icon.png'),
-            width: MediaQuery.of(context).size.width * 0.21,
-            height: MediaQuery.of(context).size.height * 0.1,
-            fit: BoxFit.contain,
           ),
-        ),
-        FutureBuilder<bool>(
-          future: _hasToken(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.data == true) {
-              return Spacer();
-            } else {
-              return const SizedBox(
-                width: 0,
-              ); // ✅ عدم عرض الأيقونة لو مفيش توكن
-            }
-          },
-        ),
-        GestureDetector(
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Container(
-              width: !home
-                  ? MediaQuery.of(context).size.width * 0.52
-                  : MediaQuery.of(context).size.width * 0.60,
-              alignment: Alignment.centerRight,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(3),
-                  border: Border.all(color: Colors.grey, width: .5)),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.search,
-                      color: Colors.grey,
+    FutureBuilder<bool>(
+      future:   _hasToken(),
+          builder: (context, snapshot) => GestureDetector(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Container(
+                width:  (snapshot.connectionState == ConnectionState.done &&
+    snapshot.data == true)
+                    ? MediaQuery.of(context).size.width * 0.62
+                    : MediaQuery.of(context).size.width * 0.71,
+                alignment: Alignment.centerRight,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(color: Colors.grey, width: .5)),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Text(AppLocalizations.of(context)!.searchForWhat,
-                        style: TextStyle(color: Colors.black)),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(AppLocalizations.of(context)!.searchForWhat,
+                          style: TextStyle(color: Colors.black)),
+                    ),
+                  ],
+                ),
               ),
             ),
+            onTap: () {
+              _startSearch(context);
+            },
           ),
-          onTap: () {
-            _startSearch(context);
-          },
-        ),
-
-        // ✅ التحقق من حالة التوكن
-        FutureBuilder<bool>(
-          future: _hasToken(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.data == true) {
-              return IconButton(
-                icon: const Icon(
-                  Icons.favorite_border,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FavScreen()),
-                  );
-                },
-              );
-            } else {
-              return const SizedBox(
-                width: 15,
-              ); // ✅ عدم عرض الأيقونة لو مفيش توكن
-            }
-          },
-        ),
-      ],
-
-      leading: home
-          ? null
-          : IconButton(
-        icon: Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
-        onPressed: () {
-          Navigator.pop(context);
-        },
+          ),
+          FutureBuilder<bool>(
+            future: _hasToken(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.data == true) {
+                return Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => FavScreen()),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.favorite_border,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const SizedBox(
+                  width: 0,
+                ); // ✅ عدم عرض الأيقونة لو مفيش توكن
+              }
+            },
+          )
+        ],
       ),
+      leadingWidth: mediaQueryWidth(context) ,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}
+class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final bool home;
+
+  const CustomPagesAppBar({
+    Key? key,
+    required this.title,
+    required this.home,
+  }) : super(key: key);
+
+  Future<bool> _hasToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token') != null;
+  }
+
+  void _startSearch(BuildContext context) {
+    showSearch(context: context, delegate: ProductSearchDelegate());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      leading: Row(
+        children: [
+          GestureDetector(
+              onTap:  () => Navigator.pop(context),
+              child: Padding(
+                padding: const EdgeInsets.only( left:0.0, right: 8.0),
+                child: Icon(Icons.arrow_back_ios, color:mainColor, size: 25),
+              )),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Image(
+              image: AssetImage('assets/app_icon.png'),
+              width: MediaQuery.of(context).size.width * 0.22,
+              height: MediaQuery.of(context).size.height * 0.1,
+              fit: BoxFit.contain,
+            ),
+          ),
+    FutureBuilder<bool>(
+      future:   _hasToken(),
+          builder: (context, snapshot) => GestureDetector(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Container(
+                width:  (snapshot.connectionState == ConnectionState.done &&
+    snapshot.data == true)
+                    ? MediaQuery.of(context).size.width * 0.52
+                    : MediaQuery.of(context).size.width * 0.61,
+                alignment: Alignment.centerRight,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(color: Colors.grey, width: .5)),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(AppLocalizations.of(context)!.searchForWhat,
+                          style: TextStyle(color: Colors.black)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            onTap: () {
+              _startSearch(context);
+            },
+          ),
+          ),
+          FutureBuilder<bool>(
+            future: _hasToken(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.data == true) {
+                return Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => FavScreen()),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.favorite_border,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const SizedBox(
+                  width: 0,
+                ); // ✅ عدم عرض الأيقونة لو مفيش توكن
+              }
+            },
+          )
+        ],
+      ),
+      leadingWidth: mediaQueryWidth(context) ,
     );
   }
 

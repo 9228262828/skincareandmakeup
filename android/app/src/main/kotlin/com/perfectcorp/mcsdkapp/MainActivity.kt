@@ -1,4 +1,4 @@
-package com.perfectcorp.mcsdkapp
+package com.gomla.store
 
 import android.os.Build
 import android.util.Log

@@ -1,5 +1,6 @@
 import UIKit
 import Flutter
+import GoogleMaps
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -11,6 +12,9 @@ import Flutter
 
         // Register Flutter plugins
         GeneratedPluginRegistrant.register(with: self)
+
+        // Initialize Google Maps
+        GMSServices.provideAPIKey("AIzaSyAJr2jWZ_YLhxb-wpzxb43HoX92qfCP6jA")
 
         // Register custom Flutter plugins
         if let registrar = self.registrar(forPlugin: "skincarePlugin"),

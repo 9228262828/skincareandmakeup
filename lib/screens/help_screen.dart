@@ -28,7 +28,7 @@ class HelpSupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Help & Support',home: false,),
+      appBar: CustomPagesAppBar(title: 'Help & Support',home: false,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -416,8 +416,8 @@ class WooCommerceService {
         Uri.parse('https://gomla.sa/wp-json/wc/v3/orders?customer=$userId'), // ✅ Correct API format
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': auth, // ✅ Use only one Authorization header
-          'gomla_autherization': 'Bearer $jwtToken',
+          'Authorization': auth,
+          'gomla_auth': 'Bearer $jwtToken',
         },
       );
 
@@ -426,7 +426,7 @@ class WooCommerceService {
         print("Orders Response: $jsonResponse");
 
         if (jsonResponse is List) {
-          return jsonResponse.map((order) => Order.fromJson(order)).toList(); // ✅ Return a list of orders
+          return jsonResponse.map((order) => Order.fromJson(order)).toList();  
         } else {
           print("Unexpected response format");
           return [];
@@ -475,7 +475,7 @@ class WooCommerceService {
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': auth,
-      'gomla_autherization': "Bearer $token",
+      'gomla_auth': "Bearer $token",
     };
 
     final body = jsonEncode({

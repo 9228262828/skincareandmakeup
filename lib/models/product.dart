@@ -10,6 +10,9 @@ class Product {
   final String short_description;
   final List<String> images;
   final int categoryId;
+  final int brandId;
+  final String howToUse;
+  final String hazardsCautions;
 
   Product({
     required this.id,
@@ -22,15 +25,27 @@ class Product {
     required this.short_description,
     required this.images,
     required this.categoryId,
+    required this.brandId,
     required this.avrage_rating,
+    required this.howToUse,
+    required this.hazardsCautions,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
+     String getMetaDataValue(String key) {
+      var metaData = json['meta_data'] ?? [];
+      var metaItem = metaData.firstWhere(
+            (item) => item['key'] == key,
+        orElse: () => {'value': ''},
+      );
+      return metaItem['value'] ?? '';
+    }
+
     return Product(
       id: json['id'],
       name: json['name'] ?? '',
       imageUrl: json['images'] != null && json['images'].isNotEmpty
-          ? json['images'][0]['src']
+          ? json['images'][0]['src'] // Make sure 'src' exists
           : 'https://placeholder.com/150',
       price: double.tryParse(json['price'].toString()) ?? 0.0,
       sale_price: double.tryParse(json['sale_price'].toString()) ?? 0.0,
@@ -38,12 +53,17 @@ class Product {
       description: json['description'] ?? '',
       short_description: json['short_description'] ?? '',
       images: json['images'] != null
-          ? List<String>.from(json['images'].map((image) => image['src']))
+          ? List<String>.from(json['images'].map((image) => image['src'] ?? '')) // Ensure safe handling of null 'src'
           : [],
       categoryId: json['categories'] != null && json['categories'].isNotEmpty
           ? json['categories'][0]['id']
           : 0,
+      brandId: json['brands'] != null && json['brands'].isNotEmpty
+          ? json['brands'][0]['id']
+          : 0,
       avrage_rating: json['average_rating']?.toString() ?? '0.0',
+      howToUse: getMetaDataValue('how_to_use'),
+      hazardsCautions: getMetaDataValue('hazards_cautions'),
     );
   }
 }

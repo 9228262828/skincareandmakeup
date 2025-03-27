@@ -152,22 +152,41 @@ InputDecoration customInputDecoration(
     String hintText, {
       Widget? suffixIcon,
       Widget? suffix,
+      Widget? prefixIcon,
     }) {
   return InputDecoration(
     labelText: labelText,
     hintText: hintText,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(3),
+      borderRadius: BorderRadius.circular(10),
       borderSide:  BorderSide(color: mainColor),
       gapPadding: 10,
     ),
-    labelStyle: Theme.of(context).textTheme.titleSmall,
-    hintStyle: Theme.of(context)
-        .textTheme
-        .titleSmall!
-        .copyWith(color: mainColor),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10.0),
+      borderSide: BorderSide(
+          color: Color(0xFFEAEAEA),
+          width:
+          1), // Yellow border when the field is enabled
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10.0),
+      borderSide: BorderSide(
+          color: Color(0xFFEAEAEA).withOpacity(.8),
+          width: 1), // Green border when focused
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10.0),
+      borderSide: BorderSide(
+          color: Colors.red,
+          width: 1), // Red border for error state
+    ),
+    errorStyle: TextStyle(fontSize: 12), // Adjust the error message size
+    labelStyle:   TextStyle(color: Color(0xFFD9D9D9),fontSize: 14)  ,
+    hintStyle:   TextStyle(color: Color(0xFFD9D9D9),fontSize: 14)  ,
     contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
     suffixIcon: suffixIcon,
     suffix: suffix,
+    prefixIcon: prefixIcon
   );
 }

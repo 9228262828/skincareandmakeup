@@ -16,6 +16,7 @@ import '../widgets/language_selector.dart';
 import '../widgets/unauth_widget.dart';
 import 'fav_screen.dart';
 import 'help_screen.dart';
+import 'main_screen.dart';
 import 'orders_screen.dart';
 
 class ProfileState extends Equatable {
@@ -256,7 +257,7 @@ class ProfileScreen extends StatelessWidget {
                   context.read<ProfileCubit>().logout();
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => MainScreen()),
+                    MaterialPageRoute(builder: (context) => MainScreen(index: 0)),
                   );
                 },
                 child: Container(

@@ -4,9 +4,11 @@ import 'package:Gomla/screens/verifyphone_screen.dart';
 import 'package:Gomla/shared/global/app_theme.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:pinput/pinput.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import '../contstants.dart';
 import '../shared/utils/app_assets.dart';
 import '../shared/utils/app_values.dart';
+import '../widgets/phone_field.dart';
 import 'login_screen.dart';
 import 'package:http/http.dart' as http;
 class ResetPassScreen extends StatefulWidget {
@@ -101,6 +103,20 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar:   AppBar(
+        surfaceTintColor:   Colors.white,
+        backgroundColor: Colors.white,
+        title: Text(AppLocalizations.of(context)!.resetPassword,style: TextStyle(color: Colors.black,fontSize: 16),),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -112,60 +128,15 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                   height: mediaQueryHeight(context) * 0.06,
                 ),
                 Image.asset(ImageAssets.logoWhite,
-                    height: mediaQueryHeight(context) * 0.15,
+                    height: mediaQueryHeight(context) * 0.09,
                     width: mediaQueryWidth(context) * 0.7),
+                SizedBox(height: mediaQueryHeight(context) * 0.08,),
                 Text(AppLocalizations.of(context)!.resetPassword, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
                 SizedBox(
                   height: mediaQueryHeight(context) * 0.05,
                 ),
-                /*TextFormField(
-                  controller: _firstNameController,
-                  decoration: customInputDecoration(
-                    context
-                  , AppLocalizations.of(context)!.firstName, AppLocalizations.of(context)!.firstName),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourFirstName;
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.lastName, AppLocalizations.of(context)!.lastName),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourLastName;
-                    }
-                    return null;
-                  },
-                ),*/
-                TextFormField(
-                  textDirection: TextDirection.ltr,
-                  controller: _phoneController,
-                  maxLength: 9,
-                  decoration: customInputDecoration(
-                    context
-                    , AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.phoneNumber,suffixIcon: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      '+966',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourPhoneNumber;
-                    }
-                    return null;
-                  },
+                PhoneNumberField(
+                  phoneController: _phoneController,
                 ),
                 SizedBox(height: 20),
                 _isLoading
@@ -173,14 +144,14 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                     : ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       maximumSize:    Size(double.infinity, 50),
                       fixedSize:   Size(double.infinity, 45),
                       minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
-                      backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
+                      backgroundColor: Color(0xFF212224), foregroundColor: Colors.white, elevation: 0),
                   onPressed: _checkPhone,
-                  child: Text(AppLocalizations.of(context)!.resetPassword),
+                  child: Text(AppLocalizations.of(context)!.send_otp),
                 ),
                 SizedBox(height: 20),
                 /*   Row(
@@ -223,18 +194,6 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                     ),
                   ],
                 ),*/
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                  child: Text(AppLocalizations.of(context)!
-                      .alreadyHaveAnAccount),
-                ),
               ],
             ),
           ),
@@ -325,7 +284,21 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
       });
     }
   }
-
+  void _listenOtp() async {
+    await SmsAutoFill().listenForCode();
+    print("OTP Listen is called");
+  }
+  @override
+  void initState() {
+    _listenOtp();
+    super.initState();
+  }
+  @override
+  void dispose() {
+    SmsAutoFill().unregisterListener();
+    print("unVerify Listener");
+    super.dispose();
+  }
 
 
   @override
@@ -351,24 +324,27 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              Pinput(
-                length: 6,
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                defaultPinTheme: PinTheme(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    locale: Localizations.localeOf(context),
-                  ),
+              PinFieldAutoFill(
+                currentCode: _otpController.text,
+                cursor:   Cursor(
+                  color: mainColor,
+                  height: 20,
+                  width: 1.5,
                 ),
+                decoration:  BoxLooseDecoration(
+                    radius: Radius.circular(5),
+
+                    strokeColorBuilder: FixedColorBuilder(
+                        mainColor)),
+                codeLength: 6,
+
+                onCodeChanged: (code) {
+                  print("OnCodeChanged : $code");
+                  _otpController.text = code.toString();
+                },
+                onCodeSubmitted: (val) {
+                  print("OnCodeSubmitted : $val");
+                },
               ),
 
               SizedBox(height: 10),
@@ -401,7 +377,8 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
                       maximumSize:    Size(mediaQueryWidth(context)*.9, 50),
                       fixedSize:   Size(mediaQueryWidth(context)*.7, 45),
                       minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
-                      backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
+                      backgroundColor: Color(0xFF212224),
+                      foregroundColor: Colors.white, elevation: 0),
                   onPressed: _register,
                   child: Text(AppLocalizations.of(context)!.resetPassword),
                 ),

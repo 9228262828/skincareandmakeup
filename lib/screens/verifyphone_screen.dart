@@ -3,11 +3,17 @@ import 'package:http/http.dart' as http;
 import 'package:pinput/pinput.dart';
 import 'dart:convert';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 
 import '../contstants.dart';
+import '../main.dart';
+import '../models/banner.dart';
+import '../providers/banner_repo.dart';
+import '../services/auth_service.dart';
 import '../shared/utils/app_assets.dart';
 import '../shared/utils/app_values.dart';
 import 'login_screen.dart';
+import 'main_screen.dart';
 
 class VerifyPhoneScreen extends StatefulWidget {
   final String phone;
@@ -30,6 +36,18 @@ class VerifyPhoneScreen extends StatefulWidget {
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final TextEditingController _otpController = TextEditingController();
   bool _isLoading = false;
+  List<Bannerr> _banners = [];
+  Future<void> _fetchBanners() async {
+    try {
+      List<Bannerr> banners = await BannerService().fetchBanners();
+      setState(() {
+        _banners = banners;
+      });
+      print('Fetched banners: ${banners.length}');
+    } catch (error) {
+      print('Error fetching banners: $error');
+    }
+  }
 
   Future<void> _register() async {
     if (_otpController.text.length != 6) {
@@ -66,8 +84,13 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration successful!')),
         );
-        // يمكنك توجيه المستخدم إلى شاشة تسجيل الدخول
-         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        await AuthService.login(
+          widget.phone,
+          widget.password,
+        );
+        Navigator.pushAndRemoveUntil(context,  (MaterialPageRoute(builder: (context) => MainScreen(
+
+            banners: _banners,index: 0))), (route) => false);
       } else {
         String errorMessage = responseData["message"] ?? 'Registration failed, please try again';
 
@@ -92,83 +115,119 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     }
   }
 
+  void _listenOtp() async {
+    await SmsAutoFill().listenForCode();
+    print("OTP Listen is called");
+  }
+  @override
+  void initState() {
+    _listenOtp();
+    super.initState();
+  }
+  @override
+  void dispose() {
+    SmsAutoFill().unregisterListener();
+    print("unVerify Listener");
+    super.dispose();
+  }
 
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.verifyPhone),),
+      appBar: AppBar(
+        surfaceTintColor:   Colors.white,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(AppLocalizations.of(context)!.verifyPhone,style: TextStyle(color: Colors.black,fontSize: 16),),),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Directionality(
           textDirection: TextDirection.ltr,
 
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
 
-            children: [
-              SizedBox(
-                height: mediaQueryHeight(context) * 0.1,
-              ),
-              Image.asset(ImageAssets.logoWhite,
-                  height: mediaQueryHeight(context) * 0.15,
-                  width: mediaQueryWidth(context) * 0.7),
+              children: [
                 SizedBox(
-                  height: mediaQueryHeight(context) * 0.1,
+                  height: mediaQueryHeight(context) * 0.04,
                 ),
-              Text("${AppLocalizations.of(context)!.please_enter_6_numbers}${widget.phone}",
-            style:  TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
+                Image.asset(ImageAssets.logoWhite,
+                    height: mediaQueryHeight(context) * 0.1,
+                    width: mediaQueryWidth(context) * 0.7),
+                  SizedBox(
+                    height: mediaQueryHeight(context) * 0.1,
+                  ),
+                Text("${AppLocalizations.of(context)!.please_enter_6_numbers}",
+              style:  TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+
+                ),
+                PhoneNumberField1(
+                  phone: widget.phone,),
+                SizedBox(height: 20),
+                PinFieldAutoFill(
+                  currentCode: _otpController.text,
+                  cursor:   Cursor(
+                    color: mainColor,
+                    height: 20,
+                    width: 1.5,
+                  ),
+                  decoration:  BoxLooseDecoration(
+                      radius: Radius.circular(5),
+
+                      strokeColorBuilder: FixedColorBuilder(
+                          mainColor)),
+                  codeLength: 6,
+                  onCodeChanged: (code) {
+                    print("OnCodeChanged : $code");
+                    _otpController.text = code.toString();
+                  },
+                  onCodeSubmitted: (val) {
+                    print("OnCodeSubmitted : $val");
+                  },
+                ),
+
+
+                SizedBox(height: 20),
+                _isLoading
+                    ? CircularProgressIndicator()
+                    : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        maximumSize:    Size(mediaQueryWidth(context)*.9, 50),
+                        fixedSize:   Size(mediaQueryWidth(context)*.7, 45),
+                        minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
+                        backgroundColor: Color(0xFF212224),
+                                        foregroundColor: Colors.white, elevation: 0),
+                                    onPressed: _register,
+                                    child: Text(AppLocalizations.of(context)!.verifyOtp,style:  TextStyle(fontSize: 16,fontWeight: FontWeight.w500,),),
+                                  ),
+                    ),
+
+            TextButton(onPressed:
+                (){
+              _otpController.clear();
+                  _checkPhone();
+                }
+                , child: Text(AppLocalizations.of(context)!.resend_otp))
+              ],
             ),
-              ),
-              SizedBox(height: 20),
-              Pinput(
-                length: 6,
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                defaultPinTheme: PinTheme(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    locale: Localizations.localeOf(context),
-                  ),
-                ),
-              ),
-
-
-              SizedBox(height: 20),
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      maximumSize:    Size(mediaQueryWidth(context)*.9, 50),
-                      fixedSize:   Size(mediaQueryWidth(context)*.7, 45),
-                      minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
-                      backgroundColor: mainColor, foregroundColor: Colors.white, elevation: 0),
-                                  onPressed: _register,
-                                  child: Text('Verify & Register'),
-                                ),
-                  ),
-
-          TextButton(onPressed:
-              (){
-            _otpController.clear();
-                _checkPhone();
-              }
-              , child: Text(AppLocalizations.of(context)!.resend_otp))
-            ],
           ),
         ),
       ),
@@ -216,4 +275,37 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
       }
     }
 
+}
+
+
+class PhoneNumberField1 extends StatefulWidget {
+  final String phone;
+
+  PhoneNumberField1({required this.phone});
+
+  @override
+  _PhoneNumberField1State createState() => _PhoneNumberField1State();
+}
+
+class _PhoneNumberField1State extends State<PhoneNumberField1> {
+  @override
+  Widget build(BuildContext context) {
+    String formattedPhoneNumber = _formatPhoneNumber(widget.phone);
+
+    return Text(
+      formattedPhoneNumber,
+      style: TextStyle(fontSize: 16),
+    );
+  }
+
+  String _formatPhoneNumber(String phone) {
+    // Get the current locale
+    String countryCode = '+966'; // Default to Saudi Arabia code
+    if (Localizations.localeOf(context).languageCode == 'ar') {
+      return '$countryCode$phone'; // If the language is Arabic, just concatenate the number with the code
+    } else {
+      // Default to international format
+      return '$countryCode$phone'; // Format for other languages (you can adjust as needed)
+    }
+  }
 }

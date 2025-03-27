@@ -24,7 +24,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'My Orders', home: false),
+      appBar: CustomPagesAppBar(title: 'My Orders', home: false),
       body: FutureBuilder<List<Order>>(
         future: futureOrders,  // ✅ Use initialized futureOrders
         builder: (context, snapshot) {

@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1056794039802',
     projectId: 'gomla-bb127',
     storageBucket: 'gomla-bb127.firebasestorage.app',
-    iosBundleId: 'com.perfectcorp.mcsdkapp',
+    iosBundleId: 'com.gomla.store',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

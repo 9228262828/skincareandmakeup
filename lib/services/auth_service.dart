@@ -96,7 +96,7 @@ class AuthService {
     final responseUser = await http.get(
       Uri.parse("https://gomla.sa/wp-json/custom-auth/v1/profile"),
       headers: {
-        "gomla_autherization": 'Bearer $token',
+        "gomla_auth": 'Bearer $token',
       },
     );
 
@@ -104,6 +104,7 @@ class AuthService {
       print('User info fetched');
       return json.decode(responseUser.body);
     } else {
+      print(responseUser.body);
       throw Exception('Failed to fetch user info');
     }
     print('Token validated');

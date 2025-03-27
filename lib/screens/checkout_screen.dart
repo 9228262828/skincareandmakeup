@@ -15,6 +15,7 @@ import '../models/cart.dart';
 import '../services/auth_service.dart';
 import '../services/woocommerce_service.dart';
 import '../widgets/app_bar.dart';
+import 'main_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   @override
@@ -209,7 +210,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _totalAmount = _calculateTotalAmount();
 
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.checkout,home: false,),
+      appBar: CustomPagesAppBar(title: AppLocalizations.of(context)!.checkout,home: false,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -424,7 +425,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
 
     if (orderCreated) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen(index: 0)));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order placed successfully')),
       );
