@@ -125,7 +125,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
     print(widget.categoryId);
     try {
       List<Product> newProducts = await wooCommerceService.filterProducts(
-        context: context,
+
         minPrice: selectedMinPrice,
         maxPrice: selectedMaxPrice,
         brandId: selectedBrandId,
@@ -217,6 +217,13 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25.0),
+              topRight: Radius.circular(25.0),
+            ),
+          ),
           child: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Padding(
@@ -240,6 +247,8 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                             RangeValues(selectedMinPrice, selectedMaxPrice),
                             min: minPrice ?? 0,
                             max: maxPrice ?? 1000,
+                            activeColor:  Color(0xFF212224),
+                            inactiveColor:  Color(0xFF5B5E61).withOpacity(0.5),
                             onChanged: (RangeValues values) {
                               setState(() {
                                 selectedMinPrice = values.start;
@@ -290,7 +299,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       children: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            side:    BorderSide(color: mainColor),
+                            side:    BorderSide(color:Color(0xFF212224),),
                             foregroundColor: Colors.black,
                             backgroundColor: Colors.transparent,
                           ),
@@ -303,7 +312,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         TextButton(
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: mainColor,
+                            backgroundColor: Color(0xFF212224),
                           ),
                           onPressed: () {
                             setState(() {
@@ -338,6 +347,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
       ),
       builder: (BuildContext context) {
         return Container(
+          color: Colors.grey.shade300,
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
@@ -360,6 +370,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: sortOptions.map((String option) {
                           return RadioListTile<String>(
+                            activeColor:  Color(0xFF212224),
                             title: Text(_getSortOptionDisplayName(option)),
                             value: option,
                             groupValue: selectedSortOption,
@@ -377,7 +388,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       children: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            side:    BorderSide(color: mainColor),
+                            side:    BorderSide(color:Color(0xFF212224),),
                             foregroundColor: Colors.black,
                             backgroundColor: Colors.transparent,
                             textStyle: TextStyle(color: Colors.black),
@@ -394,7 +405,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         TextButton(
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: mainColor,
+                            backgroundColor: Color(0xFF212224),
                           ),
                           onPressed: () {
                             setState(() {
@@ -440,7 +451,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: CustomPagesAppBar(
         title: AppLocalizations.of(context)!.products, home: false,),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
@@ -471,14 +482,10 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                 children: [
                   buildCategoriesList(),
                   if (products.isEmpty)
-                    Column(
-                      children: [
-                        Center(
-                            child: buildEmptyState(context,
-                                AppLocalizations.of(context)!
-                                    .noProductsAvailable)),
-                      ],
-                    ),
+                    Center(
+                        child: buildEmptyState(context,
+                            AppLocalizations.of(context)!
+                                .noProductsAvailable)),
                   GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -618,6 +625,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                     child: Column(
                       children: [
                         CircleAvatar(
+                          backgroundColor:  Colors.grey[300],
                           backgroundImage:
                           CachedNetworkImageProvider(category.imageUrl),
                           radius: 40,

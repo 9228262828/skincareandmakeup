@@ -41,8 +41,7 @@ class _AdPageState extends State<AdPage> {
   String? _externalLink;
   String? _mediaType;
   int? _skipTime;
-  bool _isAfterTest = false;
-  int _currentAdIndex = 0;
+   int _currentAdIndex = 0;
 
   List<Map<String, dynamic>> _ads = [];
 

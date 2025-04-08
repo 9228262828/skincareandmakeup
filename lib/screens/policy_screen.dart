@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class PrivacyPolicyPage extends StatefulWidget {
@@ -21,8 +22,18 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   }
 
   Future<void> fetchPrivacyPolicyData() async {
-    final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/3');
-    final response = await http.get(url);
+      String _tokenKey = 'auth_token';
+
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(_tokenKey);
+
+    print(prefs.getString(_tokenKey));
+    final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/3',);
+    final response = await http.get(url,
+      headers: {
+        "gomlaauth": 'Bearer $token',
+
+    });
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

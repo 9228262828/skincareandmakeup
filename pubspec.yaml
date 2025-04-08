@@ -59,6 +59,9 @@ dependencies:
   pinput:
   device_info_plus: ^9.0.3
   syncfusion_flutter_pdfviewer: ^24.1.41
+  sms_autofill  :
+  timeago:
+  google_maps_flutter:
 
 
 
@@ -86,4 +89,5 @@ flutter:
     - assets/images/
     - assets/
     - assets/images/ved.mp4
+    - assets/pdf.pdf
     - assets/pdf.pdf

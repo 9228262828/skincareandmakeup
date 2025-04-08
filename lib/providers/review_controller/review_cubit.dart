@@ -25,7 +25,12 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
+        print("data");
+        print(data);
+        print("data");
         List<Review> reviews = data.map((json) => Review.fromJson(json)).toList();
+        print('reviews');
+        print(reviews);
         emit(ReviewLoaded(reviews));
       } else {
         emit(ReviewError('Failed to load reviews'));

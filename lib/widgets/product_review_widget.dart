@@ -7,6 +7,7 @@ import 'package:html/parser.dart';
 
 import '../providers/review_controller/review_cubit.dart';
 import '../providers/review_controller/review_states.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ReviewWidget extends StatelessWidget {
   final int productId;
@@ -15,6 +16,7 @@ class ReviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider(
       create: (context) => ReviewBloc()..add(FetchReviews(productId)),
       child: BlocBuilder<ReviewBloc, ReviewState>(
@@ -23,76 +25,135 @@ class ReviewWidget extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           } else if (state is ReviewLoaded) {
             if (state.reviews.isEmpty) {
-              return Center(
-                  child: Text(AppLocalizations.of(context)!.noReviews_yet,
-                      style: TextStyle(color: mainColor)));
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      SizedBox(height: mediaQueryHeight(context) * 0.02),
+                      Center(
+                          child: Text(AppLocalizations.of(context)!.noReviews_yet,
+                              style: TextStyle(color: Color(0xFF212224)))),
+
+                    ],
+                  ),
+                ),
+              );
             }
-            return SizedBox(
-              height: mediaQueryHeight(context) * 0.21,
-              // Set your desired height here
-              child: ListView.builder(
-                itemCount: state.reviews.length,
-                scrollDirection: Axis.horizontal, // Horizontal scrolling
-                itemBuilder: (context, index) {
-                  final review = state.reviews[index];
-                  return Card(
-                    child: Container(
-                      decoration:  BoxDecoration(
-                        color:  Colors.white,
-                        border: Border.all(color: mainColor),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      width: mediaQueryHeight(context) * 0.2,
-                      padding: EdgeInsets.all(8),
-                      height: mediaQueryHeight(context) * 0.2,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Reviewer Avatar
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                review.reviewerAvatarUrls.avatar96),
-                            radius: 25, // Adjust the size of the avatar
-                          ),
-                          SizedBox(height: 8),
-                          // Spacing between avatar and text
-                          // Reviewer Name
-                          Text(
-                            review.reviewer ?? 'Anonymous',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 4),
-                          // Spacing between name and review
-                          // Review Text
-                          Expanded(
-                            child: Text(
-                              _stripHtmlTags(review.review),
-                              style: TextStyle(fontSize: 14),
-                              textAlign: TextAlign.center,
-                              maxLines: 3, // Limit the number of lines
-                              overflow: TextOverflow
-                                  .ellipsis, // Add ellipsis for overflow
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                         Text(
-                            review.rating.toString(),
-                            style: TextStyle(fontSize: 12),
-                            textAlign: TextAlign.center,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: buildRatingIcons(review.rating
-                                .toDouble()), // Helper function to build star icons
-                          ),
-                        ],
-                      ),
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(AppLocalizations.of(context)!.reviewProduct,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        Text(
+                          "${state.reviews.length} ${AppLocalizations.of(context)!.review}",
+                          style: TextStyle(
+                              color: Colors.black, fontSize: 16),
+                        ),
+                      ],
                     ),
-                  );
-                },
+                    SizedBox(height: mediaQueryHeight(context) * 0.02),
+                    ListView.builder(
+                      shrinkWrap:
+                      true, // Makes the ListView take only as much height as needed
+                      physics:
+                      NeverScrollableScrollPhysics(), // Disable its scroll, let the parent scroll handle it
+                      itemCount:
+                      state.reviews.length  ,
+                      itemBuilder: (context, index) {
+                        final review = state.reviews[index];
+
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                          ),
+                          width: mediaQueryHeight(context) * 0.3,
+                          height: mediaQueryHeight(context) * 0.17,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Reviewer Avatar
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage: NetworkImage(
+                                        review.reviewerAvatarUrls.avatar96),
+                                    radius:
+                                    25, // Adjust the size of the avatar
+                                  ),
+                                  const SizedBox(width: 8),
+                                    Column(
+                                    children: [
+                                      Text(
+                                        review.reviewer,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                      ),
+                                     /* ReviewWidget1 (
+                                        dateCreated: review.dateCreated,
+                                      )*/
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: buildRatingIcons(
+                                        review.rating.toDouble()), // Helper function to build star icons
+                                  ),
+                                  Text(
+                                    "${AppLocalizations.of(context)!.rating} ${review.rating}",
+                                    style: TextStyle(fontSize: 12),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                                Expanded(
+                                child: Text(
+                                  _stripHtmlTags(review.review),                                  style: TextStyle(fontSize: 14),
+                                  maxLines: 2,
+                                  overflow: TextOverflow
+                                      .ellipsis, // Add ellipsis for overflow
+                                ),
+                              ),
+
+                              Divider(
+                                thickness: .5,
+                                color: Color(0xFFEAEAEA),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           } else if (state is ReviewError) {
@@ -103,6 +164,7 @@ class ReviewWidget extends StatelessWidget {
         },
       ),
     );
+
   }
 
   String _stripHtmlTags(String htmlString) {
@@ -127,7 +189,7 @@ List<Widget> buildRatingIcons(double rating) {
 
   // Add fully filled stars
   for (int i = 0; i < fullStars; i++) {
-    stars.add(Icon(Icons.star, color: Colors.amber, size: 16));
+    stars.add(Icon(Icons.star, color: Colors.amber, size: 20));
   }
 
   // Add partially filled star (if any)
@@ -135,11 +197,11 @@ List<Widget> buildRatingIcons(double rating) {
     stars.add(
       Stack(
         children: [
-          Icon(Icons.star_border, color: Colors.amber, size: 16),
+          Icon(Icons.star_border, color: Colors.amber, size: 20),
           ClipRect(
             clipper: _PartialStarClipper(partialStar),
             child:
-            Icon(Icons.star, color: Colors.amber, size: 16),
+            Icon(Icons.star, color: Colors.amber, size: 20),
           ),
         ],
       ),
@@ -170,3 +232,5 @@ class _PartialStarClipper extends CustomClipper<Rect> {
     return true;
   }
 }
+
+

@@ -25,7 +25,7 @@ class SkincareResult extends StatefulWidget {
 }
 
 class _SkincareResultState extends State<SkincareResult> {
-  String? selectedFeature; // Track the selected feature
+  String? selectedFeature;
   Map<String, String>? reports;
   Map<String, String>? scores;
   Map<String, String>? skinTypes;
@@ -40,12 +40,11 @@ class _SkincareResultState extends State<SkincareResult> {
     // Print the list of features for debugging
     print("List of skin features:");
     for (var feature in widget.skinFeatures) {
-      print(feature); // This will print each feature name
+      print(feature);
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      testMoistureFeature(); // Run the test for "Moisture" feature
-
+      testMoistureFeature();
       widget.skincareViewChannel.getReports().then((reports) {
         widget.skincareViewChannel.getOverallScore().then((scores) {
           widget.skincareViewChannel.getSkinTypes().then((skinTypes) {
@@ -447,19 +446,18 @@ class _SkincareResultState extends State<SkincareResult> {
 
 
   Widget buildSelectedEffectPalette() {
-    if (selectedFeature == null)
-      return Container(); // No palette if no feature is selected
-// Define custom data for "Acne" effect
-    if (selectedFeature == "acne") {
+    if (selectedFeature == null) {
+      return Container();
+    }
+     if (selectedFeature == "acne") {
       return Column(
         children: [
           const SizedBox(height: 8),
           Column(
             children: [
               Text(
-          AppLocalizations.of(context)!.heavy_dark_circle // Localized for "dark_circle_v2"
-          , // Very Low
-                style: TextStyle(color: Colors.black, fontSize: 15),
+          AppLocalizations.of(context)!.heavy_dark_circle ,
+                style: const TextStyle(color: Colors.black, fontSize: 15),
               ),
               const SizedBox(height: 5),
               Container(

@@ -7,15 +7,18 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart';
 
 import '../contstants.dart';
 import '../main.dart';
 import '../services/auth_service.dart';
 import '../widgets/account_shimmer.dart';
+import '../widgets/app_bar.dart';
 import '../widgets/language_selector.dart';
 import '../widgets/unauth_widget.dart';
 import 'fav_screen.dart';
 import 'help_screen.dart';
+import 'main_screen.dart';
 import 'orders_screen.dart';
 
 class ProfileState extends Equatable {
@@ -60,14 +63,40 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
 
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Set the status bar to black with light icons (white)
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black, // Black status bar
+      statusBarIconBrightness: Brightness.light, // White status bar icons
+    ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // Reset status bar color when leaving the screen (optional)
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Reset to default (transparent)
+    ));
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ProfileCubit()..fetchUserInfo(context),
       child: Scaffold(
+        appBar: CustomAppBar(title: '', home: true),
         backgroundColor: Colors.grey.shade100,
         body: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
@@ -112,9 +141,7 @@ class ProfileScreen extends StatelessWidget {
             if (userInfo == null) ...[
               UnauthWidget(),
             ] else ...[
-              SizedBox(
-                height: mediaQueryHeight(context) * 0.04,
-              ),
+
               Padding(
                 padding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4),
@@ -230,13 +257,13 @@ class ProfileScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: mediaQueryHeight(context) * 0.02),
-           /*   Container(
+              Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: _buildLanguageSelector(context)),
-              SizedBox(height: mediaQueryHeight(context) * 0.01),*/
+              SizedBox(height: mediaQueryHeight(context) * 0.01),
               Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -256,7 +283,7 @@ class ProfileScreen extends StatelessWidget {
                   context.read<ProfileCubit>().logout();
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => MainScreen()),
+                    MaterialPageRoute(builder: (context) => MainScreen(index: 0)),
                   );
                 },
                 child: Container(

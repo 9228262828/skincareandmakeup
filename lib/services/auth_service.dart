@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../env.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthService {
   static const String _baseUrl = '$siteUrl/wp-json/jwt-auth/v1';
@@ -12,7 +14,7 @@ class AuthService {
   static const String _userId = 'user_id';
   static const String _userBaseUrl = '$siteUrl/wp-json/custom/v1/user';
 
-  static Future<void> login(String username, String password) async {
+  static Future<String> login(String username, String password) async {
     final response = await http.post(
       Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/login'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -21,8 +23,6 @@ class AuthService {
         'password': password,
       },
     );
-
-    print(response.body);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -37,14 +37,18 @@ class AuthService {
 
         print('Login successful: User ID - $userId');
         print('Login successful: Token - $token');
-      } else {
 
+        return 'Login successful'; // Return success message
+      } else {
+        print(response.body);
         print('Login failed');
-        throw Exception('Failed to login');
+        return data['message'] ?? 'Failed to login'; // Return API error message without Exception
       }
     } else {
       print('Error: ${response.statusCode}');
-      throw Exception('Failed to login');
+      final data = json.decode(response.body);
+      print(data['message']);
+      throw (data['message']);
     }
   }
 
@@ -69,7 +73,8 @@ class AuthService {
     } else {
       final data = jsonDecode(response.body);
       print(data['message']);
-      throw Exception(data['message']);
+
+      throw (data['message']);
     }
   }
 
@@ -96,7 +101,7 @@ class AuthService {
     final responseUser = await http.get(
       Uri.parse("https://gomla.sa/wp-json/custom-auth/v1/profile"),
       headers: {
-        "gomla_autherization": 'Bearer $token',
+        "gomlaauth": 'Bearer $token',
       },
     );
 
@@ -104,6 +109,7 @@ class AuthService {
       print('User info fetched');
       return json.decode(responseUser.body);
     } else {
+      print(responseUser.body);
       throw Exception('Failed to fetch user info');
     }
     print('Token validated');

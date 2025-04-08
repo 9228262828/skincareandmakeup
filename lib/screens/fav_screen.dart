@@ -17,7 +17,7 @@ class FavScreen extends StatelessWidget {
     final fav = Provider.of<Fav>(context);
     print(fav.items);
     return Scaffold(
-      appBar: CustomAppBar(title: AppLocalizations.of(context)!.favorites,home: false,),
+      appBar: CustomPagesAppBar(title: AppLocalizations.of(context)!.favorites,home: false,),
       body: fav.items.isEmpty
           ? Center(child: Text(AppLocalizations.of(context)!.yourFavoritesIsEmpty))
           : Column(

@@ -67,7 +67,6 @@ class _HomeBannerSliderState extends State<HomeBannerSlider> {
       );
     }
 
-    // تصفية البنرات المميزة فقط
     List<Bannerr> featuredBanners = _banners.where((banner) => banner.featured == "1").toList();
 
     if (featuredBanners.isEmpty) {
@@ -149,11 +148,13 @@ class _HomeBannerSliderState extends State<HomeBannerSlider> {
           enableInfiniteScroll: true,
           autoPlayAnimationDuration: Duration(milliseconds: 800),
           autoPlayCurve: Curves.fastOutSlowIn,
+          autoPlay: true,
           pauseAutoPlayOnTouch: true,
           pauseAutoPlayOnManualNavigate: true,
           height: mediaQueryHeight(context) * 0.5,
+          clipBehavior:   Clip.antiAlias,
           scrollPhysics: BouncingScrollPhysics(),
-          viewportFraction: .9,
+          viewportFraction: 0.9 , // The other images will be smaller
           onPageChanged: (index, reason) {},
         ),
       ),

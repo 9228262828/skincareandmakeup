@@ -316,8 +316,7 @@ class ProductListingCubit extends Cubit<ProductListingState> {
         brandId: selectedBrandId,
         orderBy: selectedSortOption,
         page: page,
-        context: context,
-      );
+       );
 
       if (newProducts.isEmpty) {
         isLastPage = true;

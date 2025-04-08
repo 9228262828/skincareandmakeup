@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
 import '../models/banner.dart';
 import '../providers/banner_repo.dart';
+import 'lang_screen.dart';
+import 'main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -15,14 +15,16 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   List<Bannerr> _banners = [];
+  late Image _gifImage;
+  final int _gifDuration =6900;
 
   @override
   void initState() {
     super.initState();
     _loadSplashData();
-
-
+    _gifImage = Image.asset('assets/logo Gomla Gif 3.gif',); // Ensure the path is correct
   }
+
 
   Future<void> _loadSplashData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -34,8 +36,8 @@ class _SplashScreenState extends State<SplashScreen> {
     // Fetch banners
     await _fetchBanners();
 
-    // Wait 3 seconds for splash delay
-    await Future.delayed(const Duration(seconds: 3));
+    // Wait until the GIF finishes
+    await Future.delayed(Duration(milliseconds: _gifDuration));
 
     // Determine navigation flow
     determineNavigation();
@@ -70,30 +72,22 @@ class _SplashScreenState extends State<SplashScreen> {
       await prefs.setBool('isFirstLaunch', false);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OpenScreen()),
+        MaterialPageRoute(builder: (context) => OnboardingScreen()),
       );
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(banners: _banners),
-        ),
-      );
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen(banners: _banners, index: 0)),
+              (route) => false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    String splashImage = 'assets/app_icon.png';
-
     return Scaffold(
+      backgroundColor: Color(0xFF212224),
       body: Center(
-        child: Image.asset(
-          splashImage,
-          width: MediaQuery.of(context).size.width * .85,
-          height: MediaQuery.of(context).size.height * .2,
-          fit: BoxFit.contain,
-        ),
+        child: _gifImage, // Preloaded GIF
       ),
     );
   }

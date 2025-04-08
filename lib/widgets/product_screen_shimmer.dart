@@ -19,17 +19,17 @@ class ShimmerLoadingPage extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3.0),
                   ),
-                  height: 75,
+                  height: 55,
                 ),
               ),
 
-              SizedBox(height: 16),
+              SizedBox(height: 8),
               Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: Container(
                   height: MediaQuery.of(context).size.height *
-                      0.3, // 30% of screen height
+                      0.27, // 30% of screen height
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3.0),
@@ -37,7 +37,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 8),
+              SizedBox(height: 4),
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -50,7 +50,7 @@ class ShimmerLoadingPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: const CircleAvatar(
-                          radius: 5, // Set size to 10
+                          radius: 4, // Set size to 10
                           backgroundColor: Colors.white,
                         ),
                       ),
@@ -58,12 +58,12 @@ class ShimmerLoadingPage extends StatelessWidget {
                   }),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 8),
               Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: Container(
-                  height: 45,
+                  height: 80,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3.0),
@@ -73,47 +73,24 @@ class ShimmerLoadingPage extends StatelessWidget {
 
               SizedBox(height: 8),
 
-              // 5. Row with two boxes
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.38,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(3.0),
-                        ),
-                      ),
-                    ),
-                    Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.38,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(3.0),
-                        ),
-                      ),
-                    ),
-                  ],
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(3.0),
+                  ),
                 ),
               ),
-              SizedBox(height: 16),
-
+              SizedBox(height: 8),
 
               Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: Container(
-                  height: 200,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(3.0),

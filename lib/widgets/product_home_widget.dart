@@ -85,7 +85,8 @@ class ProductHomeWidget extends StatelessWidget {
                   }
                   return _buildProductList(context, state.products , type);
                 } else if (state is BestDealsError) {
-                  print("Error: ${state.error}");
+
+                  print("Error:     ${state.error}");
                   return _buildError(state.error);
                 } else {
                   return const SizedBox.shrink();
@@ -181,7 +182,7 @@ class ProductHomeWidget extends StatelessWidget {
                     width: type != "recentlyViewedProducts" && type != "healthAndBeauty"? MediaQuery
                         .of(context)
                         .size
-                        .width / 2.2 : mediaQueryWidth(context) * 0.3,
+                        .width / 2.2 : mediaQueryWidth(context) * 0.4,
                     child: Padding(
                       padding: const EdgeInsets.all(5.0),
                       child: type != "recentlyViewedProducts"&& type != "healthAndBeauty" ?ProductCard(
@@ -201,7 +202,7 @@ class ProductHomeWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
-        'Error: $message',
+        '  $message',
         style: const TextStyle(color: Colors.red),
       ),
     );
@@ -209,13 +210,14 @@ class ProductHomeWidget extends StatelessWidget {
 }
 
 Widget buildEmptyState(BuildContext context, String title) {
-  return Container(
-    color: Colors.yellow, // Show yellow container if products are empty
-    child: Center(
+  return Column(
+    crossAxisAlignment:   CrossAxisAlignment.center,
+      mainAxisAlignment:  MainAxisAlignment.center,
+     children:[ Center(
       child: Text(
         title,
         style: TextStyle(color: Colors.black),
       ),
-    ),
+    ),]
   );
 }

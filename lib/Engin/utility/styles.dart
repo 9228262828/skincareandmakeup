@@ -1,3 +1,4 @@
+import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -18,7 +19,7 @@ Positioned backButton(BuildContext context) {
 
         IconButton(
           alignment: Alignment.center,
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 30,),
+          icon:  Icon(Icons.arrow_back_ios, color: mainColor, size: 25,),
           onPressed: () {
             Navigator.maybePop(context);
           },
@@ -75,12 +76,12 @@ StatelessWidget lightQualityIcon(
 
 Positioned lightQualityBox(String faceLighting, String faceFront, String faceArea, BuildContext context) {
   return Positioned(
-    top: 50,
-    right: 1,
+    top: 80,
+    right: 2,
 
     left: 10,
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    child: Padding(
+      padding: const EdgeInsets.only(left: 0.0,right: 2),
       child: Row(
         crossAxisAlignment:   CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,7 +142,7 @@ Positioned lightQualityBox(String faceLighting, String faceFront, String faceAre
                           AppLocalizations.of(context)!.outOfBoundary
                           : AppLocalizations.of(context)!.unknown,
               context),
-          SizedBox(width: 10),
+          SizedBox(width: 20),
 
         ],
       ),

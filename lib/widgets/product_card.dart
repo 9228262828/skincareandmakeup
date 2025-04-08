@@ -126,15 +126,15 @@ class _ProductCardState extends State<ProductCard> {
                       //  fakeProduct == "fake"? SizedBox(height: 10):
                         FadeInImage(
                           image: (imageUrl.isNotEmpty &&
-                                  Uri.tryParse(imageUrl)?.hasAbsolutePath == true)
+                              Uri.tryParse(imageUrl)?.isAbsolute == true)
                               ? NetworkImage(imageUrl)
-                              :AssetImage('assets/placeholder.png')
-                                  as ImageProvider,
+                              : AssetImage('assets/placeholder.png') as ImageProvider,
                           placeholder: AssetImage('assets/grey_image.jpeg'),
                           height: MediaQuery.of(context).size.height * 0.195,
-                          fit: BoxFit.fitHeight,
+                          fit: BoxFit.contain,
                           width: double.infinity,
-                        ),
+                        )
+
 
                       ],
                     ),
@@ -381,6 +381,7 @@ class _ProductCardEmptyState extends State<ProductCardEmpty> {
       ),
       padding: const EdgeInsets.all(4.0),
       height: MediaQuery.of(context).size.height * 0.1,
+        width:  MediaQuery.of(context).size.width * 0.4,
       child: Image(
         image: (imageUrl.isNotEmpty &&
                 Uri.tryParse(imageUrl)?.hasAbsolutePath == true)
@@ -389,8 +390,8 @@ class _ProductCardEmptyState extends State<ProductCardEmpty> {
         errorBuilder: (context, error, stackTrace) =>
             Image.asset('assets/placeholder.png'),
         height: MediaQuery.of(context).size.height * 0.1,
-        fit: BoxFit.cover,
-        width: mediaQueryWidth(context) * 0.25,
+        fit: BoxFit.contain,
+        width: mediaQueryWidth(context) * 0.4,
       ),
     );
   }

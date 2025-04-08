@@ -11,5 +11,7 @@ Product fakeProduct = Product(
   short_description: "A short description of the sample product.",
   images: [""],
   categoryId: 101,
-  avrage_rating: "4.5",
+  avrage_rating: "4.5", howToUse: '', hazardsCautions: '', brandId: 0,
+  shipping_taxable: false, stock_status: ''
+
 );

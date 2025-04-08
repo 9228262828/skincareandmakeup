@@ -9,6 +9,7 @@ import '../models/cart.dart';
 import '../models/cart_item.dart';
 import '../services/auth_service.dart';
 import '../shared/global/app_theme.dart';
+import '../test.dart';
 import '../widgets/app_bar.dart';
 import 'checkout_screen.dart';
 import 'login_screen.dart';
@@ -45,71 +46,11 @@ class _CartScreenState extends State<CartScreen> {
     final cart = Provider.of<Cart>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        title: Image.asset(
-          'assets/app_icon.png',
-          width: MediaQuery.of(context).size.width * 0.35,
-        ),
-        // centerTitle: true,
-        actions: [
-          GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.60,
-                alignment: Alignment.centerRight,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(3),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 0,
-                        blurRadius: 7,
-                        offset: Offset(0, 0), // changes position of shadow
-                      ),
-                    ]),
-                child: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    _startSearch(context);
-                  },
-                ),
-              ),
-            ),
-            onTap: () {
-              _startSearch(context);
-            },
-          ),
-          // Stack(
-          //   children: [
-          //     Positioned(
-          //       top: 0,
-          //       right: 10,
-          //       child: Text(
-          //         cartCount.toString(),
-          //         style: TextStyle(color: mainColor, fontSize: 14, fontWeight: FontWeight.bold),
-          //       ),
-          //     ),
-          //     IconButton(
-          //       icon: Icon(
-          //         Icons.shopping_cart,
-          //         color: Colors.black,
-          //       ),
-          //       onPressed: () {
-          //         Navigator.push(
-          //           context,
-          //           MaterialPageRoute(builder: (context) => CartScreen()),
-          //         );
-          //       },
-          //     ),
-          //   ],
-          // ),
-        ],
+      appBar: CustomAppBar(
+        title: "",
+        home: true,
       ),
+      backgroundColor:  Colors.grey.shade200,
       body: cart.items.isEmpty
           ? Center(child: Text(AppLocalizations.of(context)!.yourCartIsEmpty))
           : Padding(
@@ -172,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),
                                         ),
-
+SizedBox(width: 4),
                                         SvgPicture.asset(
                                             "assets/SAR.svg",
                                             width: 20,
@@ -235,6 +176,7 @@ class _CartScreenState extends State<CartScreen> {
                                   Row(
                                     children: [
                                       Text(
+
                                         '${cart.totalAmount.toStringAsFixed(2)} ',
                                         style: const TextStyle(
                                             fontSize: 14,
@@ -247,6 +189,7 @@ class _CartScreenState extends State<CartScreen> {
                                           height: 20,
                                         color: Colors.white,
                                       ),
+
                                     ],
                                   ),
                                 ],
@@ -290,10 +233,30 @@ class CartItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: false);
+    Locale currentLocale = Localizations.localeOf(context);
 
+    final cart = Provider.of<Cart>(context, listen: false);
+    BorderRadius borderRadius = currentLocale.languageCode == 'ar'
+        ? BorderRadius.only(
+      topRight: Radius.circular(8),
+      bottomRight: Radius.circular(8),
+    )
+        : BorderRadius.only(
+      topLeft: Radius.circular(8),
+      bottomLeft: Radius.circular(8),
+    );
+    BorderRadius borderRadiusleft = currentLocale.languageCode == 'ar'
+        ? BorderRadius.only(
+      topLeft: Radius.circular(8),
+      bottomLeft: Radius.circular(8),
+    )
+        : BorderRadius.only(
+      topRight: Radius.circular(8),
+      bottomRight: Radius.circular(8),
+
+    );
     return Card(
-      color: lightColor,
+      color: Colors.white,
       elevation: .01,
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Padding(
@@ -310,8 +273,15 @@ class CartItemWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(3.0),
                     ),
-                    child: Image.network(
+                    child: cartItem.product.images.isNotEmpty
+                        ? Image.network(
                       cartItem.product.images.first,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.contain,
+                    )
+                        : Image.asset(
+                      'assets/placeholder.png', // Use a default placeholder image
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
@@ -329,13 +299,24 @@ class CartItemWidget extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                                '${cartItem.variation?.price ?? cartItem.product.price}',
+                                '${cartItem.variation?.price ?? cartItem.product.price.toStringAsFixed(2)}',
                                 style: const TextStyle(fontSize: 16)),
+                            const SizedBox(width: 4),
                             SvgPicture.asset(
                                 "assets/SAR.svg",
                                 width: 20,
                                 height: 20
                             ),
+                          Spacer(),
+                          cartItem.product.shipping_taxable== true?
+                            Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child:Column(
+                                children: [
+                                  SizedBox(height: 3),
+                                  Text( '${AppLocalizations.of(context)!.fullTax}',),
+                                ],
+                              ) ,):const Text(''),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -376,14 +357,12 @@ class CartItemWidget extends StatelessWidget {
                         // First Section: Add button with blue background
                         Container(
                           width: 30,
-                          decoration: const BoxDecoration(
-                            border: Border.fromBorderSide(
+                          decoration: BoxDecoration(
+                            border: const Border.fromBorderSide(
                               BorderSide(width: .5, color: Colors.grey),
                             ),
                             // Blue background for the first section
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(8),
-                                bottomRight: Radius.circular(8)),
+                            borderRadius: borderRadius,
                           ),
                           child: Center(
                             child: IconButton(
@@ -425,15 +404,12 @@ class CartItemWidget extends StatelessWidget {
                         // Third Section: Minus button with grey background
                         Container(
                           width: 30,
-                          decoration: const BoxDecoration(
+                          decoration:   BoxDecoration(
                             border: Border.fromBorderSide(
                               BorderSide(width: .5, color: Colors.grey),
                             ),
                             // Blue background for the first section
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                bottomLeft: Radius.circular(8)),
-                          ),
+                            borderRadius: borderRadiusleft, ),
                           child: Center(
                             child: IconButton(
                               icon: const Icon(
@@ -467,8 +443,8 @@ class CartItemWidget extends StatelessWidget {
                       ),
                       child: Center(
                         child: Icon(
-                          Icons.delete,
-                          color: Colors.red,
+                          Icons.delete_outline,
+                          color: Colors.black,
                           size: 16,
                         ),
                       ),

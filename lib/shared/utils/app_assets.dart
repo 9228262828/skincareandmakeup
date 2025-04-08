@@ -15,6 +15,8 @@ class ImageAssets {
   static const String banner2 = 'assets/banner2.png';
   static const String banner3 = 'assets/banner3.png';
   static const String banner4 = 'assets/banner4.jpg';
+  static const String arab_flag = 'assets/download.png';
+  static const String amirica_flag = 'assets/amirica.png';
 
 
 }

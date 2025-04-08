@@ -6,6 +6,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'main_screen.dart';
 class DeleteAccount extends StatelessWidget {
   const DeleteAccount({super.key});
   void deleteAccount(context) {
@@ -107,7 +109,7 @@ class DeleteAccount extends StatelessWidget {
       final response = await http.post(
         Uri.parse(url),
         headers: {
-          'gomla_autherization': 'Bearer $token',
+          'gomlaauth': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -121,7 +123,7 @@ class DeleteAccount extends StatelessWidget {
       if (response.statusCode == 200 && responseData["success"] == true) {
         print("Account deleted successfully!");
         showToast(text: responseData['message'], state: ToastStates.SUCCESS);
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>   MainScreen(index: 0)));
 
         // Clear token and user ID from SharedPreferences
         await prefs.remove(_tokenKey);

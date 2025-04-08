@@ -16,6 +16,7 @@ import '../widgets/product_card.dart';
 import '../widgets/product_shimmer_widget.dart';
 import 'TEST.dart';
 import 'custom_progress_bar.dart';
+import 'models.dart';
 
 class ReportScreen extends StatefulWidget {
   final List<Map<String, dynamic>> capturedFeatures;
@@ -38,8 +39,7 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   bool isArabic = false;
 
-  // Function to get the assessment level based on the score
-  String getAssessmentLevel(int score) {
+   String getAssessmentLevel(int score) {
     if (score >= 80) {
       return "Good";
     } else if (score >= 60) {
@@ -49,8 +49,7 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  // Function to return the color based on the assessment level
-  Color getAssessmentColor(String assessment) {
+   Color getAssessmentColor(String assessment) {
     switch (assessment) {
       case "Good":
         return Colors.green.withOpacity(0.7);
@@ -417,7 +416,6 @@ class _ReportScreenState extends State<ReportScreen> {
                 color: Color(0xFFEAEAEA),
                 thickness: 1.5,
               ),
-
               Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: Row(
@@ -433,7 +431,6 @@ class _ReportScreenState extends State<ReportScreen> {
                   ],
                 ),
               ),
-              // Feature Details Section
               ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 itemCount: widget.capturedFeatures.length ,
@@ -585,28 +582,10 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         ),
       ),
-      /* floatingActionButton:   FloatingActionButton(
-        backgroundColor: Colors.white,
-
-        shape:  CircleBorder(
-          side: BorderSide(
-            color: mainColor,
-          )
-        ),
-        elevation: 2,
-        child: Icon(Icons.picture_as_pdf, color: mainColor,),
-       onPressed: () {
-         for (var feature in widget.capturedFeatures) {
-           inspectImageDetails(feature['image']);
-         }
-
-       },
-      ),*/
     );
   }
 
-// Radar chart data based on the reports
-  RadarChartData getRadarChartData() {
+   RadarChartData getRadarChartData() {
     // Function to get the translated feature name
     String getTranslatedFeatureName(String featureName) {
       switch (featureName) {
@@ -731,7 +710,8 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   List<ProductCategory> _filterValidCategories(
-      List<ProductCategory> categories) {
+      List<ProductCategory> categories)
+  {
     return categories.where((category) {
       final details = category.details;
 
@@ -771,7 +751,9 @@ class _ReportScreenState extends State<ReportScreen> {
       name: preferredDetails.name ?? "",
       price: preferredDetails.price ?? 0.0,
       description: preferredDetails.description ?? "",
-      avrage_rating:  "0.0",
+      avrage_rating:  "0.0", howToUse: '', hazardsCautions: '', brandId: 0,
+      shipping_taxable:false, stock_status: ''
+
     );
   }
 }

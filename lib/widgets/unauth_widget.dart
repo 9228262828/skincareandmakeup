@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../contstants.dart';
 import '../screens/login_screen.dart';
 import '../screens/policy_screen.dart';
+import '../screens/register_phone_screen.dart';
 import '../screens/terms_screen.dart';
 import 'language_selector.dart';
 
@@ -75,7 +76,7 @@ class UnauthWidget extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                  const RegistrationScreen()),
+                                  const RegisterPhoneScreen()),
                             );
                           }),
                     ],

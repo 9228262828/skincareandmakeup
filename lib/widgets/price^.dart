@@ -21,7 +21,23 @@ class PriceDisplay extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        discount  == '0.00' ? Container() :
+        Text(
+          lastPrice.toStringAsFixed(2),
 
+          style: const TextStyle(
+            fontSize: 16,color: Colors.grey,
+
+            decoration:
+            TextDecoration.lineThrough,
+            fontWeight: FontWeight.w500,
+            height: 1,
+            textBaseline: TextBaseline.ideographic,
+            decorationColor: Colors.grey,
+          ),
+        ),
+
+        SizedBox(width: 4),
         RichText(
           text: TextSpan(
             style: TextStyle(
@@ -42,7 +58,7 @@ class PriceDisplay extends StatelessWidget {
             style: TextStyle(
 
               fontSize: priceParts .length > 3 ? 20 : 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: Colors.black, // Color for main text
             ),
             children: [
@@ -57,7 +73,7 @@ class PriceDisplay extends StatelessWidget {
             style: TextStyle(
 
               fontSize: priceParts .length > 3 ? 20 : 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               color: Colors.black, // Color for main text
             ),
             children: [
@@ -68,77 +84,13 @@ class PriceDisplay extends StatelessWidget {
           ),
         ),
 
-        SizedBox(width: 2),
+        SizedBox(width: 3),
         SvgPicture.asset(
           "assets/SAR.svg",
           width: 20,
           height: 18
         ),
-        SizedBox(width: 2),
 
-      /*  RichText(
-          text: TextSpan(
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black, // Color for main text
-            ),
-            children: [
-            *//*  TextSpan(
-                text: ' ${AppLocalizations.of(context)!.egp}',
-                // Decimal part (in superscript)
-                style: TextStyle(
-                  fontSize: 14,
-                  // Smaller font size for the decimal part
-                  fontWeight: FontWeight.w400,
-                  height: 1.2,
-                  // Raises the decimal part to look like a superscript
-                  textBaseline: TextBaseline
-                      .ideographic, // Ensure correct alignment (raise it)
-                ),
-              ),*//*
-            ],
-          ),
-        ),*/
-        SizedBox(width: 2),
-        discount  == '0.00' ? Container() :
-        RichText(
-          text: TextSpan(
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: Colors.black, // Color for main text
-            ),
-            children: [
-              TextSpan(
-                text:"${AppLocalizations.of(context)!.save} $discount",
-                style: const TextStyle(
-                  fontSize: 12,color: Colors.green,
-                  fontWeight: FontWeight.w600,
-                  height: 1,
-                  textBaseline: TextBaseline
-                      .ideographic,
-                ),
-              ),
-
-             /* TextSpan(
-                text: ' ${AppLocalizations.of(context)!.egp}',
-                style: const TextStyle(
-                  fontSize: 10,color: Colors.green,
-                  fontWeight: FontWeight.w600,
-                  height: 1,
-                  textBaseline: TextBaseline
-                      .ideographic,
-                ),
-              ),*/
-            ],
-          ),
-        ),  SvgPicture.asset(
-            "assets/SAR.svg",
-            width: 20,
-            height: 12,
-          color: Colors.green,
-        ),
 
       ],
     );

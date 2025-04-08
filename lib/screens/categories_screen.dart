@@ -105,28 +105,27 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 children: [
 
                   for (int i = 0; i < mainCategories.length; i += 3)
-
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            for (int j = i;
-                                j < i + 3 && j < mainCategories.length;
-                                j++)
-                              _buildCategoryTile(mainCategories[j]),
+                            for (int j = i; j < i + 3; j++)
+                              if (j < mainCategories.length)
+                                _buildCategoryTile(mainCategories[j])
+                              else
+                                const Expanded(child: SizedBox()), // Empty slot to fill the row
                           ],
                         ),
-                        for (int j = i;
-                            j < i + 3 && j < mainCategories.length;
-                            j++)
+                        for (int j = i; j < i + 3 && j < mainCategories.length; j++)
                           if (showSubCategories[mainCategories[j].id] == true)
                             isSubCategoryLoading[mainCategories[j].id] == true
                                 ? _buildSubCategoryShimmer()
                                 : _buildSubCategories(mainCategories[j]),
                       ],
                     ),
+
                   if (isLoadingMore)
                     SizedBox(
                         height: MediaQuery.of(context).size.height * 0.24,
