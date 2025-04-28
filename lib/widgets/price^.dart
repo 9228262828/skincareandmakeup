@@ -1,29 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class PriceDisplay extends StatelessWidget {
+class PriceDisplay extends StatefulWidget {
   final double price;
   final double lastPrice;
 
   PriceDisplay({required this.price, required this.lastPrice});
 
   @override
+  State<PriceDisplay> createState() => _PriceDisplayState();
+}
+
+class _PriceDisplayState extends State<PriceDisplay> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadLanguagePreference();
+  }
+  String languageCode = 'en'; // Default language
+
+  Future<void> _loadLanguagePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      languageCode =
+          prefs.getString('language_code') ?? 'en'; // Default to English
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Convert the price to a string
-    String priceString = price.toStringAsFixed(2);
+
+     // Convert the price to a string
+    String priceString = widget.price.toStringAsFixed(2);
     List<String> priceParts = priceString.split('.');
 
-    String lastPriceString = lastPrice.toStringAsFixed(2);
+    String lastPriceString = widget.lastPrice.toStringAsFixed(2);
 
-    String discount = ((lastPrice - price)).toStringAsFixed(2);
+    String discount = ((widget.lastPrice - widget.price)).toStringAsFixed(2);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         discount  == '0.00' ? Container() :
         Text(
-          lastPrice.toStringAsFixed(2),
+          widget.lastPrice.toStringAsFixed(2),
 
           style: const TextStyle(
             fontSize: 16,color: Colors.grey,
@@ -38,57 +62,23 @@ class PriceDisplay extends StatelessWidget {
         ),
 
         SizedBox(width: 4),
-        RichText(
-          text: TextSpan(
-            style: TextStyle(
-
-              fontSize: priceParts .length > 3 ? 20 : 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.black, // Color for main text
-            ),
-            children: [
-              TextSpan(
-                text: priceParts[1], // Integer part
-              ),
-            ],
-          ),
-        ),
-        RichText(
-          text: TextSpan(
-            style: TextStyle(
-
-              fontSize: priceParts .length > 3 ? 20 : 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black, // Color for main text
-            ),
-            children: [
-              TextSpan(
-                text: ".", // Integer part
-              ),
-            ],
-          ),
-        ),
-        RichText(
-          text: TextSpan(
-            style: TextStyle(
-
-              fontSize: priceParts .length > 3 ? 20 : 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.black, // Color for main text
-            ),
-            children: [
-              TextSpan(
-                text: priceParts[0], // Integer part
-              ),
-            ],
+        Text(
+          priceString,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            height: 1,
+            textBaseline: TextBaseline.ideographic,
           ),
         ),
 
         SizedBox(width: 3),
         SvgPicture.asset(
           "assets/SAR.svg",
-          width: 20,
-          height: 18
+          width: 16,
+          height: 16,
+          color: Colors.black,
         ),
 
 

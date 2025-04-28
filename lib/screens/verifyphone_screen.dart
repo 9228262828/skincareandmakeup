@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Gomla/screens/registration_screen.dart';
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pinput/pinput.dart';
@@ -34,30 +35,18 @@ class VerifyPhoneScreen extends StatefulWidget {
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final TextEditingController _otpController = TextEditingController();
   bool _isLoading = false;
-  List<Bannerr> _banners = [];
-  Future<void> _fetchBanners() async {
-    try {
-      List<Bannerr> banners = await BannerService().fetchBanners();
-      setState(() {
-        _banners = banners;
-      });
-      print('Fetched banners: ${banners.length}');
-    } catch (error) {
-      print('Error fetching banners: $error');
-    }
-  }
-
 
 
   void _listenOtp() async {
     await SmsAutoFill().listenForCode();
     print("OTP Listen is called");
   }
+
   @override
   void initState() {
     _listenOtp();
     super.initState();
-     _startResendTimer();
+    _startResendTimer();
   }
 
 
@@ -139,16 +128,20 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 SizedBox(height: 20),
                 PinFieldAutoFill(
                   currentCode: _otpController.text,
-                  cursor:   Cursor(
-                    color: mainColor,
+                  cursor: Cursor(
+                    color: mainColor,  // Set cursor color to a noticeable color
                     height: 20,
-                    width: 1.5,
+                    width: 2.0,  // Make the cursor a little thicker
                   ),
-                  decoration:  BoxLooseDecoration(
-                      radius: Radius.circular(5),
-
-                      strokeColorBuilder: FixedColorBuilder(
-                          mainColor)),
+                  decoration: BoxLooseDecoration(
+                    radius: Radius.circular(5),
+                    strokeColorBuilder: FixedColorBuilder(mainColor),
+                    bgColorBuilder: FixedColorBuilder(Colors.white),
+                    textStyle: TextStyle(
+                      color: Colors.black,  // Set text color to black
+                      fontSize: 18,         // Set font size for OTP text
+                    ),
+                  ),
                   codeLength: 6,
                   onCodeChanged: (code) {
                     print("OnCodeChanged : $code");
@@ -162,7 +155,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
                 SizedBox(height: 20),
                 _isLoading
-                    ? CircularProgressIndicator()
+                    ? CircularProgressIndicator(color: mainColor)
                     : Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ElevatedButton(
@@ -176,10 +169,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                         backgroundColor: Color(0xFF212224),
                                         foregroundColor: Colors.white, elevation: 0),
                                     onPressed: () {
-                                      print(_otpController.text);
-                                      print(widget.phone);
-                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegistrationScreen(otp: _otpController.text,phone : widget.phone),));
-                                    },
+                                      _VerifyPhone(); },
                                     child: Text(AppLocalizations.of(context)!.verifyOtp,style:  TextStyle(fontSize: 16,fontWeight: FontWeight.w500,),),
                                   ),
                     ),
@@ -197,7 +187,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                         ? AppLocalizations.of(context)!.resend_otp
                         : "${AppLocalizations.of(context)!.resend_otp} ($_resendSeconds)",
                     style: TextStyle(
-                      color: _canResend ? Colors.blue : Colors.grey,
+                      color: _canResend ? mainColor : Colors.grey,
                     ),
                   ),
                 ),
@@ -224,9 +214,47 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
           if (data['success'] == true) {
             String otp = data['otp'].toString(); // حفظ OTP
+
+            showToast(text:data['message'], state:  ToastStates.SUCCESS);
+
+          } else {
+
+            showToast(text:data['message'], state:  ToastStates.ERROR);
+          }
+        } else {
+
+          showToast(text:AppLocalizations.of(context)!.phoneVerificationFailed, state:  ToastStates.ERROR);
+        }
+      } catch (e) {
+        print('Error: $e');
+
+        showToast(text: AppLocalizations.of(context)!.phoneVerificationFailed, state:  ToastStates.ERROR);
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  Future<void> _VerifyPhone() async {
+
+
+      try {
+        final response = await http.post(
+          Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/verify-otp'),
+          body: {'phone': widget.phone,
+            'otp': _otpController.text},
+        );
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(response.body);
+          print(data); // طباعة البيانات لفحصها
+
+          if (data['success'] == true) {
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
             );
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => RegistrationScreen(otp:   _otpController.text, phone: widget.phone)), (_) => false);
 
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -234,8 +262,10 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
             );
           }
         } else {
+          final Map<String, dynamic> data = json.decode(response.body);
+          print(data);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Phone verification failed')),
+            SnackBar(content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
           );
         }
       } catch (e) {

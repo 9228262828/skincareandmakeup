@@ -28,34 +28,52 @@ class SkinData {
   SkinData({required this.categories});
 
   factory SkinData.fromJson(Map<String, dynamic> json) {
-    final categories = json.entries
-        .map((entry) {
-      final key = entry.key;
-      final value = entry.value;
+    final List<ProductCategory> allCategories = [];
 
+    json.forEach((key, value) {
       if (value is Map<String, dynamic>) {
         final details = ProductDetails.fromCategoryJson(value);
-        if (details.ar != null || details.en != null) {
-          return ProductCategory(
+
+        final hasValidAr = details.ar != null &&
+            details.ar!.id != null &&
+            details.ar!.name != null &&
+            details.ar!.description != null &&
+            details.ar!.price != null;
+
+        final hasValidEn = details.en != null &&
+            details.en!.id != null &&
+            details.en!.name != null &&
+            details.en!.description != null &&
+            details.en!.price != null;
+
+        final isValid = hasValidAr || hasValidEn;
+
+        if (isValid) {
+          allCategories.add(ProductCategory(
             key: key,
             details: details,
-          );
+          ));
+        } else {
+          print("Skipping invalid category: $key -> $value");
         }
       }
-      print("Skipping invalid category: $key -> $value");
-      return null; // Skip invalid categories
-    })
-        .where((category) => category != null)
-        .cast<ProductCategory>()
-        .toList();
+    });
 
-    if (categories.isEmpty) {
+    if (allCategories.isEmpty) {
       throw Exception("No valid categories found in data");
     }
 
-    return SkinData(categories: categories);
+    // ترتيب حسب priority
+    allCategories.sort((a, b) {
+      final aPriority = a.details.ar?.priority ?? a.details.en?.priority ?? 'Z';
+      final bPriority = b.details.ar?.priority ?? b.details.en?.priority ?? 'Z';
+      return aPriority.compareTo(bPriority);
+    });
+
+    return SkinData(categories: allCategories);
   }
 }
+
 
 class ProductCategory {
   final String key;
@@ -75,7 +93,8 @@ class ProductDetails {
   final double? regularPrice;
   final double? salePrice;
   final String? sku;
-  final String? image;
+  final dynamic image;
+  final String? priority;
   final ProductDetails? ar;
   final ProductDetails? en;
 
@@ -88,6 +107,7 @@ class ProductDetails {
     this.salePrice,
     this.sku,
     this.image,
+    this.priority,
     this.ar,
     this.en,
   });
@@ -97,9 +117,8 @@ class ProductDetails {
     final en = json['en'] is Map<String, dynamic> ? json['en'] : null;
 
     if (ar == null && en == null) {
-      print(
-          "Warning: Both 'ar' and 'en' fields are missing or invalid in: $json");
-      return ProductDetails(); // Return a default instance
+      print("Warning: Both 'ar' and 'en' fields are missing or invalid in: $json");
+      return ProductDetails();
     }
 
     return ProductDetails(
@@ -113,11 +132,25 @@ class ProductDetails {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      price: double.tryParse(json['price'] ?? '0') ?? 0.0,
-      regularPrice: double.tryParse(json['regular_price'] ?? '0') ?? 0.0,
-      salePrice: double.tryParse(json['sale_price'] ?? '0') ?? 0.0,
+      price: double.tryParse(json['price'].toString()) ?? 0.0,
+      salePrice: double.tryParse(json['sale_price'].toString()) ?? 0.0,
+      regularPrice: double.tryParse(json['regular_price'].toString()) ?? 0.0,
       sku: json['sku'],
       image: json['image'],
+      priority: json['priority'],
     );
   }
+
+  String getImageUrl() {
+    if (image is List && (image as List).isNotEmpty) {
+      final firstElement = (image as List)[0];
+      if (firstElement is String) {
+        return firstElement;
+      }
+    } else if (image is String) {
+      return image as String;
+    }
+    return "";
+  }
+
 }

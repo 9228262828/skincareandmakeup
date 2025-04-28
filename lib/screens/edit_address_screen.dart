@@ -16,8 +16,14 @@ import 'map_picker.dart';
 
 class EditAddressScreen extends StatefulWidget {
   final Address address;
+  final String address1;
+  final String city;
+  final String state;
+  final String country;
+  final String postcode;
+  final bool fromMap;
 
-  EditAddressScreen({Key? key, required this.address}) : super(key: key);
+  EditAddressScreen({Key? key, required this.address, required this.address1, required this.city, required this.state, required this.country, required this.postcode, required this.fromMap}) : super(key: key);
 
   @override
   _EditAddressScreenState createState() => _EditAddressScreenState();
@@ -41,13 +47,13 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
   @override
   void initState() {
     super.initState();
-    _address1Controller = TextEditingController(text: widget.address.address1);
+    _address1Controller = TextEditingController(text:widget.fromMap?widget.address1: widget.address.address1);
     _address2Controller = TextEditingController(text: widget.address.address2);
-    _cityController = TextEditingController(text: widget.address.city);
-    _stateController = TextEditingController(text: widget.address.state);
-    _postcodeController = TextEditingController(text: widget.address.postcode);
+    _cityController = TextEditingController(text: widget.fromMap?widget.city: widget.address.city);
+    _stateController = TextEditingController(text:widget.fromMap?widget.state: widget.address.state);
+    _postcodeController = TextEditingController(text:widget.fromMap?widget. postcode: widget.address.postcode);
     _phoneController = TextEditingController(text: widget.address.phone);
-    _countryController = TextEditingController(text: widget.address.country);
+    _countryController = TextEditingController(text:widget.fromMap?widget.country: widget.address.country);
     _notesController = TextEditingController(text: widget.address.notes);
     _firstNameController =
         TextEditingController(text: widget.address.firstName);
@@ -133,7 +139,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => MapPicker(
-              isFromAddAddress: true,
+              isFromAddAddress: false,
+              isFromEditAddress: true,
               onLocationPicked: (
                 _address,
                 _city,
@@ -210,20 +217,14 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
       if (response.statusCode == 200) {
         print(response.body);
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Address updated successfully')),
-        );
+       showToast(text:  AppLocalizations.of(context)!.addressUpdated, state: ToastStates.SUCCESS);
       } else {
         print("Response Body: ${response.body}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update address')),
-        );
+        showToast(text:  AppLocalizations.of(context)!.errorUpdatingAddress, state: ToastStates.ERROR);
       }
     } catch (e) {
       print('Error updating address: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating address')),
-      );
+      showToast(text:  AppLocalizations.of(context)!.errorUpdatingAddress, state: ToastStates.ERROR);
     } finally {
       setState(() {
         _isLoading = false;
@@ -321,29 +322,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     )
                   ],
                 ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _address2Controller,
-                  decoration: customInputDecoration(
-                      prefixIcon:
-                      Localizations.localeOf(context).languageCode == 'ar'
-                          ? Icon(
-                        Icons.location_on_outlined,
-                        size: 20,
-                        color: Color(0xFFDC9D1E),
-                      ) // Prefix for Arabic
-                          : Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Icon(
-                          Icons.location_on_outlined,
-                          size: 20,
-                          color: Color(0xFFDC9D1E),
-                        ),
-                      ),
-                      context,
-                      AppLocalizations.of(context)!.address2,
-                      AppLocalizations.of(context)!.address2),
-                ),
+
                 SizedBox(height: 10),
                 TextFormField(
                   controller: _cityController,
@@ -405,8 +384,9 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                   },
                 ),
                 SizedBox(height: 25),
+
                 Text(
-                  AppLocalizations.of(context)!.personalInformation,
+                  AppLocalizations.of(context)!.recipient_name,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -434,13 +414,13 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       context,
                       AppLocalizations.of(context)!.firstName,
                       AppLocalizations.of(context)!.firstName),
-                  validator: (value) {
+                  /* validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
                           .pleaseEnterYourFirstName;
                     }
                     return null;
-                  },
+                  },*/
                 ),
                 SizedBox(height: 10),
                 TextFormField(
@@ -464,16 +444,25 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       context,
                       AppLocalizations.of(context)!.lastName,
                       AppLocalizations.of(context)!.lastName),
-                  validator: (value) {
+                  /* validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
                           .pleaseEnterYourLastName;
                     }
                     return null;
-                  },
+                  },*/
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 25),
+                Text(
+                  AppLocalizations.of(context)!.recipient_phone,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: 15),
                 PhoneNumberField(
+                  isRequired: false,
                   phoneController: _phoneController,
                 ),
                 SizedBox(height: 25),
@@ -489,7 +478,17 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 StackOver(
                   notesController: _notesController,
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _address2Controller,
+                  maxLines: 3,
+                  decoration: customInputDecoration(
+
+                      context,
+                      AppLocalizations.of(context)!.address2,
+                      AppLocalizations.of(context)!.address2),
+                ),
+                 SizedBox(height: 20),
                  ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(

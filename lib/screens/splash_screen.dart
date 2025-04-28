@@ -14,8 +14,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  List<Bannerr> _banners = [];
-  late Image _gifImage;
+   late Image _gifImage;
   final int _gifDuration =6900;
 
   @override
@@ -34,7 +33,6 @@ class _SplashScreenState extends State<SplashScreen> {
     print('Stored locale: $savedLocale');
 
     // Fetch banners
-    await _fetchBanners();
 
     // Wait until the GIF finishes
     await Future.delayed(Duration(milliseconds: _gifDuration));
@@ -43,17 +41,6 @@ class _SplashScreenState extends State<SplashScreen> {
     determineNavigation();
   }
 
-  Future<void> _fetchBanners() async {
-    try {
-      List<Bannerr> banners = await BannerService().fetchBanners();
-      setState(() {
-        _banners = banners;
-      });
-      print('Fetched banners: ${banners.length}');
-    } catch (error) {
-      print('Error fetching banners: $error');
-    }
-  }
 
   Future<void> determineNavigation() async {
     final prefs = await SharedPreferences.getInstance();
@@ -77,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen(banners: _banners, index: 0)),
+          MaterialPageRoute(builder: (context) => MainScreen(banners: [], index: 0)),
               (route) => false);
     }
   }

@@ -53,13 +53,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
 
         BlocProvider(create: (_) => LocaleCubit()),
-        ChangeNotifierProxyProvider<LocaleCubit, HomeScreenProvider>(
-          create: (_) => HomeScreenProvider(),
-          update: (context, localeCubit, homeScreenProvider) {
-            homeScreenProvider!.refreshData(context);
-            return homeScreenProvider;
-          },
-        ),
       ],
       child: const MyApp(),
     ),

@@ -9,6 +9,7 @@ import '../models/fav_item.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/product.dart';
+import '../shared/components/toast_component.dart';
 import '../widgets/app_bar.dart';
 
 class FavScreen extends StatelessWidget {
@@ -50,14 +51,11 @@ class _FavItemWidgetState extends State<FavItemWidget> {
   void _addToCart() {
     final cart = Provider.of<Cart>(context, listen: false);
     if (widget.favItem != null) {
-      cart.addItem(widget.favItem, null);
+      cart.addItem(widget.favItem,  );
       cart.updateQuantity(widget.favItem, widget.quantity);
       // show snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.addedtoCart),
-        ),
-      );
+
+      showToast(text: AppLocalizations.of(context)!.addedtoCart, state: ToastStates.SUCCESS);
     }
   }
 

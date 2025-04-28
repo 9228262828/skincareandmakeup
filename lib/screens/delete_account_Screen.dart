@@ -1,4 +1,5 @@
 import 'package:Gomla/main.dart';
+import 'package:Gomla/screens/reset_pass_screen.dart';
 import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class DeleteAccount extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.grey.shade100,
-          title: Text(AppLocalizations.of(context)!.deleteAccount),
+          title: Text(AppLocalizations.of(context)!.securitySettings),
         ),
         backgroundColor: Colors.grey.shade100,
         body: Column(
@@ -85,7 +86,42 @@ class DeleteAccount extends StatelessWidget {
                   ),
                 ),
               ),
-            )
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPassScreen()));
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: mediaQueryHeight(context) * 0.1,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(3.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppLocalizations.of(context)!.forgetPassword,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 18)),
+                        SizedBox(height: mediaQueryHeight(context) * 0.01),
+
+                        Text(AppLocalizations.of(context)!.resetPassword,
+                            style: const TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ));
   }

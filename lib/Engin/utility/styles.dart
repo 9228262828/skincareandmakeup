@@ -263,8 +263,8 @@ SnackBar showErrorDialog(String errorMessage) {
 Container loadingIndicator() {
   return Container(
     color: Colors.black.withOpacity(0.3), // Transparent overlay
-    child: const Center(
-      child: CircularProgressIndicator(),
+    child:  Center(
+      child: CircularProgressIndicator(color: mainColor),
     ),
   );
 }

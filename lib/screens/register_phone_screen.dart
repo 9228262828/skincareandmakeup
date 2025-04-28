@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../contstants.dart';
 import '../services/auth_service.dart';
+import '../shared/components/toast_component.dart';
 import '../shared/utils/app_assets.dart';
 import '../shared/utils/app_values.dart';
 import '../widgets/pass_fiels.dart';
@@ -37,14 +38,14 @@ class _RegisterPhoneScreenState extends State<RegisterPhoneScreen> {
       });
 
       // Check if phone number is in valid format
-      print("+966${_phoneController.text}");
+      print("${_phoneController.text}");
 
       try {
         final response = await http.post(
           Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/check-phone'),
           body: {
             'phone':
-            "+966${_phoneController.text}" // Corrected line to send the phone as a string
+            "${_phoneController.text}" // Corrected line to send the phone as a string
           },
         );
 
@@ -59,11 +60,9 @@ class _RegisterPhoneScreenState extends State<RegisterPhoneScreen> {
             print('Decoded data: $data');
 
             if (data['success'] == true) {
-              String otp = data['otp'].toString(); // حفظ OTP
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
-              );
+              String otp = data['otp'].toString();
+              showToast(state: ToastStates.SUCCESS, text: data['message']);
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -75,32 +74,21 @@ class _RegisterPhoneScreenState extends State<RegisterPhoneScreen> {
               );
             } else {
               print('Error response: ${response.body}');
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(data['message'] ?? 'فشل التحقق من الهاتف')),
-              );
+            showToast(text: data['message'], state: ToastStates.ERROR);
             }
           } catch (e) {
             print('Error decoding JSON: $e');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error decoding response: $e')),
-            );
+            showToast(text: 'خطأ في التحقق من الهاتف', state: ToastStates.ERROR);
           }
         } else {
           print('Error: Received status code ${response.statusCode}');
           print('Response body: ${response.body}');
           final errorResponse = json.decode(response.body);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    ' ${errorResponse['message'] ?? 'خطأ في التحقق من الهاتف'}')),
-          );
+          showToast(text: errorResponse['message'], state: ToastStates.ERROR);
         }
       } catch (e) {
         print('Error: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Network error: ${e.toString()}')),
-        );
+        showToast(text: 'خطأ في التحقق من الهاتف', state: ToastStates.ERROR);
       } finally {
         setState(() {
           _isLoading = false;
@@ -135,6 +123,7 @@ class _RegisterPhoneScreenState extends State<RegisterPhoneScreen> {
                 ),
 
                 PhoneNumberField(
+                  isRequired:   true,
                   phoneController: _phoneController,
                 ),
                 SizedBox(height: 10),

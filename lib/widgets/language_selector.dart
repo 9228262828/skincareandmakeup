@@ -1,3 +1,4 @@
+import 'package:Gomla/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -30,7 +31,9 @@ class LanguageSelector extends StatelessWidget {
           onChanged: (selectedLocale) {
             if (selectedLocale != null) {
               context.read<LocaleCubit>().setLocale(selectedLocale); // Update the locale in LocaleCubit
-              Provider.of<HomeScreenProvider>(context, listen: false).refreshData(context); // Refresh home data if necessary
+              Provider.of<HomeScreenProvider>(context, listen: false).refreshData(context);
+
+              Navigator.pushAndRemoveUntil( context, MaterialPageRoute(builder: (context) => MainScreen(index: 3)), (route) => false);// Refresh home data if necessary
             }
           },
         );

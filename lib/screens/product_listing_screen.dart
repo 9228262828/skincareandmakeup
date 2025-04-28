@@ -51,10 +51,12 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
   String? selectedSortOption;
 
   final List<String> sortOptions = [
+    "default",
     'date',
     'popularity',
     'rating',
-    'price',
+    'price-asc',
+    'price-desc',
   ];
 
   @override
@@ -116,51 +118,6 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
     await fetchChildCategories();
   }
 
-  Future<void> fetchProducts() async {
-    if (isLoading || isLastPage) return;
-    setState(() {
-      isLoading = true;
-    });
-
-    print(widget.categoryId);
-    try {
-      List<Product> newProducts = await wooCommerceService.filterProducts(
-
-        minPrice: selectedMinPrice,
-        maxPrice: selectedMaxPrice,
-        brandId: selectedBrandId,
-        categoryIdFilter: selectedCategoryId ?? widget.categoryId,
-        page: (widget.categoryId == 160 || widget.categoryId == 30) ? 2 : page,
-        orderBy: selectedSortOption,
-      );
-
-      setState(() {
-        products.addAll(newProducts);
-
-        if (newProducts.isNotEmpty) {
-          minPrice ??= newProducts
-              .map((p) => p.price ?? 0)
-              .reduce((a, b) => a < b ? a : b);
-          maxPrice ??= newProducts
-              .map((p) => p.price ?? 0)
-              .reduce((a, b) => a > b ? a : b);
-          selectedMinPrice = minPrice!;
-          selectedMaxPrice = maxPrice!;
-        }
-
-        if (newProducts.length < 10) {
-          isLastPage = true;
-        }
-        page++;
-      });
-    } catch (e) {
-      print(e);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   Future<void> fetchCategories() async {
     try {
@@ -243,12 +200,11 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           RangeSlider(
-                            values:
-                            RangeValues(selectedMinPrice, selectedMaxPrice),
-                            min: minPrice ?? 0,
-                            max: maxPrice ?? 1000,
-                            activeColor:  Color(0xFF212224),
-                            inactiveColor:  Color(0xFF5B5E61).withOpacity(0.5),
+                            values: RangeValues(selectedMinPrice, selectedMaxPrice),
+                            min: minPrice ?? 0, // Use the dynamically calculated minPrice
+                            max: maxPrice ?? 1000, // Use the dynamically calculated maxPrice
+                            activeColor: Color(0xFF212224),
+                            inactiveColor: Color(0xFF5B5E61).withOpacity(0.5),
                             onChanged: (RangeValues values) {
                               setState(() {
                                 selectedMinPrice = values.start;
@@ -256,9 +212,10 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                               });
                             },
                           ),
+
                           Text(
                               '${AppLocalizations.of(context)!.price}: ${selectedMinPrice.toStringAsFixed(2)} - ${selectedMaxPrice.toStringAsFixed(2)}'),
-                          DropdownButton<int>(
+                        /*  DropdownButton<int>(
                             hint:
                             Text(AppLocalizations.of(context)!.selectBrand),
                             value: selectedBrandId,
@@ -289,7 +246,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                                 child: Text(category.name),
                               );
                             }).toList(),
-                          ),
+                          ),*/
                         ],
                       ),
                     ),
@@ -361,8 +318,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                   children: [
                     Text(
                       AppLocalizations.of(context)!.sortProducts,
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SingleChildScrollView(
                       child: Column(
@@ -370,7 +326,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: sortOptions.map((String option) {
                           return RadioListTile<String>(
-                            activeColor:  Color(0xFF212224),
+                            activeColor: Color(0xFF212224),
                             title: Text(_getSortOptionDisplayName(option)),
                             value: option,
                             groupValue: selectedSortOption,
@@ -388,12 +344,11 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                       children: [
                         TextButton(
                           style: TextButton.styleFrom(
-                            side:    BorderSide(color:Color(0xFF212224),),
+                            side: BorderSide(color: Color(0xFF212224)),
                             foregroundColor: Colors.black,
                             backgroundColor: Colors.transparent,
                             textStyle: TextStyle(color: Colors.black),
                           ),
-
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
@@ -408,12 +363,20 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
                             backgroundColor: Color(0xFF212224),
                           ),
                           onPressed: () {
+                            if (selectedSortOption == 'default') {
+                              print("default");
+                            } else {
+                              print(selectedSortOption);
+                            }
+
                             setState(() {
+                              // Apply the sorting logic based on selectedSortOption
                               products.clear();
                               page = 1;
                               isLastPage = false;
                               fetchProducts();
                             });
+
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -433,16 +396,83 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
     );
   }
 
+
+
+   Future<void> fetchProducts() async {
+    if (isLoading || isLastPage) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    print(widget.categoryId);
+
+    try {
+      String? orderBy = selectedSortOption == 'default'
+          ? null
+          : selectedSortOption == 'price-asc'
+          ? 'price&order=asc'  // Sort by price low to high
+          : selectedSortOption == 'price-desc'
+          ? 'price&order=desc' // Sort by price high to low
+          : selectedSortOption;  // For other sorting options (rating, popularity, etc.)
+
+      List<Product> newProducts = await wooCommerceService.filterProducts(
+        minPrice: selectedMinPrice,
+        maxPrice: selectedMaxPrice,
+        brandId: selectedBrandId,
+        categoryIdFilter: selectedCategoryId ?? widget.categoryId,
+        page: page,
+        orderBy: orderBy,
+      );
+
+      setState(() {
+        products.addAll(newProducts);
+
+        if (newProducts.isNotEmpty) {
+          // Calculate the minPrice and maxPrice from the new products
+          minPrice ??= newProducts
+              .map((p) => p.price ?? 0)
+              .reduce((a, b) => a < b ? a : b); // Find the minimum price
+          maxPrice ??= newProducts
+              .map((p) => p.price ?? 0)
+              .reduce((a, b) => a > b ? a : b); // Find the maximum price
+
+          // Update selectedMinPrice and selectedMaxPrice
+          selectedMinPrice = minPrice!;
+          selectedMaxPrice = maxPrice!;
+        }
+
+        if (newProducts.length < 10) {
+          isLastPage = true;
+        }
+        page++;
+      });
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+
   String _getSortOptionDisplayName(String option) {
     switch (option) {
-      case 'popularity':
+      case 'default':
+        return AppLocalizations.of(context)!.defaultSorting;
+        case 'popularity':
         return AppLocalizations.of(context)!.sortByPopularity;
       case 'rating':
         return AppLocalizations.of(context)!.sortByRating;
       case 'date':
         return AppLocalizations.of(context)!.sortByDate;
-      case 'price':
-        return AppLocalizations.of(context)!.sortByPrice;
+      case 'price-asc':
+        return AppLocalizations.of(context)!.sortByPriceLowToHigh;
+      case 'price-desc':
+        return AppLocalizations.of(context)!.sortByPriceHighToLow;
+
       default:
         return AppLocalizations.of(context)!.defaultSorting;
     }
@@ -451,6 +481,7 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       appBar: CustomPagesAppBar(
         title: AppLocalizations.of(context)!.products, home: false,),
       body: NotificationListener<ScrollNotification>(
@@ -461,69 +492,83 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
           }
           return true;
         },
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 50,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(widget.categoryName, style: TextStyle(
-                      fontWeight: FontWeight.bold
-                  ),),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            setState(() {
+              products.clear();
+              page = 1;
+              isLastPage = false;
+              fetchProducts();
+            });
+          },
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 50,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.categoryName.replaceAll('&amp;', '&'),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+
+                  ),
                 ),
               ),
-            ),
-            isLoading && products.isEmpty ?
-            Expanded(child: ProductCardWithShimmer(count: 10,)) : // Initial Shimmer
-            Expanded(
-              child: ListView(
-                children: [
-                  buildCategoriesList(),
-                  if (products.isEmpty)
-                    Center(
-                        child: buildEmptyState(context,
-                            AppLocalizations.of(context)!
-                                .noProductsAvailable)),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(8.0),
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.45,
-                      crossAxisSpacing: 8.0,
-                      mainAxisSpacing: 8.0,
-                    ),
-                    itemCount: isLoading && products.isNotEmpty && page > 1
-                        ? products.length + 1 : products.length, // Show shimmer for load more
-                    itemBuilder: (context, index) {
-                      if (isLoading && index == products.length) {
-                        return ShimmerCard(); // Shimmer for Load More
-                      }
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductScreen(
-                                productId: products[index].id,
+              isLoading && products.isEmpty ?
+              Expanded(child: ProductCardWithShimmer(count: 10,)) : // Initial Shimmer
+              Expanded(
+                child: ListView(
+                  children: [
+                    buildCategoriesList(),
+                    if (products.isEmpty)
+                      Center(
+                          child: buildEmptyState(context,
+                              AppLocalizations.of(context)!
+                                  .noProductsAvailable)),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(8.0),
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.52,
+                        crossAxisSpacing: 8.0,
+                        mainAxisSpacing: 8.0,
+                      ),
+                      itemCount: isLoading && products.isNotEmpty && page > 1
+                          ? products.length + 1 : products.length, // Show shimmer for load more
+                      itemBuilder: (context, index) {
+                        if (isLoading && index == products.length) {
+                          return ShimmerCard(); // Shimmer for Load More
+                        }
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductScreen(
+                                  productId: products[index].id,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        child: ProductCard(
-                          product: products[index], fakeProduct: "",),
-                      );
-                    },
-                  ),
-                ],
+                            );
+                          },
+                          child: ProductCard(
+                            product: products[index], fakeProduct: "",),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 60,)
-          ],
+             ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation

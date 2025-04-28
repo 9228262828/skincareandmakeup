@@ -1,5 +1,6 @@
 import 'package:Gomla/contstants.dart';
 import 'package:Gomla/screens/product_screen.dart';
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,140 +60,138 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ProductsCubit>();
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: CustomPagesAppBar(title: widget.brandName, home: false),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: BlocBuilder<ProductsCubit, ProductsState>(
-            builder: (context, state) {
-              if (state is ProductsLoading && state.page == 1 && state is! ProductsInitial) {
-                return ProductCardWithShimmerAllScreen(count: 10); // Show shimmer during loading
-              } else if (state is ProductsLoaded) {
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<ProductsCubit>().fetchProductss(brandId: widget.id);
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _buildBrandHeader(widget.brandName),
-                      Expanded(
-                        child: GridView.builder(
-                          controller: _scrollController,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.5,
-                            crossAxisSpacing: 8.0,
-                            mainAxisSpacing: 8.0,
-                          ),
-                          itemCount: state.hasReachedMax
-                              ? state.Productss.length
-                              : state.Productss.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index < state.Productss.length) {
-                              final product = state.Productss[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProductScreen(
-                                        productId: product.id,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: ProductCard(product: product, fakeProduct: ''),
-                              );
-                            } else {
-                              return _buildLoadMoreShimmer();
-                            }
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        height: mediaQueryHeight(context) * 0.04,
-                      )
-                    ],
-                  ),
-                );
-              } else if (state is ProductsError) {
-                return Center(child: Text(state.message));
-              } else {
-                return ProductCardWithShimmerAllScreen(count: 10);
-              }
-            },
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
-        floatingActionButton: widget.isLink == false
-            ? Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: mediaQueryWidth(context) * 0.53,
-                height: mediaQueryHeight(context) * 0.05,
-                decoration: BoxDecoration(
-                  color: mainColor,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          showSortDialog(context, cubit);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.sort, color: Colors.white),
-                            Text(
-                              AppLocalizations.of(context)!.sort,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          _showFilterDialog(context, context.read<ProductsCubit>());
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.filter_list_outlined,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!.filter,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 10),
-              CircleAvatar(
-                backgroundColor: mainColor,
-                child: Icon(Icons.share, color: Colors.white),
-              ),
-            ],
-          ),
-        )
-            : SizedBox(height: 0),
-      ),
-    );
+    return Scaffold(
+     backgroundColor:  Colors.grey.shade200,
+     appBar: CustomPagesAppBar(title: widget.brandName, home: false),
+     body: Padding(
+       padding: const EdgeInsets.all(8.0),
+       child: BlocBuilder<ProductsCubit, ProductsState>(
+         builder: (context, state) {
+           if (state is ProductsLoading && state.page == 1 && state is! ProductsInitial) {
+             return ProductCardWithShimmerAllScreen(count: 10); // Show shimmer during loading
+           } else if (state is ProductsLoaded) {
+             return RefreshIndicator(
+               onRefresh: () async {
+                 context.read<ProductsCubit>().fetchProductss(brandId: widget.id);
+               },
+               child: Column(
+                 crossAxisAlignment: CrossAxisAlignment.center,
+                 children: [
+                   _buildBrandHeader(widget.brandName),
+                   Expanded(
+                     child: GridView.builder(
+                       controller: _scrollController,
+                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                         crossAxisCount: 2,
+                         childAspectRatio: 0.53,
+                         crossAxisSpacing: 8.0,
+                         mainAxisSpacing: 8.0,
+                       ),
+                       itemCount: state.hasReachedMax
+                           ? state.Productss.length
+                           : state.Productss.length + 1,
+                       itemBuilder: (context, index) {
+                         if (index < state.Productss.length) {
+                           final product = state.Productss[index];
+                           return GestureDetector(
+                             onTap: () {
+                               Navigator.push(
+                                 context,
+                                 MaterialPageRoute(
+                                   builder: (context) => ProductScreen(
+                                     productId: product.id,
+                                   ),
+                                 ),
+                               );
+                             },
+                             child: ProductCard(product: product, fakeProduct: ''),
+                           );
+                         } else {
+                           return _buildLoadMoreShimmer();
+                         }
+                       },
+                     ),
+                   ),
+                   SizedBox(
+                     height: mediaQueryHeight(context) * 0.04,
+                   )
+                 ],
+               ),
+             );
+           } else if (state is ProductsError) {
+             return Center(child: Text(state.message));
+           } else {
+             return ProductCardWithShimmerAllScreen(count: 10);
+           }
+         },
+       ),
+     ),
+     floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+     floatingActionButton: widget.isLink == false
+         ? Padding(
+       padding: const EdgeInsets.all(25.0),
+       child: Row(
+         mainAxisAlignment: MainAxisAlignment.center,
+         children: [
+           Container(
+             width: mediaQueryWidth(context) * 0.53,
+             height: mediaQueryHeight(context) * 0.05,
+             decoration: BoxDecoration(
+               color: mainColor,
+               borderRadius: BorderRadius.circular(30),
+             ),
+             child: Row(
+               children: [
+                 Expanded(
+                   child: TextButton(
+                     onPressed: () {
+                       showSortDialog(context, cubit);
+                     },
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Icon(Icons.sort, color: Colors.white),
+                         Text(
+                           AppLocalizations.of(context)!.sort,
+                           style: TextStyle(color: Colors.white),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+                 Expanded(
+                   child: TextButton(
+                     onPressed: () {
+                       _showFilterDialog(context, context.read<ProductsCubit>());
+                     },
+                     child: Row(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         Icon(
+                           Icons.filter_list_outlined,
+                           color: Colors.white,
+                         ),
+                         Text(
+                           AppLocalizations.of(context)!.filter,
+                           style: TextStyle(color: Colors.white),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+               ],
+             ),
+           ),
+           SizedBox(width: 10),
+           CircleAvatar(
+             backgroundColor: mainColor,
+             child: Icon(Icons.share, color: Colors.white),
+           ),
+         ],
+       ),
+     )
+         : SizedBox(height: 0),
+          );
   }
 
   Widget _buildBrandHeader(String brandName) {
@@ -278,6 +277,13 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
     builder: (BuildContext context) {
       return Container(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25.0),
+            topRight: Radius.circular(25.0),
+          ),
+        ),
         child: StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Padding(
@@ -286,14 +292,17 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Filter Products',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    AppLocalizations.of(context)!.filterProducts,
+                    style:
+                    TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   // Price Range Slider
                   RangeSlider(
                     values: RangeValues(cubit.minPrice ?? 0, cubit.maxPrice ?? 1000),
                     min: 0,
                     max: 1000,
+                    activeColor:  Color(0xFF212224),
+                    inactiveColor:  Color(0xFF5B5E61).withOpacity(0.5),
                     onChanged: (RangeValues values) {
                       setState(() {
                         cubit.minPrice = values.start;
@@ -302,10 +311,10 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
                     },
                   ),
                   Text(
-                    'Price: ${cubit.minPrice?.toStringAsFixed(2)} - ${cubit.maxPrice?.toStringAsFixed(2)}',
+                    '${AppLocalizations.of(context)!.price}: ${cubit.minPrice?.toStringAsFixed(2)} - ${cubit.maxPrice?.toStringAsFixed(2)}',
                   ),
                   // Brand Dropdown
-                  DropdownButton<int>(
+               /*   DropdownButton<int>(
                     hint: Text(AppLocalizations.of(context)!.selectBrand),
                     value: cubit.selectedBrandId,
                     onChanged: (int? newValue) {
@@ -334,18 +343,28 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
                         child: Text(category.name),
                       );
                     }).toList(),
-                  ),
+                  ),*/
                   // Apply and Cancel buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
+                        style: TextButton.styleFrom(
+                          side:    BorderSide(color:Color(0xFF212224),),
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
+                        ),
                         onPressed: () {
-                          Navigator.of(context).pop();  // Close the filter dialog
+                          Navigator.of(context).pop();
                         },
-                        child: Text('Cancel'),
+                        child: Text(AppLocalizations.of(context)!.cancel,
+                            style: TextStyle(color: Colors.black)),
                       ),
                       TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Color(0xFF212224),
+                        ),
                         onPressed: () {
                           // Apply filter
                           cubit.applyFilter(
@@ -357,7 +376,8 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
                           );
                           Navigator.of(context).pop(); // Close the filter dialog
                         },
-                        child: Text('Apply'),
+                        child: Text(AppLocalizations.of(context)!.apply,
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -372,7 +392,7 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
 }
 
 
-void showSortDialog(BuildContext context, ProductsCubit cubit) {
+showSortDialog(BuildContext context, ProductsCubit cubit) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -381,6 +401,7 @@ void showSortDialog(BuildContext context, ProductsCubit cubit) {
     ),
     builder: (BuildContext context) {
       return Container(
+        color: Colors.grey.shade300,
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
@@ -403,57 +424,97 @@ void showSortDialog(BuildContext context, ProductsCubit cubit) {
                   // List of sort options
                   Column(
                     children: [
+                      // Default Sorting
+                      ListTile(
+                        title: Text(AppLocalizations.of(context)!.defaultSorting),
+                        leading: Radio<String>(
+                          value: 'default',
+                          activeColor: Color(0xFF212224),
+                          groupValue: cubit.selectedSortOption,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                cubit.applySort(value, context);
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      // Date Sorting
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.sortByDate),
                         leading: Radio<String>(
                           value: 'date',
+                          activeColor: Color(0xFF212224),
                           groupValue: cubit.selectedSortOption,
                           onChanged: (value) {
                             if (value != null) {
                               setState(() {
-                                cubit.selectedSortOption = value; // No need for null check operator
+                                cubit.applySort(value, context);
                               });
                             }
                           },
                         ),
                       ),
+                      // Popularity Sorting
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.sortByPopularity),
                         leading: Radio<String>(
                           value: 'popularity',
+                          activeColor: Color(0xFF212224),
                           groupValue: cubit.selectedSortOption,
                           onChanged: (value) {
                             if (value != null) {
                               setState(() {
-                                cubit.selectedSortOption = value; // No need for null check operator
+                                cubit.applySort(value, context);
                               });
                             }
                           },
                         ),
                       ),
+                      // Rating Sorting
                       ListTile(
                         title: Text(AppLocalizations.of(context)!.sortByRating),
                         leading: Radio<String>(
                           value: 'rating',
+                          activeColor: Color(0xFF212224),
                           groupValue: cubit.selectedSortOption,
                           onChanged: (value) {
                             if (value != null) {
                               setState(() {
-                                cubit.selectedSortOption = value; // No need for null check operator
+                                cubit.applySort(value, context);
                               });
                             }
                           },
                         ),
                       ),
+                      // Price Low to High
                       ListTile(
-                        title: Text(AppLocalizations.of(context)!.sortByPrice),
+                        title: Text(AppLocalizations.of(context)!.sortByPriceLowToHigh),
                         leading: Radio<String>(
-                          value: 'price',
+                          value: 'price-asc',
+                          activeColor: Color(0xFF212224),
                           groupValue: cubit.selectedSortOption,
                           onChanged: (value) {
                             if (value != null) {
                               setState(() {
-                                cubit.selectedSortOption = value; // No need for null check operator
+                                cubit.applySort(value, context);
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      // Price High to Low
+                      ListTile(
+                        title: Text(AppLocalizations.of(context)!.sortByPriceHighToLow),
+                        leading: Radio<String>(
+                          value: 'price-desc',
+                          activeColor: Color(0xFF212224),
+                          groupValue: cubit.selectedSortOption,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                cubit.applySort(value, context);
                               });
                             }
                           },
@@ -467,25 +528,23 @@ void showSortDialog(BuildContext context, ProductsCubit cubit) {
                     children: [
                       TextButton(
                         style: TextButton.styleFrom(
-                          side: BorderSide(color: mainColor),
+                          side: BorderSide(color: Color(0xFF212224)),
                           foregroundColor: Colors.black,
                           backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text(
-                          AppLocalizations.of(context)!.cancel,
-                        ),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                       TextButton(
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: mainColor,
+                          backgroundColor: Color(0xFF212224),
                         ),
                         onPressed: () {
                           if (cubit.selectedSortOption != null) {
-                            cubit.applySort(cubit.selectedSortOption!, context); // Only pass if non-null
+                            cubit.applySort(cubit.selectedSortOption!, context);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(AppLocalizations.of(context)!.pleaseEnterYourUsername),
@@ -493,9 +552,7 @@ void showSortDialog(BuildContext context, ProductsCubit cubit) {
                           }
                           Navigator.of(context).pop();
                         },
-                        child: Text(
-                          AppLocalizations.of(context)!.apply,
-                        ),
+                        child: Text(AppLocalizations.of(context)!.apply),
                       ),
                     ],
                   ),

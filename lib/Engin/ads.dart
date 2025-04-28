@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import '../Engin/report_screen.dart';
 import '../Engin/skincare.dart';
+import '../contstants.dart';
 
 class AdPage extends StatefulWidget {
   final bool isbeforetest;
@@ -245,8 +246,8 @@ class _AdPageState extends State<AdPage> {
               ),
             )
           else
-            const Center(
-              child: CircularProgressIndicator(),
+             Center(
+              child: CircularProgressIndicator(color: mainColor),
             ),
           // Mute button
           if (_mediaType == 'video' && _videoController.value.isInitialized)

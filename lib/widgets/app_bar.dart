@@ -3,6 +3,7 @@ import 'package:Gomla/screens/fav_screen.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:googleapis/cloudsearch/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/cart.dart';
@@ -23,9 +24,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return prefs.getString('auth_token') != null;
   }
 
-  void _startSearch(BuildContext context) {
-    showSearch(context: context, delegate: ProductSearchDelegate());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +42,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               fit: BoxFit.contain,
             ),
           ),
+          SizedBox(width: 10),
           FutureBuilder<bool>(
             future: _hasToken(),
             builder: (context, snapshot) => GestureDetector(
@@ -52,7 +51,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Container(
                   width: (snapshot.connectionState == ConnectionState.done &&
                           snapshot.data == true)
-                      ? MediaQuery.of(context).size.width * 0.58
+                      ? MediaQuery.of(context).size.width * 0.57
                       : MediaQuery.of(context).size.width * 0.66,
                   height: MediaQuery.of(context).size.height * 0.045,
                   alignment: Alignment.centerRight,
@@ -79,7 +78,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               onTap: () {
-                _startSearch(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResultsScreen()));
               },
             ),
           ),
@@ -98,7 +97,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(4.0),
                         child: Icon(
                           Icons.favorite_border,
                           color: Colors.white,
@@ -139,9 +138,7 @@ class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
     return prefs.getString('auth_token') != null;
   }
 
-  void _startSearch(BuildContext context) {
-    showSearch(context: context, delegate: ProductSearchDelegate());
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -154,11 +151,11 @@ class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
           GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Padding(
-                padding: const EdgeInsets.only(left: 0.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Icon(Icons.arrow_back_ios, color: mainColor, size: 25),
               )),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: Image(
               image: AssetImage('assets/app_icon.png'),
               width: MediaQuery.of(context).size.width * 0.22,
@@ -166,6 +163,7 @@ class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
               fit: BoxFit.contain,
             ),
           ),
+          SizedBox(width: 10),
           FutureBuilder<bool>(
             future: _hasToken(),
             builder: (context, snapshot) => GestureDetector(
@@ -173,7 +171,7 @@ class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsets.all(4.0),
                 child: Container(
                   height: MediaQuery.of(context).size.height * 0.045,
-                  width: MediaQuery.of(context).size.width * 0.61,
+                  width: MediaQuery.of(context).size.width * 0.57,
                   alignment: Alignment.centerRight,
                   decoration: BoxDecoration(
                       color: Color(0xFF212224),
@@ -198,7 +196,7 @@ class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               onTap: () {
-                _startSearch(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResultsScreen()));
               },
             ),
           ),
@@ -212,45 +210,3 @@ class CustomPagesAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
-class ProductSearchDelegate extends SearchDelegate<String> {
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    Future.microtask(() {
-      close(context, query);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SearchResultsScreen(query: query),
-        ),
-      );
-    });
-    return Container(); // Return an empty container to satisfy the method's requirement
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    return Container();
-  }
-}

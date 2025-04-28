@@ -58,8 +58,9 @@ class _MainScreenState extends State<MainScreen> {
           _onItemTapped(5);
         },
       ),
-      CategoriesScreen(),
       BrandsScreen(),
+      CategoriesScreen(),
+
       ProfileScreen(),
       CartScreen(),
     ];
@@ -77,13 +78,14 @@ class _MainScreenState extends State<MainScreen> {
                 icon: _getIcon(ImageAssets.home, widget.index == 0),
                 label: AppLocalizations.of(context)!.home,
               ),
+
               BottomNavigationBarItem(
-                icon: _getIcon(ImageAssets.category, widget.index == 1),
-                label: AppLocalizations.of(context)!.categories,
+                icon: _getIcon(ImageAssets.sale, widget.index == 1),
+                label: AppLocalizations.of(context)!.brands,
               ),
               BottomNavigationBarItem(
-                icon: _getIcon(ImageAssets.sale, widget.index == 2),
-                label: AppLocalizations.of(context)!.brands,
+                icon: _getIcon(ImageAssets.category, widget.index == 2),
+                label: AppLocalizations.of(context)!.categories,
               ),
               BottomNavigationBarItem(
                 icon: _getIcon(ImageAssets.account, widget.index == 3),

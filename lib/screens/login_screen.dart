@@ -13,6 +13,7 @@ import '../main.dart';
 import '../models/banner.dart';
 import '../providers/banner_repo.dart';
 import '../services/auth_service.dart';
+import '../shared/components/toast_component.dart';
 import '../shared/global/app_theme.dart';
 import '../widgets/pass_fiels.dart';
 import '../widgets/phone_field.dart';
@@ -66,12 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
 
         // Show success message in the Snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.green,
-          ),
-        );
+       showToast(text: message, state: ToastStates.SUCCESS);
 
         // Navigate to the home screen or wherever
         Navigator.pushReplacement(
@@ -80,14 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       } catch (e) {
         // Show error message from API
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${AppLocalizations.of(context)!.loginFailed}: ${e.toString()}',
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
+        showToast(text: e.toString(), state: ToastStates.ERROR);
       } finally {
         setState(() {
           _isLoading = false;
@@ -119,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 PhoneNumberField(
+                  isRequired: true,
                   phoneController: _usernameController,
                 ),
 

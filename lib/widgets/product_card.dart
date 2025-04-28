@@ -64,32 +64,29 @@ class _ProductCardState extends State<ProductCard> {
     return parse(document.body!.text).documentElement!.text;
   }
 
-  void _addToCart() {
-    final cart = Provider.of<Cart>(context, listen: false);
-    if (widget.product != null) {
-      cart.addItem(widget.product, selectedVariation);
-      cart.updateQuantity(widget.product, quantity);
-      // show snackbar
-    /*  ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.addedtoCart),
-        ),
-      );*/
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    double regularPrice =
-        double.tryParse(widget.product.regularPrice.toString()) ?? 0;
-    double discountedPrice =
-        double.tryParse(widget.product.price.toString()) ?? 0;
+    double regularPrice = double.tryParse(widget.product.regularPrice.toString()) ?? 0.0;
+    double discountedPrice = double.tryParse(widget.product.price.toString()) ?? 0.0;
+    double price = 0.0;
 
-// Calculate the percentage difference
-    double percentage = ((regularPrice - discountedPrice) / regularPrice) * 100;
+    if (widget.product.shipping_taxable == true) {
+      // Calculate the price with 15% shipping tax
+      double calculatedPrice = discountedPrice + (discountedPrice * 0.15);
+      price = calculatedPrice;  // This is the final price shown to the user
+
+       double calculatedRegularPrice = regularPrice + (regularPrice * 0.15);
+      regularPrice = calculatedRegularPrice;  // This is the final regular price shown to the user
+    }
+
+// Calculate the percentage difference (based on original prices without tax)
+    double percentage = (((regularPrice) - price) / regularPrice) * 100;
 
 // Round the percentage to the nearest integer
-    int roundedPercentage = percentage.round();
+
+
+    Locale currentLocale = Localizations.localeOf(context);
 
     final fav = Provider.of<Fav>(context);
     final cart = Provider.of<Cart>(context);
@@ -140,14 +137,15 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ),
                 ),
-                roundedPercentage == 0
+                percentage == 0
                     ? Container()
                     :
-                Positioned(
+          currentLocale == Locale('ar')?      Positioned(
                   bottom: 0,
                   right: 0,
+
                   child: Container(
-                    width: mediaQueryWidth(context) * 0.17,
+                    width: mediaQueryWidth(context) * 0.21,
                     height: mediaQueryWidth(context) * 0.07,
                     decoration: BoxDecoration(
                       color: Color(0xffcb0d39),
@@ -162,15 +160,45 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                     child: Center(
                       child: Text(
-                          "${AppLocalizations.of(context)!.off}  $roundedPercentage%",
+                          "${AppLocalizations.of(context)!.off}  ${percentage.toStringAsFixed(2)}%",
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
-                            fontSize: 12),
+                            fontSize: 10),
                       ),
                     ),
                   ),
+                ):
+          Positioned(
+            bottom: 0,
+            left: 0,
+
+            child: Container(
+              width: mediaQueryWidth(context) * 0.21,
+
+              height: mediaQueryWidth(context) * 0.07,
+              decoration: BoxDecoration(
+                color: Color(0xffcb0d39),
+                borderRadius: BorderRadius.circular(3),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.grey,
+                      spreadRadius: -2,
+                      blurRadius: 5,
+                      offset: Offset(0, 0))
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  "${percentage.toStringAsFixed(2)}% ${AppLocalizations.of(context)!.off} ",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12),
                 ),
+              ),
+            ),
+          ),
                  Positioned(
                   top: 0,
                   right: 0,
@@ -307,20 +335,19 @@ class _ProductCardState extends State<ProductCard> {
 SizedBox(height: 10 ),
 
             PriceDisplay(
-              price: widget.product.price,
-              lastPrice: widget.product.regularPrice,
+              price: price,
+              lastPrice: regularPrice,
             ),
             SizedBox(height: 10 ),
 
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 6.0,
+                horizontal: 2.0,
               ),
               child: Text(
                 widget.product.name,
                 maxLines: 2,
-                textAlign: TextAlign.right,
-                overflow: TextOverflow.visible,
+                 overflow: TextOverflow.visible,
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0),
               ),
             ),
@@ -376,7 +403,7 @@ class _ProductCardEmptyState extends State<ProductCardEmpty> {
       decoration: BoxDecoration(
         // shadow
         border: Border.all(color: Colors.grey, width: .1),
-
+color:  Colors.white,
         borderRadius: BorderRadius.circular(3.0),
       ),
       padding: const EdgeInsets.all(4.0),

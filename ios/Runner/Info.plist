@@ -145,6 +145,18 @@
 	<true/>
 
 
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSAllowsArbitraryLoads</key>
+  <true/>
+</dict>
+
+<key>UIAppFonts</key>
+<array>
+  <string>SMSAutoFill</string>
+</array>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Your custom message for photo library access.</string>
 
 <key>NSAppTransportSecurity</key>
 <dict>

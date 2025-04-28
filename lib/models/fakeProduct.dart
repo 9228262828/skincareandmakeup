@@ -12,6 +12,6 @@ Product fakeProduct = Product(
   images: [""],
   categoryId: 101,
   avrage_rating: "4.5", howToUse: '', hazardsCautions: '', brandId: 0,
-  shipping_taxable: false, stock_status: ''
+  shipping_taxable: false, stock_status: '', brandImage: '', brandName: '', stock_quantity: 10
 
 );

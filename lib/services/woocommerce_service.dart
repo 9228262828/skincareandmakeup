@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:Gomla/shared/components/toast_component.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +11,8 @@ import '../models/order.dart';
 import '../models/payment_method.dart';
 import '../models/product.dart';
 import '../models/category.dart';
+import '../models/shipping_method_model.dart';
+import '../models/shppong_zone_model.dart';
 import 'auth_service.dart';
 
 class WooCommerceService {
@@ -72,42 +75,49 @@ class WooCommerceService {
   }
 
   Future<List<Product>> filterProducts({
-
     double? minPrice,
     double? maxPrice,
     int? brandId,
     int? categoryIdFilter,
     int page = 1,
     String? orderBy,
-  }) async
-  {
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale');
     language ??= 'ar';
+
+    // Build the URL dynamically by including parameters if they are not null
     final url = Uri.parse(
-        '$baseUrl/products?page=$page&per_page=10${minPrice != null ? '&min_price=$minPrice' : ''}${maxPrice != null ? '&max_price=$maxPrice' : ''}${brandId != null ? '&brand=$brandId' : ''}${categoryIdFilter != null ? '&category=$categoryIdFilter' : ''}${orderBy != null ? '&orderby=$orderBy' : ''}&lang=$language');
-    final response = await http.get(url, headers: {
-      'Authorization':
-          'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
-    });
+        '$baseUrl/products?page=$page&per_page=10'
+            '${minPrice != null ? '&min_price=$minPrice' : ''}'
+            '${maxPrice != null ? '&max_price=$maxPrice' : ''}'
+            '${brandId != null ? '&brand=$brandId' : ''}'
+            '${categoryIdFilter != null ? '&category=$categoryIdFilter' : ''}'
+            '${orderBy != null ? '&orderby=$orderBy' : ''}'  // Append orderBy only if it's not null
+            '&lang=$language'
+    );
 
-    if (response.statusCode == 200) {
-      /* print(" response.body");
-      print( response.body);
-      print( response.body);
-      print( response.body);
+    print("Request URL: $url"); // Debugging: print the full URL
 
-      print( "response.body");*/
-      print(response.body);
-      print(response.body);
-      print(response.body);
-      print(response.body);
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((item) => Product.fromJson(item)).toList();
-    } else {
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((item) => Product.fromJson(item)).toList();
+      } else {
+        final errorResponse = json.decode(response.body);
+        print("Error Response: ${errorResponse['message']}");
+        throw Exception('Failed to load filtered products');
+      }
+    } catch (error) {
+      print("Error fetching filtered products: $error");
       throw Exception('Failed to load filtered products');
     }
   }
+
 
   Future<Product> fetchProduct(int productId, BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -306,7 +316,7 @@ class WooCommerceService {
     try {
       final response = await http.get(
         Uri.parse(
-            'https://gomla.sa/wp-json/wc/v3/products/brands?lang=$language&per_page=$perPage&page=$page'),
+            'https://gomla.sa/wp-json/wc/v3/products/brands?lang=$language&page=$page&per_page=$perPage'),
         headers: {
           'Authorization': 'Basic ' +
               base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -409,62 +419,19 @@ class WooCommerceService {
     }
   }
 
-  Future<List<Order>> fetchUserOrders(BuildContext context) async {
-    try {
-      // Fetch the JWT token from SharedPreferences
-      final pref = await SharedPreferences.getInstance();
-      final String jwtToken = pref.getString('auth_token') ?? '';
 
-      // Fetch user info to get the userId
-      final userInfo = await AuthService.fetchUserInfo();
-      final userId = userInfo["data"]['id'];
-
-      print("Fetching orders for user ID: $userId");
-
-      // Encode consumer key and secret for WooCommerce authentication
-      String auth =
-          'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
-
-      final response = await http.get(
-        Uri.parse(
-            'https://gomla.sa/wp-json/wc/v3/orders?customer=$userId'), // ✅ Correct API format
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': auth,
-          'gomlaauth': 'Bearer $jwtToken',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
-        print("Orders Response: $jsonResponse");
-
-        if (jsonResponse is List) {
-          return jsonResponse.map((order) => Order.fromJson(order)).toList();
-        } else {
-          print("Unexpected response format");
-          return [];
-        }
-      } else {
-        print('Failed to fetch orders: ${response.statusCode}');
-        print('Response body: ${response.body}');
-        return [];
-      }
-    } catch (e) {
-      print('Error fetching orders: $e');
-      return [];
-    }
-  }
-
-  Future<bool> createOrder({
+  Future<Map<String, String>> createOrder({
     required String firstName,
     required String lastName,
     required String country,
     required String address,
     required String city,
+    required String total,
+    required double totalPrice,
     required String state,
     required String phone,
     required String email,
+    required String status,
     required String orderNotes,
     required String shippingCost,
     required String paymentMethod,
@@ -478,11 +445,11 @@ class WooCommerceService {
     String? language = prefs.getString('locale');
     String? token = prefs.getString('auth_token');
     language ??= 'ar';
+
     final url = Uri.parse('$baseUrl/orders?lang=$language');
 
     // Encoding the consumer key and secret for Basic Authentication
-    String auth =
-        'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
+    String auth = 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
 
     final headers = {
       'Content-Type': 'application/json',
@@ -492,15 +459,16 @@ class WooCommerceService {
 
     final body = jsonEncode({
       'payment_method': paymentMethod,
-      'payment_method_title':
-      paymentMethod == 'cod' ? 'Cash on Delivery' : 'Credit Card',
+      'payment_method_title': paymentMethod == 'cod' ? 'Cash on Delivery' : 'Credit Card',
       'set_paid': setPaid,
-      'status': 'processing', // Set the order status to processing
+      'status': status,
       'customer_id': userId,
+      'total': totalPrice,
       'billing': {
         'first_name': firstName,
         'last_name': lastName,
         'address_1': address,
+        'address_2': address,
         'city': city,
         'state': state,
         'postcode': '',
@@ -512,17 +480,19 @@ class WooCommerceService {
         'first_name': firstName,
         'last_name': lastName,
         'address_1': address,
+        'address_2': address,
         'city': city,
         'state': state,
         'postcode': '',
         'country': country,
       },
-      'line_items': cartItems
-          .map((item) => {
-        'product_id': item.product.id,
-        'quantity': item.quantity,
-      })
-          .toList(),
+      'line_items': cartItems.map((item) {
+        return {
+          'product_id': item.product.id,
+          'quantity': item.quantity,
+          'total': total,
+        };
+      }).toList(),
       'shipping_lines': [
         {
           'method_id': 'shipping_fee',
@@ -538,92 +508,121 @@ class WooCommerceService {
         }
       ]
     });
-    print(body);
 
+    // Send the request to create the order
     final response = await http.post(url, headers: headers, body: body);
 
     if (response.statusCode == 201) {
-      // If successful, parse the response and show a success message
+      // Order created successfully
       final responseBody = jsonDecode(response.body);
-      String message = responseBody['message'] ?? 'Order placed successfully';
-      showToast(text: message, state: ToastStates.SUCCESS);
+      String message = responseBody['message'] ?? 'Order created successfully';
 
-      print('Order created successfully');
-      return true;
+      // Extract orderId and orderKey from the response
+      String orderId = responseBody['id'].toString();
+      String orderKey = responseBody['order_key'].toString();
+
+      // Return orderId and orderKey as a Map
+      return {
+        'orderId': orderId,
+        'orderKey': orderKey,
+      };
     } else {
-      // If failed, parse the response and show the error message
+      // Order creation failed
       String responseBody = utf8.decode(response.bodyBytes);
       final errorResponse = jsonDecode(responseBody);
       String message = errorResponse['message'] ?? 'Failed to create order';
 
+      // Show error toast message
       showToast(text: message, state: ToastStates.ERROR);
 
       print('Failed to create order: ${response.statusCode} - $message');
-      return false;
+
+      // Return empty map in case of failure
+      return {};
     }
   }
 
+
   Future<void> updateOrderStatusToPaid() async {
-    // Implement this function to update the order status to 'paid'
-  }
+   }
 
   Future<List<Product>> searchProducts(
-      String query, int page, BuildContext context) async {
+      String query, int page, BuildContext context) async
+  {
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale');
     language ??= 'ar';
     final url = Uri.parse(
-        '$baseUrl/products?search=$query&page=$page&per_page=10&consumer_key=$consumerKey&consumer_secret=$consumerSecret&lang=$language');
-    final response = await http.get(url);
+        'https://gomla.sa/wp-json/wc/v3/products?search=$query&lang=$language&page=1&per_page=20',
+
+
+    );
+    final response = await http.get(url,
+    headers:    {
+      'Authorization': 'Basic ' +
+          base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+    }
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((item) => Product.fromJson(item)).toList();
     } else {
+      final errorResponse = json.decode(response.body);
+      print(errorResponse['message']);
       throw Exception('Failed to search products');
     }
   }
 
-  Future<List<dynamic>> fetchShippingZones(BuildContext context) async {
+  Future<List<ShippingZoneModel>> fetchShippingZones(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale');
-    language ??= 'ar';
+    String? language = prefs.getString('locale') ?? 'ar';
+    String? token = prefs.getString('auth_token');
     final url = Uri.parse('$baseUrl/shipping/zones?lang=$language');
-    String auth =
-        'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
-    final headers = {'Content-Type': 'application/json', 'Authorization': auth};
-
-    // print('$url&consumer_key=$consumerKey&consumer_secret=$consumerSecret');
+    String auth = 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
+    final headers = {'Content-Type': 'application/json', 'Authorization': auth,
+      'gomlaauth': "Bearer $token",
+    };
 
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<dynamic> zones = jsonDecode(response.body);
-      for (var zone in zones) {
-        zone['methods'] = await fetchShippingMethods(zone['id'], context);
+      List data = jsonDecode(response.body);
+      List<ShippingZoneModel> zones = [];
+
+      for (var item in data) {
+        ShippingZoneModel zone = ShippingZoneModel.fromJson(item);
+        List<ShippingMethodModel> methods = await fetchShippingMethods(zone.id, context);
+
+        // Only add the zone if methods are not empty
+        if (methods.isNotEmpty) {
+          zones.add(zone.copyWith(methods: methods));
+        }
       }
-      // print(zones);
+
       return zones;
     } else {
+      final errorResponse = json.decode(response.body);
+      print(errorResponse['message']);
       throw Exception('Failed to load shipping zones');
     }
   }
 
-  Future<List<dynamic>> fetchShippingMethods(
-      int zoneId, BuildContext context) async {
+  Future<List<ShippingMethodModel>> fetchShippingMethods(int zoneId, BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString('locale');
-    language ??= 'ar';
-    final url =
-        Uri.parse('$baseUrl/shipping/zones/$zoneId/methods?lang=$language');
-    String auth =
-        'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
-    final headers = {'Content-Type': 'application/json', 'Authorization': auth};
+    String? language = prefs.getString('locale') ?? 'ar';
+    String? token = prefs.getString('auth_token');
+    final url = Uri.parse('$baseUrl/shipping/zones/$zoneId/methods?lang=$language');
+    String auth = 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
+    final headers = {'Content-Type': 'application/json', 'Authorization': auth,
+      'gomlaauth': "Bearer $token",
+    };
 
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      List data = jsonDecode(response.body);
+      return data.map((item) => ShippingMethodModel.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load shipping methods');
     }
@@ -642,6 +641,7 @@ class WooCommerceService {
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': auth,
+      "gomlaauth": 'Bearer ${prefs.getString('auth_token')}',
     };
 
     final response = await http.get(url, headers: headers);
@@ -650,10 +650,10 @@ class WooCommerceService {
 
     if (response.statusCode == 200) {
       final List<dynamic> coupons = jsonDecode(response.body);
-      // print(coupons);
+       print(coupons);
       if (coupons.isNotEmpty) {
         final coupon = coupons[0];
-        // print(coupon['amount']);
+        print(coupon['amount']);
         if (coupon['code'] == couponCode) {
           print(couponCode);
           return [

@@ -37,14 +37,13 @@ class _SkincareResultState extends State<SkincareResult> {
   void initState() {
     super.initState();
 
-    // Print the list of features for debugging
-    print("List of skin features:");
+     print("List of skin features:");
     for (var feature in widget.skinFeatures) {
       print(feature);
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      testMoistureFeature();
+    //  testMoistureFeature();
       widget.skincareViewChannel.getReports().then((reports) {
         widget.skincareViewChannel.getOverallScore().then((scores) {
           widget.skincareViewChannel.getSkinTypes().then((skinTypes) {

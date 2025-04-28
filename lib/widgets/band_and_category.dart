@@ -38,12 +38,14 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
     final String baseUrl = '$siteUrl/wp-json/wc/v3';
     final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
     final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+
     final prefs = await SharedPreferences.getInstance();
     String? language = prefs.getString('locale');
     language ??= 'ar';
+
     final response = await http.get(
       Uri.parse(
-          '$baseUrl/products/categories?lang=$language&per_page=100&parent=$categoryId'),
+          '$baseUrl/products/categories/$categoryId?lang=$language&per_page=100&'),
       headers: {
         'Authorization': 'Basic ' +
             base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -51,8 +53,10 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
     );
 
     if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
-      return jsonResponse.map((category) => Category.fromJson(category)).toList();
+      final jsonResponse = json.decode(response.body);
+
+      // ✅ Since it's a single object, wrap it inside a List
+      return [Category.fromJson(jsonResponse)];
     } else {
       throw Exception('Failed to load categories');
     }
@@ -83,7 +87,7 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
           return Brand(
             name: decodedData['name'] ?? '',
             imageUrl: imageUrl,
-            id: decodedData['id'] ?? 0,
+            id: decodedData['id'] ?? 0, slug: decodedData['slug'] ?? '',
           );
         } else {
           throw Exception('Unexpected response format, expected a brand object');
@@ -93,7 +97,7 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
       }
     } catch (e) {
       print("Error fetching brand: $e");
-      return Brand(name: '', imageUrl: '', id: 0);
+      return Brand(name: '', imageUrl: '', id: 0, slug: '');
     }
   }
 
@@ -109,14 +113,14 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical:6),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(2),
                     child: Text(
-                      AppLocalizations.of(context)!.brand,
+                      AppLocalizations.of(context)!.productBrand,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
@@ -166,17 +170,19 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                       }
                     },
                   ),
+
                 ],
               ),
             ),
             Divider(color: Color(0xffEAEAEA)),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical:6),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 4.0, vertical: 2.0),
                     child: Text(
                       AppLocalizations.of(context)!.categoryOfProducts,
                       style: const TextStyle(
@@ -201,22 +207,24 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                           ),
                         );
                       } else if (snapshot.hasError) {
+                        print('Error: ${snapshot.error}');
                         return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                        final category = snapshot.data![0]; // Assuming the first category
+                      } else if (snapshot.hasData &&
+                          snapshot.data!.isNotEmpty) {
+                        final category =
+                            snapshot.data![0]; // Assuming the first category
                         return Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: Row(
                             children: [
-
-                          if (category.imageUrl.isNotEmpty)
-                            Image.network(category.imageUrl, width: 60),
-                      if (category.imageUrl.isEmpty)
-                      Image.asset(ImageAssets.logo, width: 60),
+                              if (category.imageUrl.isNotEmpty)
+                                Image.network(category.imageUrl, width: 60),
+                              if (category.imageUrl.isEmpty)
+                                Image.asset(ImageAssets.logo, width: 60),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  category.name,
+                                  category.name.replaceAll('&amp;', '&'),
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -229,7 +237,7 @@ class _ProductDetailWidgetState extends State<ProductDetailWidget> {
                           ),
                         );
                       } else {
-                        return const Text('No categories available');
+                        return Container();
                       }
                     },
                   ),

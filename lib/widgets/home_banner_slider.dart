@@ -53,7 +53,7 @@ class _HomeBannerSliderState extends State<HomeBannerSlider> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(color: mainColor));
     }
 
     if (_banners.isEmpty) {

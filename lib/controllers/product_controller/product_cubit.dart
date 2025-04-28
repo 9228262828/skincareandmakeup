@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Gomla/controllers/product_controller/product_states.dart';
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -130,49 +131,7 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  void addToCart(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: false);
-    cart.addItem(product, selectedVariation);
-    cart.updateQuantity(product, quantity);
-    emit(ProductAddedToCart(product: product, quantity: quantity));
-
-    // Show SnackBar for adding to cart
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                AppLocalizations.of(context)!.addedtoCart,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                minimumSize: const Size(0, 0),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CartScreen()),
-                );
-              },
-              child: Text(
-                AppLocalizations.of(context)!.goToCart,
-                style: TextStyle(fontSize: 12, color: Colors.pink),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.grey[800],
-        duration: const Duration(seconds: 4),
-      ),
-    );
-  }
-   final String baseUrl = '$siteUrl/wp-json/wc/v3';
+    final String baseUrl = '$siteUrl/wp-json/wc/v3';
   final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
   final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
   Future<void> checkLoginStatus() async {
@@ -220,16 +179,17 @@ class ProductCubit extends Cubit<ProductState> {
       );
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Review submitted successfully')));
+
+        showToast(text: AppLocalizations.of(context)!.reviewSubmittedMessage, state: ToastStates.SUCCESS);
         reviewController.clear();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to submit review')));
+        showToast(text: AppLocalizations.of(context)!.reviewSubmissionFailed, state: ToastStates.ERROR);
+
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Failed to submit review: $e')));
+
     }
   }
 

@@ -66,7 +66,7 @@ appBar:   AppBar(
                     fit: BoxFit.contain,
                     width: double.infinity,
                     height: double.infinity,
-                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                    placeholder: (context, url) =>  Center(child: CircularProgressIndicator(color: mainColor)),
                     errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.white),
                   ),
                 );
@@ -105,7 +105,7 @@ appBar:   AppBar(
                           fit: BoxFit.contain,
                           width: 80,
                           height: 80,
-                          placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                          placeholder: (context, url) =>  Center(child: CircularProgressIndicator(color: mainColor)),
                           errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.white),
                         ),
                       ),

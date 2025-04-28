@@ -15,8 +15,7 @@ class PasswordField extends StatefulWidget {
 
 class _PasswordFieldState extends State<PasswordField> {
 
-  // Boolean to toggle the visibility of the password
-  bool _obscureText = true;
+   bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {

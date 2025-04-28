@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Gomla/Engin/skin_cubit_and_states.dart';
+import 'package:Gomla/Engin/skin_product_scetion.dart';
 import 'package:Gomla/contstants.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -9,14 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image/image.dart' as img;
-
-import '../models/product.dart';
-import '../screens/product_screen.dart';
-import '../widgets/product_card.dart';
-import '../widgets/product_shimmer_widget.dart';
 import 'TEST.dart';
 import 'custom_progress_bar.dart';
-import 'models.dart';
 
 class ReportScreen extends StatefulWidget {
   final List<Map<String, dynamic>> capturedFeatures;
@@ -73,7 +68,18 @@ class _ReportScreenState extends State<ReportScreen> {
 
       body: RefreshIndicator(
         onRefresh: () async {
-          await SkinAnalysisCubit().fetchSkinAnalysis("20", "56", "3" , "3", "2", "20", "95", "85", '75', "48", "38", "35");
+         /* await SkinAnalysisCubit().fetchSkinAnalysis(
+              widget.reports["moisture"]!,
+              widget.reports["redness"]!,
+              widget.reports["oiliness"]!,
+              widget.reports["acne"]!,
+              widget.reports["pore"]!,
+              widget.reports["texture"]!,
+              widget.reports["wrinkle"]!,
+              widget.reports["age_spot"]!,
+              widget.reports["dark_circle_v2"]!,
+              widget.reports["radiance"]!,
+              widget.score["skinAge"]!,     );*/
         },
         child: SingleChildScrollView(
           child: Column(
@@ -241,181 +247,31 @@ class _ReportScreenState extends State<ReportScreen> {
               SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.treatments,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
+              Container(
+                color:  Colors.grey.shade200,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.treatments,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
 
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              BlocProvider(
-                create: (context) {
-                  // Ensure that all values are not null before passing them
-                  final dryness = widget.reports["moisture"];
-                  final redness = widget.reports["redness"];
-                  final oillness = widget.reports["oiliness"];
-                  final acne = widget.reports["acne"];
-                  final pores = widget.reports["pore"];
-                  final texture = widget.reports["texture"];
-                  final wrinkles = widget.reports["wrinkle"];
-                  final darkspots = widget.reports["age_spot"];
-                  final darkcircles = widget.reports["dark_circle_v2"];
-                  final radiance = widget.reports["radiance"];
-                  final skinAge = widget.score["skinAge"];
-                  final overallScore = widget.score["overallScore"];
+              Container(
+                  color:  Colors.grey.shade200,
+                  child: SkinProductsSection(reports: widget.reports, score: widget.score)),
 
-                  if (dryness == null) {
-                    print("dryness is null");
-                  }
-                  if (redness == null) {
-                    print("redness is null");
-                  }
-                  if (oillness == null) {
-                    print("oillness is null");
-                  }
-                  if (acne == null) {
-                    print("acne is null");
-                  }
-                  if (pores == null) {
-                    print("pores is null");
-                  }
-                  if (texture == null) {
-                    print("texture is null");
-                  }
-                  if (wrinkles == null) {
-                    print("wrinkles is null");
-                  }
-                  if (darkspots == null) {
-                    print("darkspots is null");
-                  }
-                  if (darkcircles == null) {
-                    print("darkcircles is null");
-                  }
-                  if (radiance == null) {
-                    print("radiance is null");
-                  }
-                  if (skinAge == null) {
-                    print("skinAge is null");
-                  }
-                  if (overallScore == null) {
-                    print("overallScore is null");
-                  }
 
-                  // Check if any of the values are null before proceeding
-                  if (dryness == null ||
-                      redness == null ||
-                      oillness == null ||
-                      acne == null ||
-                      pores == null ||
-                      texture == null ||
-                      wrinkles == null ||
-                      darkspots == null ||
-                      darkcircles == null ||
-                      radiance == null ||
-                      skinAge == null ||
-                      overallScore == null) {
-                    return SkinAnalysisCubit()
-                      ..emit(SkinAnalysisError("Missing necessary data."));
-                  }
 
-                  // If everything is valid, proceed with the call
-                  return SkinAnalysisCubit()
-                    ..fetchSkinAnalysis(
-                      dryness,
-                      redness,
-                      oillness,
-                      acne,
-                      pores,
-                      texture,
-                      wrinkles,
-                      darkspots,
-                      darkcircles,
-                      radiance,
-                      skinAge,
-                      overallScore,
-                    );
-                },
-                child: BlocBuilder<SkinAnalysisCubit, SkinAnalysisState>(
-                  builder: (context, state) {
-                    if (state is SkinAnalysisLoading) {
-                      return const ProductCardWithShimmer(count: 2);
-                    } else if (state is SkinAnalysisError) {
-                      print(state.message);
-                      return Center(child: Text(state.message));
-                    } else if (state is SkinAnalysisSuccess) {
-                      final categories = _filterValidCategories(
-                          state.response.data.categories);
 
-                      if (categories.isEmpty) {
-                        return const Center(child: Text('no product now'));
-                      }
-
-                      return Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height / 2.2,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: categories.length,
-                                physics: const BouncingScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ProductScreen(
-                                            productId: categories[index]
-                                                .details
-                                                .ar!
-                                                .id!,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width /
-                                          2.2,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: ProductCard(
-                                          product: _createProductFromDetails(
-                                              categories[index].details),
-                                          fakeProduct: "",
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                color: Color(0xFFEAEAEA),
-                thickness: 1.5,
-              ),
               Padding(
                 padding: const EdgeInsets.all(6.0),
                 child: Row(
@@ -709,51 +565,6 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  List<ProductCategory> _filterValidCategories(
-      List<ProductCategory> categories)
-  {
-    return categories.where((category) {
-      final details = category.details;
 
-      final hasValidAr = details.ar != null &&
-          details.ar!.id != null &&
-          details.ar!.name != null &&
-          details.ar!.description != null;
 
-      final hasValidEn = details.en != null &&
-          details.en!.id != null &&
-          details.en!.name != null &&
-          details.en!.description != null;
-
-      final isValid = hasValidAr || hasValidEn;
-      if (!isValid) {
-        print("Invalid category: ${category.key}");
-      }
-
-      return isValid;
-    }).toList();
-  }
-
-  Product _createProductFromDetails(ProductDetails details) {
-    final preferredDetails = details.ar ?? details.en;
-    if (preferredDetails == null) {
-      throw Exception("Both 'ar' and 'en' details are null");
-    }
-
-    return Product(
-      short_description: preferredDetails.description ?? "",
-      sale_price: preferredDetails.salePrice ?? 0.0,
-      regularPrice: preferredDetails.regularPrice ?? 0.0,
-      categoryId: preferredDetails.id ?? 0,
-      images: [preferredDetails.image ?? ""],
-      imageUrl: preferredDetails.image ?? "",
-      id: preferredDetails.id ?? 0,
-      name: preferredDetails.name ?? "",
-      price: preferredDetails.price ?? 0.0,
-      description: preferredDetails.description ?? "",
-      avrage_rating:  "0.0", howToUse: '', hazardsCautions: '', brandId: 0,
-      shipping_taxable:false, stock_status: ''
-
-    );
-  }
-}
+ }

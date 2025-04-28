@@ -50,19 +50,19 @@ class _OpenScreenState extends State<OpenScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: mediaQueryHeight(context) * 0.2),
+              SizedBox(height: mediaQueryHeight(context) * 0.15),
               Center(
                 child: Image.asset(
                   ImageAssets.logoWhite,
-                  height: mediaQueryHeight(context) * 0.2,
-                  width: mediaQueryWidth(context) * 0.7,
+                  height: mediaQueryHeight(context) * 0.15,
+                  width: mediaQueryWidth(context) * 0.65,
                 ),
               ),
               SizedBox(height: 30),
               Center(
                   child: Text(
                     AppLocalizations.of(context)!.sign_in_to_account,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   )),
               SizedBox(height: 20),
               Column(
@@ -76,12 +76,12 @@ class _OpenScreenState extends State<OpenScreen> {
                     ),
                     SizedBox(height: 10),
 
-                    Text(
+                   /* Text(
                       AppLocalizations.of(context)!.find_reorder_purchases,
                       style:
                       TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 10),*/
                     Text(
                       AppLocalizations.of(context)!.track_purchases,
                       style:
@@ -95,7 +95,7 @@ class _OpenScreenState extends State<OpenScreen> {
                     backgroundColor: mainColor,
                     minimumSize: Size(double.infinity, 50),
                     // Text color
-                    side: BorderSide(color: Colors.grey, width: 1),
+                    side: BorderSide(color: mainColor, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(3),
                     ),
@@ -105,7 +105,7 @@ class _OpenScreenState extends State<OpenScreen> {
                   },
                   child: Text(
                     AppLocalizations.of(context)!.already_customer_sign_in,
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
                   )),
               SizedBox(height: 10),
               ElevatedButton(
@@ -114,7 +114,8 @@ class _OpenScreenState extends State<OpenScreen> {
                     backgroundColor: Colors.grey.shade200,
                     minimumSize: Size(double.infinity, 50),
                     // Text color
-                    side: BorderSide(color: Colors.grey, width: .5),
+                    side: BorderSide(color: Colors.grey.shade400, width: .5),
+                    shadowColor:  Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(3),
                     ),
@@ -133,7 +134,8 @@ class _OpenScreenState extends State<OpenScreen> {
                     backgroundColor: Colors.grey.shade200,
                     minimumSize: Size(double.infinity, 50),
                     // Text color
-                    side: BorderSide(color: Colors.grey, width: .5),
+                    side: BorderSide(color: Colors.grey.shade400, width: .5),
+                    shadowColor:  Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(3),
                     ),

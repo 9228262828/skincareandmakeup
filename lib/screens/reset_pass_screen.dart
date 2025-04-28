@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:Gomla/screens/verifyphone_screen.dart';
@@ -9,6 +12,7 @@ import '../contstants.dart';
 import '../services/auth_service.dart';
 import '../shared/utils/app_assets.dart';
 import '../shared/utils/app_values.dart';
+import '../widgets/pass_fiels.dart';
 import '../widgets/phone_field.dart';
 import 'login_screen.dart';
 import 'package:http/http.dart' as http;
@@ -41,7 +45,7 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
         final response = await http.post(
           Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/request-password-reset'),
           body: {
-            'phone': "+966${_phoneController.text}" // Corrected line to send the phone as a string
+            'phone': "${_phoneController.text}" // Corrected line to send the phone as a string
           },
         );
 
@@ -57,9 +61,8 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
 
             if (data['success'] == true) {
               String otp = data['otp'].toString(); // حفظ OTP
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(data['message'] ?? 'تم التحقق من الهاتف')),
-              );
+
+              showToast(text: data['message'] , state: ToastStates.SUCCESS);
               _otpController.text = otp;
               Navigator.push(
                 context,
@@ -73,30 +76,22 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
             } else {
               print('Error response: ${response.body}');
               final Map<String, dynamic> data = json.decode(response.body);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(' ${data['message']}')),
-              );
+             showToast(text: data['message'], state: ToastStates.ERROR);
             }
           } catch (e) {
             // Catching FormatException or any other decoding issues
             print('Error decoding JSON: $e');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error decoding response: $e')),
-            );
+         showToast(text: e.toString(), state: ToastStates.ERROR);
           }
         } else {
           print('Error: Received status code ${response.statusCode}');
           print('Response body: ${response.body}');
           final Map<String, dynamic> data = json.decode(response.body);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(' ${data['message']}')),
-          );
+          showToast(text: data['message'], state: ToastStates.ERROR);
         }
       } catch (e) {
         print('Error: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Network error: ${e.toString()}')),
-        );
+        showToast(text: e.toString(), state: ToastStates.ERROR);
       } finally {
         setState(() {
           _isLoading = false;
@@ -141,6 +136,7 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                   height: mediaQueryHeight(context) * 0.05,
                 ),
                 PhoneNumberField(
+                  isRequired: true,
                   phoneController: _phoneController,
                 ),
                 SizedBox(height: 20),
@@ -159,46 +155,7 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
                   child: Text(AppLocalizations.of(context)!.send_otp),
                 ),
                 SizedBox(height: 20),
-                /*   Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: _signInWithGoogle,
-                      icon: Icon(
-                        Icons.g_mobiledata,
-                        size: 25,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          maximumSize: Size(40, 40),
-                          // Text color
-                          side: BorderSide(color: Colors.grey, width: 1),
-                          shape: CircleBorder(
-                            side: BorderSide(color: Colors.grey, width: 1),
-                          )),
-                    ),
-                    SizedBox(width: 10),
-                    // Facebook Sign-In Button
-                    IconButton(
-                      onPressed: signInWithFacebook,
-                      icon: Icon(
-                        Icons.facebook,
-                        size: 25,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          animationDuration: Duration(milliseconds: 1000),
-                          backgroundColor: Colors.blue,
-                          // Text color
-                          side: BorderSide(color: Colors.blue, width: 1),
-                          shape: CircleBorder(
-                            side: BorderSide(color: Colors.blue, width: 1),
-                          )),
-                    ),
-                  ],
-                ),*/
+
               ],
             ),
           ),
@@ -234,18 +191,16 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _resetPassword() async {
-    if (_otpController.text.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.please_enter_6_numbers)),
-      );
+    if (_otpController.text.length != 6 ) {
+
+      showToast(text: AppLocalizations.of(context)!.please_enter_6_numbers, state: ToastStates.ERROR);
       return;
     }
 
     // Validate if the password is entered
     if (_passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterYourNewPassword)),
-      );
+
+      showToast(text: AppLocalizations.of(context)!.pleaseEnterYourNewPassword, state: ToastStates.ERROR);
       return;
     }
 
@@ -254,7 +209,7 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
     });
 
     final data = {
-      'phone': "+966${widget.phone}",
+      'phone': "${widget.phone}",
       'new_password': _passwordController.text,
       'otp': _otpController.text,
     };
@@ -271,9 +226,8 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
       print("Response Data: $responseData");
 
       if (responseData['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.password_reset_successfully)),
-        );
+
+        showToast(text: AppLocalizations.of(context)!.password_reset_successfully, state: ToastStates.SUCCESS);
         await AuthService.login(
           widget.phone,
           _passwordController.text,
@@ -283,41 +237,121 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
             banners: [],index: 0))), (route) => false);
       } else {
         String errorMessage = responseData["message"] ?? '';
-
+print("Error Message: $errorMessage");
         // Check if there is an 'errors' list
         if (responseData.containsKey("errors")) {
           Map<String, dynamic> errors = responseData["errors"];
           errorMessage = errors.entries.map((e) => "${e.value}").join("\n");
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+
+        showToast(text: errorMessage, state: ToastStates.ERROR);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      print("Error: $e");
+
+      showToast(text: e.toString(), state: ToastStates.ERROR);
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
   }
+
   void _listenOtp() async {
     await SmsAutoFill().listenForCode();
     print("OTP Listen is called");
   }
+  void _startResendTimer() {
+    setState(() {
+      _resendSeconds = 120;
+      _canResend = false;
+    });
+
+    _resendTimer?.cancel();
+    _resendTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_resendSeconds == 0) {
+        timer.cancel();
+        setState(() {
+          _canResend = true;
+        });
+      } else {
+        setState(() {
+          _resendSeconds--;
+        });
+      }
+    });
+  }
+  Timer? _resendTimer;
+  int _resendSeconds = 120;
+  bool _canResend = false;
+
   @override
   void initState() {
     _listenOtp();
     super.initState();
+    _startResendTimer();
+
   }
   @override
   void dispose() {
     SmsAutoFill().unregisterListener();
     print("unVerify Listener");
     super.dispose();
+  }
+  Future<void> _checkPhone() async {
+
+setState(() {
+  _isLoading = true;
+});    print("+966${widget.phone}");
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/request-password-reset'),
+        body: {
+          'phone': "${widget.phone}" // Corrected line to send the phone as a string
+        },
+      );
+
+      // Print the raw response body for inspection
+      print('Response body: ${response.body}');
+
+      // Check if the response is valid JSON or not
+      if (response.statusCode == 200) {
+        try {
+          // Attempt to decode the response if it is in JSON format
+          final Map<String, dynamic> data = json.decode(response.body);
+          print('Decoded data: $data');
+
+          if (data['success'] == true) {
+            String otp = data['otp'].toString(); // حفظ OTP
+
+            showToast(text: data['message'] , state: ToastStates.SUCCESS);
+
+          } else {
+            print('Error response: ${response.body}');
+            final Map<String, dynamic> data = json.decode(response.body);
+            showToast(text: data['message'], state: ToastStates.ERROR);
+          }
+        } catch (e) {
+          // Catching FormatException or any other decoding issues
+          print('Error decoding JSON: $e');
+          showToast(text: e.toString(), state: ToastStates.ERROR);
+        }
+      } else {
+        print('Error: Received status code ${response.statusCode}');
+        print('Response body: ${response.body}');
+        final Map<String, dynamic> data = json.decode(response.body);
+        showToast(text: data['message'], state: ToastStates.ERROR);
+      }
+    } catch (e) {
+      print('Error: $e');
+      showToast(text: e.toString(), state: ToastStates.ERROR);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
 
@@ -339,7 +373,7 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
                   height: mediaQueryHeight(context) * 0.05,
                 ),
 
-                Text("${AppLocalizations.of(context)!.please_enter_6_numbers}${widget.phone}",
+                Text("${AppLocalizations.of(context)!.please_enter_6_numbers} ${widget.phone}",
                   style:  TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -348,18 +382,21 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
                 SizedBox(height: 20),
                 PinFieldAutoFill(
                   currentCode: _otpController.text,
-                  cursor:   Cursor(
-                    color: mainColor,
+                  cursor: Cursor(
+                    color: mainColor,  // تعيين لون المؤشر للون البارز
                     height: 20,
-                    width: 1.5,
+                    width: 2.0,  // جعل المؤشر أكثر سمكًا
                   ),
-                  decoration:  BoxLooseDecoration(
-                      radius: Radius.circular(5),
-
-                      strokeColorBuilder: FixedColorBuilder(
-                          mainColor)),
+                  decoration: BoxLooseDecoration(
+                    radius: Radius.circular(5),
+                    strokeColorBuilder: FixedColorBuilder(mainColor),
+                    bgColorBuilder: FixedColorBuilder(Colors.white),
+                    textStyle: TextStyle(
+                      color: Colors.black,  // تعيين لون النص داخل الحقل
+                      fontSize: 18,         // تعيين حجم النص لرمز OTP
+                    ),
+                  ),
                   codeLength: 6,
-
                   onCodeChanged: (code) {
                     print("OnCodeChanged : $code");
                     _otpController.text = code.toString();
@@ -367,28 +404,19 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
                   onCodeSubmitted: (val) {
                     print("OnCodeSubmitted : $val");
                   },
+                    enabled: true,
                 ),
 
                 SizedBox(height: 10),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: customInputDecoration(
-                      context
-                      , AppLocalizations.of(context)!.password, AppLocalizations.of(context)!.newPassword),
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(context)!
-                          .pleaseEnterYourPhoneNumber;
-                    }
-                    return   null;
-                  },
+                PasswordField(
+                  passwordController: _passwordController,
+                  name:   AppLocalizations.of(context)!.password,
                 ),
 
 
                 SizedBox(height: 20),
                 _isLoading
-                    ? CircularProgressIndicator()
+                    ? CircularProgressIndicator(color: mainColor)
                     : Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
@@ -401,8 +429,32 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
                         minimumSize:    Size(mediaQueryWidth(context)*.9, 40),
                         backgroundColor: Color(0xFF212224),
                         foregroundColor: Colors.white, elevation: 0),
-                    onPressed: _resetPassword,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _resetPassword();
+                      }
+                        print("OTP: ${_otpController.text}");
+                    },
                     child: Text(AppLocalizations.of(context)!.resetPassword),
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                TextButton(
+                  onPressed: _canResend
+                      ? () {
+                    _otpController.clear();
+                     _startResendTimer();
+                    _checkPhone ();
+                  }
+                      : null, // Disable button if timer is running
+                  child: Text(
+                    _canResend
+                        ? AppLocalizations.of(context)!.resend_otp
+                        : "${AppLocalizations.of(context)!.resend_otp} ($_resendSeconds)",
+                    style: TextStyle(
+                      color: _canResend ? mainColor : Colors.grey,
+                    ),
                   ),
                 ),
 

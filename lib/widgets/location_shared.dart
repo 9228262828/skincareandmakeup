@@ -321,7 +321,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ?  Center(child: CircularProgressIndicator(color: mainColor))
           : Stack(
         children: [
           Column(
@@ -358,7 +358,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                         duration: Duration(milliseconds: 100),
                         child: Icon(
                           Icons.location_on_rounded,
-                          size: 20, // Adjust size as needed
+                          size: 22, // Adjust size as needed
                           color: mainColor,
                         ),
                       ),

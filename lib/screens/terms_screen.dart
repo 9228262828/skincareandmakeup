@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../contstants.dart';
+
 
 class TermsAndConditionsPage extends StatefulWidget {
   @override
@@ -30,7 +32,6 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/1877',);
     final response = await http.get(url,
         headers: {
-          "gomlaauth": 'Bearer $token',
 
         });
 
@@ -69,7 +70,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
         ),
       ),
       body: slug.isEmpty || content.isEmpty
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? Center(child: CircularProgressIndicator(color: mainColor)) // Show loading indicator
           : SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:Gomla/screens/verifyphone_screen.dart';
+import 'package:Gomla/shared/components/toast_component.dart';
 import 'package:Gomla/shared/global/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -65,9 +66,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       print("Response Data: $responseData");
 
       if (responseData['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful!')),
-        );
+       showToast(text:  AppLocalizations.of(context)!.registrationSuccess, state: ToastStates.SUCCESS);
         await AuthService.login(
          widget.phone,
           _passwordController.text,
@@ -84,14 +83,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           errorMessage = errors.entries.map((e) => "${e.value}").join("\n");
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+       showToast(text: errorMessage, state: ToastStates.ERROR);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      showToast(text: e.toString(), state: ToastStates.ERROR);
     } finally {
       setState(() {
         _isLoading = false;

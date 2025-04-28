@@ -1,4 +1,5 @@
 import 'package:Gomla/contstants.dart';
+import 'package:Gomla/models/adress_model.dart';
 import 'package:Gomla/screens/add_new_adress_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,12 +8,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../shared/utils/app_values.dart';
+import 'edit_address_screen.dart';
 
 class MapPicker extends StatefulWidget {
   final bool isFromAddAddress;
+  final bool isFromEditAddress;
   final Function(String address, String city, String state, String country, String postcode,) onLocationPicked;
 
-  const MapPicker({Key? key, required this.onLocationPicked, required this.isFromAddAddress}) : super(key: key);
+  const MapPicker({Key? key, required this.onLocationPicked, required this.isFromAddAddress, required this.isFromEditAddress}) : super(key: key);
 
   @override
   _MapPickerState createState() => _MapPickerState();
@@ -118,6 +121,8 @@ class _MapPickerState extends State<MapPicker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor:   Colors.white,
         centerTitle: true,
         title: Image(
           image: AssetImage('assets/app_icon.png'),
@@ -173,7 +178,7 @@ class _MapPickerState extends State<MapPicker> {
                         duration: Duration(milliseconds: 100),
                         child: Icon(
                           Icons.location_on_rounded,
-                          size: 20, // Adjust size as needed
+                          size: 22, // Adjust size as needed
                           color: mainColor,
                         ),
                       ),
@@ -205,19 +210,36 @@ class _MapPickerState extends State<MapPicker> {
                       print("Country: $_country");
                       print("Postal Code: $_postalCode");
 
-                  ! widget.isFromAddAddress? Navigator.pop(context):
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddAddressScreen(
-                            address: _address,
-                            city: _city,
-                            state: _state,
-                            country: _country,
-                            postcode: _postalCode,
+                      if (widget.isFromAddAddress) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddAddressScreen(
+                              address: _address,
+                              city: _city,
+                              state: _state,
+                              country: _country,
+                              postcode: _postalCode,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditAddressScreen(
+                              fromMap: true,
+                              address1: _address,
+                              address: Address(firstName: "", lastName: "", company: "", address1: "", address2: "", city: "", state: "", postcode: "", country: "", phone: "", notes: "", id: 0),
+                              city: _city,
+                              state: _state,
+                              country: _country,
+                              postcode: _postalCode,
+                            ),
+                          ),
+                        );
+                      }
+
                     }
                   },
                   child: Text(

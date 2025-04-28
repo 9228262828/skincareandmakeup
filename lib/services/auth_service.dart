@@ -85,7 +85,11 @@ class AuthService {
 
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Removes all keys and values in SharedPreferences
+    await prefs.remove(_tokenKey);
+    await prefs.remove(_userId);
+      
+    await prefs.remove("isLoggedIn");
+
   }
 
   static Future<Map<String, dynamic>>   fetchUserInfo() async {
@@ -109,7 +113,7 @@ class AuthService {
       print('User info fetched');
       return json.decode(responseUser.body);
     } else {
-      print(responseUser.body);
+      print("${json.decode(responseUser.body)}");
       throw Exception('Failed to fetch user info');
     }
     print('Token validated');
@@ -119,6 +123,40 @@ class AuthService {
   static Future<bool> isLoggedIn() async {
     String? token = await getToken();
     return token != null;
+  }
+  static Future<Map<String, dynamic>> updateUserProfile({
+    required String email,
+    required String firstName,
+    required String lastName,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token'); // Retrieve the auth token
+
+      final response = await http.post(
+        Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/edit-profile'), // Endpoint for updating the profile
+        headers: {
+          'gomlaauth': 'Bearer $token',
+          'Content-Type': 'application/x-www-form-urlencoded', // Form-data encoding
+        },
+        body: {
+          'email': email,
+          'first_name': firstName,
+          'last_name': lastName,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If successful, return the JSON response
+        return json.decode(response.body);
+      } else {
+        // If the request fails, throw an exception
+        throw Exception('Failed to update profile: ${response.body}');
+      }
+    } catch (e) {
+      // Handle any errors (e.g., network, parsing)
+      throw Exception('Error updating profile: $e');
+    }
   }
 }
 

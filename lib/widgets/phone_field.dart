@@ -5,8 +5,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PhoneNumberField extends StatefulWidget {
   final TextEditingController phoneController;
+  final bool isRequired;
 
-  PhoneNumberField({required this.phoneController});
+  PhoneNumberField({required this.phoneController, required this.isRequired});
 
   @override
   _PhoneNumberFieldState createState() => _PhoneNumberFieldState();
@@ -85,7 +86,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                     padding: const EdgeInsets.all(0.0),
                     child: TextFormField(
                       controller: widget.phoneController,
-                      validator: (value) {
+                      validator:widget.isRequired ? (value) {
                         // Check if the value is exactly 9 digits
                         if (value == null || value.isEmpty) {
                           setState(() {
@@ -105,7 +106,7 @@ class _PhoneNumberFieldState extends State<PhoneNumberField> {
                           showErrorImage = false; // No error, reset image
                         });
                         return null; // Valid phone number
-                      },
+                      } : null,
                       decoration: InputDecoration(
                         labelText: " 5xxxxxxxx",
                         labelStyle: TextStyle(color: Color(0xFFD9D9D9)),

@@ -1,5 +1,6 @@
 import 'package:Gomla/Engin/skincare.dart';
 import 'package:Gomla/contstants.dart';
+import 'package:Gomla/screens/open_screen.dart';
 import 'package:Gomla/screens/orders_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -169,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => MainScreen(
-                          index: 2,
+                          index: 1,
                         )) ,  (route) => false);
               },
             ),
@@ -253,17 +254,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 // ✅ Token exists, navigate to AdPage
                 Navigator.push(
                   context,
-                MaterialPageRoute(builder: (context) =>   SkincareDetect()),
-                /*  MaterialPageRoute(
-                    builder: (context) => AdPage(
+                  MaterialPageRoute(
+                    builder: (context) =>
+
+                    AdPage(
                       isbeforetest: true,
                       reports: {},
                       skinAnalysisData: {},
                       capturedFeatures: [],
                       scores: {},
                     ),
-                  ),*/
+                  ),
                 );
+
               } else {
                showToast(text:  AppLocalizations.of(context)!.pleaseLogin, state: ToastStates.ERROR);
                 Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())); // Ensure you have a named route for login

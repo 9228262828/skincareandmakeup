@@ -2,9 +2,9 @@ import 'dart:io';
 import 'package:Gomla/Engin/skincare.dart';
 import 'package:Gomla/contstants.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:pdfx/pdfx.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PDFViewerPage extends StatefulWidget {
   @override
@@ -12,7 +12,6 @@ class PDFViewerPage extends StatefulWidget {
 }
 
 class _PDFViewerPageState extends State<PDFViewerPage> {
-  String? _pdfPath;
   bool _loading = true;
   String? _errorMessage;
   PdfControllerPinch? _pdfController;
@@ -30,49 +29,32 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     });
 
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/downloaded.pdf';
-      final file = File(filePath);
+      final prefs = await SharedPreferences.getInstance();
+      String? language = prefs.getString('locale') ?? 'ar';
 
-      if (await file.exists()) {
-        await file.delete(); // ✅ حذف أي ملف قديم
+      String pdfUrl;
+      if (language == 'ar') {
+        pdfUrl = 'https://gomla.sa/wp-content/uploads/2025/04/gomla-skin-analysis-disclaimer-ar.pdf';
+      } else {
+        pdfUrl = 'https://gomla.sa/wp-content/uploads/2025/04/gomla-skin-analysis-disclaimer-en.pdf'; // Example for non-Arabic language (change URL as needed)
       }
 
-      // 🔥 تحميل الملف من الرابط
-      final response = await http.get(Uri.parse(
-          'https://gomla.sa/skin-analysis/gomla-skin-analysis-disclaimer-en.pdf'));
-
+      final response = await http.get(Uri.parse(pdfUrl));
       if (response.statusCode == 200) {
-        await file.writeAsBytes(response.bodyBytes);
+        // ✅ Convert the response bytes directly into the PDF document
+        final document = await PdfDocument.openData(response.bodyBytes);
+        int pageCount = document.pagesCount;
 
-        if (await file.exists()) {
-          int fileSize = await file.length();
-          print("✅ PDF size: $fileSize bytes");
-
-          if (fileSize == 0) {
-            setState(() {
-              _loading = false;
-              _errorMessage = '❌ PDF file is empty.';
-            });
-            return;
-          }
-
-          // ✅ تحميل الملف والتحقق من عدد الصفحات
-          final document = await PdfDocument.openFile(file.path);
-          int pageCount = document.pagesCount;
-
-          if (pageCount > 0) {
-            setState(() {
-              _pdfPath = file.path;
-              _loading = false;
-              _initializePdfController(document); // ✅ التهيئة بعد التأكد من الملف
-            });
-          } else {
-            setState(() {
-              _loading = false;
-              _errorMessage = '❌ PDF file is empty or corrupted.';
-            });
-          }
+        if (pageCount > 0) {
+          setState(() {
+            _loading = false;
+            _initializePdfController(document); // ✅ Initialize the PDF controller
+          });
+        } else {
+          setState(() {
+            _loading = false;
+            _errorMessage = '❌ PDF file is empty or corrupted.';
+          });
         }
       } else {
         setState(() {
@@ -83,7 +65,7 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     } catch (e) {
       setState(() {
         _loading = false;
-        _errorMessage = '❌ Error downloading PDF: $e';
+        _errorMessage = '❌ Error loading PDF: $e';
       });
     }
   }
@@ -91,13 +73,11 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
   void _initializePdfController(PdfDocument document) {
     setState(() {
       _pdfController = PdfControllerPinch(
-        document: Future.value(document), // ✅ تحويل PdfDocument إلى Future<PdfDocument>
-        initialPage: 0, // ✅ عرض من الصفحة الأولى
+        document: Future.value(document), // ✅ Convert PdfDocument to Future<PdfDocument>
+        initialPage: 0, // ✅ Show from the first page
       );
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,34 +85,36 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
       backgroundColor: mainColor,
       appBar: AppBar(
         title: Text(''),
-        backgroundColor:  mainColor,
+        backgroundColor: mainColor,
         leading: IconButton(
           icon: Icon(Icons.close, color: Colors.black),
-          onPressed: () => Navigator.pushReplacement  (context, MaterialPageRoute(builder: (context) => const SkincareDetect())),
+          onPressed: () => Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const SkincareDetect()),
+          ),
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Colors.white))
           : _errorMessage != null
           ? Center(
         child: Text(
           _errorMessage!,
-          style: const TextStyle(color: Colors.red),
+          style: TextStyle(color: Colors.red),
         ),
       )
           : _pdfController != null
           ? PdfViewPinch(
         controller: _pdfController!,
-        scrollDirection: Axis.vertical, // ✅ تمرير عمودي
-        padding: 5.0, // ✅ ضبط الهوامش
+        scrollDirection: Axis.vertical, // ✅ Vertical scroll
+        padding: 5.0, // ✅ Set the padding
       )
-          : const Center(child: Text("❌ No PDF available")),
+          : Center(child: Text("❌ No PDF available")),
     );
   }
 
   @override
   void dispose() {
-    _pdfController?.dispose(); // ✅ تنظيف الذاكرة عند الخروج
+    _pdfController?.dispose(); // ✅ Clean up the memory when exiting
     super.dispose();
   }
 }

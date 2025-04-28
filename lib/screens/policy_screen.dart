@@ -1,96 +1,94 @@
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../contstants.dart';
+import '../shared/utils/app_values.dart';
 
-class PrivacyPolicyPage extends StatefulWidget {
+class PrivacyPolicyScreen extends StatefulWidget {
+  final String url;
+  final String title;
+
+  PrivacyPolicyScreen({required this.url, required this.title});
   @override
-  _PrivacyPolicyPageState createState() => _PrivacyPolicyPageState();
+  _PrivacyPolicyScreenState createState() => _PrivacyPolicyScreenState();
 }
 
-class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
-  String slug = '';
-  String content = '';
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+  InAppWebViewController? webViewController;
 
   @override
   void initState() {
     super.initState();
-    fetchPrivacyPolicyData();
-  }
-
-  Future<void> fetchPrivacyPolicyData() async {
-      String _tokenKey = 'auth_token';
-
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString(_tokenKey);
-
-    print(prefs.getString(_tokenKey));
-    final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/3',);
-    final response = await http.get(url,
-      headers: {
-        "gomlaauth": 'Bearer $token',
-
-    });
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        slug = data['slug'];
-        content = stripHtmlTags(data['content']['rendered']);
-      });
-    } else {
-      throw Exception('Failed to load privacy policy');
-    }
-  }
-
-  // Function to strip HTML tags
-  String stripHtmlTags(String htmlString) {
-    final RegExp exp = RegExp(r'<[^>]*>');
-    return htmlString.replaceAll(exp, '');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text( AppLocalizations.of(context)!.privacyPolicy,),
-        backgroundColor: Colors.white,
-        surfaceTintColor:   Colors.white,
-        leading:  IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: slug.isEmpty || content.isEmpty
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator
-          : SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+
+        body: Column(
           children: [
-            Text(
-              " $slug",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+             Container(
+              height: mediaQueryHeight(context) * 0.1,
+              decoration: BoxDecoration(
+                color: Color(0xFF212224),
+                borderRadius: BorderRadius.only(
+
+
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(  horizontal: 8.0 ,vertical: 4),
+                child: Column(
+                  children: [
+                    SizedBox(height: mediaQueryHeight(context) * 0.04,),
+                    Row(
+                      children: [
+                        GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 0.0, right: 8.0),
+                              child: Icon(Icons.arrow_back_ios, color: mainColor, size: 25),
+                            )),
+                     ]),
+                  ],
+                ),
+              )
             ),
+            Expanded(
+              child: InAppWebView(
+                initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+                // this i the our website link
+                onWebViewCreated: (controller) {
+                  webViewController = controller;
+                },
 
-
-            SizedBox(height: 10),
-            Text(
-              content,
-              style: TextStyle(fontSize: 14),
-              textAlign: TextAlign.justify,
+                onLoadStart: (controller, url) async {
+                  await webViewController?.evaluateJavascript(source: """
+                      var header = document.querySelector('header');
+                      var footer = document.querySelector('footer');
+                      if (header) header.style.display = 'none';
+                      if (footer) footer.style.display = 'none';
+                    """);
+                  print('Started loading: $url');
+                },
+                onLoadStop: (controller, url) async {
+                  print('Finished loading: $url');
+                  await webViewController?.evaluateJavascript(source: """
+                      var header = document.querySelector('header');
+                      var method = document.querySelector('.payment_method_neoleap');
+                      var footer = document.querySelector('footer');
+                      if (header) header.style.display = 'none';
+                      if (footer) footer.style.display = 'none';
+                      if (method) method.style.display = 'block';
+                    """);
+                },
+              ),
             ),
           ],
-        ),
-      ),
+        )
+
     );
   }
 }

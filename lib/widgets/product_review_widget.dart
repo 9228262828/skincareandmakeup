@@ -22,7 +22,7 @@ class ReviewWidget extends StatelessWidget {
       child: BlocBuilder<ReviewBloc, ReviewState>(
         builder: (context, state) {
           if (state is ReviewLoading) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: mainColor));
           } else if (state is ReviewLoaded) {
             if (state.reviews.isEmpty) {
               return Padding(
@@ -187,9 +187,8 @@ List<Widget> buildRatingIcons(double rating) {
   double partialStar =
       rating - fullStars;
 
-  // Add fully filled stars
-  for (int i = 0; i < fullStars; i++) {
-    stars.add(Icon(Icons.star, color: Colors.amber, size: 20));
+   for (int i = 0; i < fullStars; i++) {
+    stars.add(Icon(Icons.star, color: Colors.amber, size: 16));
   }
 
   // Add partially filled star (if any)
@@ -197,11 +196,11 @@ List<Widget> buildRatingIcons(double rating) {
     stars.add(
       Stack(
         children: [
-          Icon(Icons.star_border, color: Colors.amber, size: 20),
+          Icon(Icons.star_border, color: Colors.amber, size: 16),
           ClipRect(
             clipper: _PartialStarClipper(partialStar),
             child:
-            Icon(Icons.star, color: Colors.amber, size: 20),
+            Icon(Icons.star, color: Colors.amber, size: 16),
           ),
         ],
       ),

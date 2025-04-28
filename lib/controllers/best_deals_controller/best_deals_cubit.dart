@@ -35,6 +35,7 @@ class BestDealsCubit extends Cubit<BestDealsState> {
         emit(BestDealsLoaded(products));
       }
     } catch (e) {
+      print("Error fetching products: $e");
       emit(BestDealsError(e.toString()));
     }
   }

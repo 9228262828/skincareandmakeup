@@ -9,7 +9,7 @@ import '../contstants.dart';
 import '../models/adress_model.dart';
 import 'package:Gomla/shared/components/toast_component.dart';
 import '../screens/adress_screen.dart';
-import '../screens/edit_address_scree.dart';
+import '../screens/edit_address_screen.dart';
 
 class LocationWidget extends StatefulWidget {
   @override
@@ -85,6 +85,13 @@ class _LocationWidgetState extends State<LocationWidget> {
           context,
           MaterialPageRoute(
             builder: (context) => EditAddressScreen(
+              fromMap: false,
+              address1: "",
+              city: "_city",
+              state: "_state",
+              postcode: '_postcode',
+              country: "_country",
+
               address: Address(
                 address1: _address,
                 address2: '',

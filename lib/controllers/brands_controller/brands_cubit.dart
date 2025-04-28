@@ -75,7 +75,7 @@ class ProductsCubit extends Cubit<ProductsState> {
   double? maxPrice;
   int? selectedBrandId;
   int? selectedCategoryId;
-  String selectedSortOption = 'rating';  // Default sorting option
+  String selectedSortOption = 'default';  // Default sorting option
 
   List<Brand> allBrands = [];  // List to store fetched brands
   List<Category> mainCategories = [];  // List to store fetched categories
@@ -107,13 +107,37 @@ class ProductsCubit extends Cubit<ProductsState> {
 
     try {
       WooCommerceService wooCommerceService = WooCommerceService();
+
+      String? orderByValue;
+      // Mapping sorting option to a valid API parameter
+      switch (selectedSortOption) {
+        case 'date':
+          orderByValue = 'date'; // Order by date
+          break;
+        case 'popularity':
+          orderByValue = 'popularity'; // Order by popularity
+          break;
+        case 'rating':
+          orderByValue = 'rating'; // Order by rating
+          break;
+        case 'price-asc':
+          orderByValue = 'price&order=asc'; // Price ascending
+          break;
+        case 'price-desc':
+          orderByValue = 'price&order=desc'; // Price descending
+          break;
+        default:
+          orderByValue = null; // Default sorting
+          break;
+      }
+
       final newProductss = await wooCommerceService.filterProducts(
-         minPrice: minPrice,
+        minPrice: minPrice,
         maxPrice: maxPrice,
         brandId: brandId,
         categoryIdFilter: selectedCategoryId,
         page: page,
-        orderBy: selectedSortOption,  // Apply sorting (default sort)
+        orderBy: orderByValue,  // Correctly passed sorting option
       );
 
       if (newProductss.length < count) {
@@ -124,10 +148,11 @@ class ProductsCubit extends Cubit<ProductsState> {
       emit(ProductsLoaded(Productss: Productss, page: page, hasReachedMax: hasReachedMax));
       page++;
     } catch (error) {
-      print(error);
+      print("Error fetching products: $error");
       emit(ProductsError(message: error.toString()));
     }
   }
+
 
   // Method to fetch brands
   Future<void> fetchBrands() async {
@@ -173,11 +198,11 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   // Method to apply sorting
   void applySort(String sortOption, BuildContext context) {
-    selectedSortOption = sortOption;
+    selectedSortOption = sortOption;  // Update the selected sort option
     page = 1;
     hasReachedMax = false;
     Productss = [];
-    fetchProductss(isInitial: true, context: context);
+    fetchProductss(isInitial: true, context: context);  // Re-fetch products with the new sort option
   }
 
   // Method to apply filters (including minPrice, maxPrice, brand, and category)
@@ -192,6 +217,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     Productss = [];
     fetchProductss(isInitial: true, context: context); // Fetch filtered products
   }
+
   Future<void> resetAndFetchData({
     bool isInitial = true,
     BuildContext? context,
@@ -213,7 +239,6 @@ class ProductsCubit extends Cubit<ProductsState> {
     fetchBrands();
     fetchMainCategories();
   }
-
 }
 
 

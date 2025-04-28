@@ -161,9 +161,32 @@ void showInstructionDialog (context){
                 SizedBox(
                   height: 12,
                 ),
+                // Second row with icon and text
                 Row(
                   children: [
-                    Image.asset("assets/remove.png",width: 35,height:35,color:  mainColor,fit:   BoxFit.contain,),
+                    Image.asset("assets/glasses.png",width: 35,height:35,fit:   BoxFit.contain,), // Another icon
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                          AppLocalizations.of(context)!.removeGlassesInstruction),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Image.asset("assets/lamb.png",width: 35,height:35,fit:   BoxFit.contain,),// Another icon for adjustment
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(AppLocalizations.of(context)!
+                          .adjustPositionInstruction),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Image.asset("assets/makeup.png",width: 35,height:35,fit:   BoxFit.contain,),
                     // Icon before the text
                     SizedBox(width: 8),
                     // Add some space between the icon and the text
@@ -179,39 +202,36 @@ void showInstructionDialog (context){
                   ],
                 ),
                 const SizedBox(height: 12),
-
-                // Second row with icon and text
                 Row(
                   children: [
-                    Image.asset("assets/sunglasses.png",width: 35,height:35,color:  mainColor,fit:   BoxFit.contain,), // Another icon
+                    Image.asset("assets/plus and minus.png",width: 35,height:35,fit:   BoxFit.contain,),
+                    // Icon before the text
                     SizedBox(width: 8),
+                    // Add some space between the icon and the text
                     Expanded(
                       child: Text(
-                          AppLocalizations.of(context)!.removeGlassesInstruction),
+                        AppLocalizations.of(context)!.plus_and_minus,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
 
+
+
                 // Third row with icon and text
-                Row(
-                  children: [
-                    Image.asset("assets/light.png",width: 35,height:35,color:  mainColor,fit:   BoxFit.contain,),// Another icon for adjustment
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(AppLocalizations.of(context)!
-                          .adjustPositionInstruction),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
+
                 Row(
                   children: [
                     Image.asset(
-                      'assets/face-circle.png',
+                      'assets/consultation.png',
                       width: 35,
                       height: 35,
-                      color: mainColor,
+
                     ), // Another icon for adjustment
                     SizedBox(width: 8),
                     Expanded(

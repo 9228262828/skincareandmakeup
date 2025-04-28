@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Gomla/screens/adress_screen.dart';
 import 'package:Gomla/widgets/phone_field.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -100,13 +101,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       showToast(
           text: AppLocalizations.of(context)!.addressAddedSuccessfully,
           state: ToastStates.SUCCESS);
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MainScreen(
-                    index: 0,
-                  )),
-          (route) => false);
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => AddressScreen()), (_) => false);
     } else {
       print(response.body);
       final error = jsonDecode(response.body);
@@ -178,6 +173,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => MapPicker(
+              isFromEditAddress: false,
               isFromAddAddress: true,
               onLocationPicked: (
                 _address,
@@ -306,29 +302,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   ],
                 ),
                 SizedBox(height: 10),
-                TextFormField(
-                  controller: _address2Controller,
-                  decoration: customInputDecoration(
-                      prefixIcon:
-                          Localizations.localeOf(context).languageCode == 'ar'
-                              ? Icon(
-                                  Icons.location_on_outlined,
-                                  size: 20,
-                                  color: Color(0xFFDC9D1E),
-                                ) // Prefix for Arabic
-                              : Directionality(
-                                  textDirection: TextDirection.ltr,
-                                  child: Icon(
-                                    Icons.location_on_outlined,
-                                    size: 20,
-                                    color: Color(0xFFDC9D1E),
-                                  ),
-                                ),
-                      context,
-                      AppLocalizations.of(context)!.address2,
-                      AppLocalizations.of(context)!.address2),
-                ),
-                SizedBox(height: 10),
+
                 TextFormField(
                   controller: _cityController,
                   decoration: customInputDecoration(
@@ -381,16 +355,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       AppLocalizations.of(context)!.state,
                       AppLocalizations.of(context)!.state),
                   readOnly: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return ' ';
-                    }
-                    return null;
-                  },
+
                 ),
                 SizedBox(height: 25),
                 Text(
-                  AppLocalizations.of(context)!.personalInformation,
+                  AppLocalizations.of(context)!.recipient_name,
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -418,13 +387,13 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       context,
                       AppLocalizations.of(context)!.firstName,
                       AppLocalizations.of(context)!.firstName),
-                  validator: (value) {
+                 /* validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
                           .pleaseEnterYourFirstName;
                     }
                     return null;
-                  },
+                  },*/
                 ),
                 SizedBox(height: 10),
                 TextFormField(
@@ -448,16 +417,25 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       context,
                       AppLocalizations.of(context)!.lastName,
                       AppLocalizations.of(context)!.lastName),
-                  validator: (value) {
+                 /* validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppLocalizations.of(context)!
                           .pleaseEnterYourLastName;
                     }
                     return null;
-                  },
+                  },*/
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 25),
+                Text(
+                  AppLocalizations.of(context)!.recipient_phone,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: 15),
                 PhoneNumberField(
+                  isRequired: false,
                   phoneController: _phoneController,
                 ),
                 SizedBox(height: 25),
@@ -472,6 +450,16 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                 StackOver(
                   notesController: _notesController,
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  maxLines: 3,
+                  controller: _address2Controller,
+                  decoration: customInputDecoration(
+
+                      context,
+                      AppLocalizations.of(context)!.address2,
+                      AppLocalizations.of(context)!.address2),
                 ),
                 SizedBox(height: 20),
 

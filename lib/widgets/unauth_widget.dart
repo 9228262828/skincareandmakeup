@@ -3,6 +3,7 @@ import 'package:Gomla/screens/registration_screen.dart';
 import 'package:Gomla/shared/utils/app_values.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../contstants.dart';
 import '../screens/login_screen.dart';
@@ -32,7 +33,7 @@ class UnauthWidget extends StatelessWidget {
           padding:
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 4),
           child: Container(
-            height: mediaQueryHeight(context) * 0.16,
+            height: mediaQueryHeight(context) * 0.22,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(3),
@@ -43,17 +44,23 @@ class UnauthWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    AppLocalizations.of(context)!.welcome,
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w400),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      AppLocalizations.of(context)!.welcome,
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  Text(
-                    AppLocalizations.of(context)!.welcomeText,
-                    style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w100),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      AppLocalizations.of(context)!.welcomeText,
+                      style: TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w100),
+                    ),
                   ),
-                  SizedBox(height: mediaQueryHeight(context) * 0.02),
+                  SizedBox(height: mediaQueryHeight(context) * 0.01),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -81,15 +88,23 @@ class UnauthWidget extends StatelessWidget {
                           }),
                     ],
                   ),
+                  SizedBox(height: mediaQueryHeight(context) * 0.01),
+
                 ],
               ),
             ),
           ),
         ),
         SizedBox(height: mediaQueryHeight(context) * 0.0),
-        Text(
-          AppLocalizations.of(context)!.settings,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Row(
+          crossAxisAlignment:   CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.settings,
+
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         SizedBox(height: mediaQueryHeight(context) * 0.02),
         Container(
@@ -98,7 +113,7 @@ class UnauthWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(3),
             ),
             child: _buildLanguageSelector(context)),
-        SizedBox(height: mediaQueryHeight(context) * 0.06),
+        SizedBox(height: mediaQueryHeight(context) * 0.01),
         /*Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -173,91 +188,108 @@ class UnauthWidget extends StatelessWidget {
             ],
           ),
         ),*/
-        Container(
+        Container(   width:  MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(3),
           ),
-          child: Column(
-            children: [
+          child:Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment:   CrossAxisAlignment.start,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment:   CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                        onTap:()  async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.getString("locale");
+                          print("Locale: ${prefs.getString("locale")}");
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TermsAndConditionsPage()),
-                      );
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.termsOfUse,
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.grey.shade500),
-                    ),
-                  ),
-                  /*TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.helpSupport,
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade500),
-                          ),
-                        ),*/
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PrivacyPolicyPage()),
-                      );
-                    },
-                    child: Text(
-                        AppLocalizations.of(context)!.privacyPolicy,
-                        style: TextStyle(
-                            fontSize: 14, color: Colors.grey.shade500)),
-                  ),
-                  /*TextButton(
-                          onPressed: () {},
-                          child: Text(
-                              AppLocalizations.of(context)!.delveryPolicy,
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.grey.shade500)),
-                        ),*/
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  /*  TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.termsOfUse,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
-                          ),
-                        ),*/
-                  /*TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.faqs,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.shareApp,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
-                          ),
-                        ),*/
-                ],
-              ),
-            ],
+                          prefs.getString("locale")=="ar"?
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/shipping-policies-and-rates/',title:   AppLocalizations.of(context)!.shipping_policies_and_pricing,)),
+                          ):
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/shipping-policies-and-rates/",title:  AppLocalizations.of(context)!.shipping_policies_and_pricing,)),
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.shipping_policies_and_pricing,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
+                    SizedBox(height: 7,),
+                    GestureDetector(
+                        onTap:()  async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.getString("locale");
+                          print("Locale: ${prefs.getString("locale")}");
+
+                          prefs.getString("locale")=="ar"?
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/privacy-policy/',title:  AppLocalizations.of(context)!.privacyPolicy,)),
+                          ):
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/privacy-policy/", title:  AppLocalizations.of(context)!.privacyPolicy,)),
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.privacyPolicy,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
+                    SizedBox(height: 7,),
+                    GestureDetector(
+                        onTap:()  async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.getString("locale");
+                          print("Locale: ${prefs.getString("locale")}");
+
+                          prefs.getString("locale")=="ar"?
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/return-and-exchange-policy/',title:  AppLocalizations.of(context)!.return_and_exchange_policy,)),
+                          ):
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/return-and-exchange-policy/",title:   AppLocalizations.of(context)!.return_and_exchange_policy,)),
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.return_and_exchange_policy,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
+                    SizedBox(height: 7,),
+
+                    GestureDetector(
+                        onTap:()  async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.getString("locale");
+                          print("Locale: ${prefs.getString("locale")}");
+
+                          prefs.getString("locale")=="ar"?
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/customer-service-policy/', title:   AppLocalizations.of(context)!.technical_support_and_customer_service_policy,)),
+                          ):
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/customer-service-policy/",  title:   AppLocalizations.of(context)!.technical_support_and_customer_service_policy,)),
+                          );
+                        },
+                        child: Text(AppLocalizations.of(context)!.technical_support_and_customer_service_policy,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
+                  ],
+                ),
+
+
+
+              ],
+            ),
           ),
         ),
         SizedBox(height: mediaQueryHeight(context) * 0.06),

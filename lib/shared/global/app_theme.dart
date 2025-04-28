@@ -153,14 +153,18 @@ InputDecoration customInputDecoration(
       Widget? suffixIcon,
       Widget? suffix,
       Widget? prefixIcon,
+      TextStyle? hintStyle,
+      Color? cursorColor,
     }) {
   return InputDecoration(
     labelText: labelText,
     hintText: hintText,
+
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide:  BorderSide(color: mainColor),
       gapPadding: 10,
+
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10.0),
@@ -182,8 +186,8 @@ InputDecoration customInputDecoration(
           width: 1), // Red border for error state
     ),
     errorStyle: TextStyle(fontSize: 12), // Adjust the error message size
-    labelStyle:   TextStyle(color: Color(0xFFD9D9D9),fontSize: 14)  ,
-    hintStyle:   TextStyle(color: Color(0xFFD9D9D9),fontSize: 14)  ,
+    labelStyle:   hintStyle ??  TextStyle(color: Color(0xFFD9D9D9),fontSize: 14)  ,
+    hintStyle: hintStyle ??  TextStyle(color: Color(0xFFD9D9D9),fontSize: 14)  ,
     contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
     suffixIcon: suffixIcon,
     suffix: suffix,
