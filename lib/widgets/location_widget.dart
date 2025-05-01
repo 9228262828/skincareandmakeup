@@ -43,86 +43,6 @@ class _LocationWidgetState extends State<LocationWidget> {
     );
   }
 
-   Future<void> _getCurrentLocation() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        _showLocationServiceDialog();
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          showToast(
-            text: 'Location permission denied!',
-            state: ToastStates.WARNING,
-          );
-          await Geolocator.openAppSettings();
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        showToast(
-          text: 'Location permission permanently denied!',
-          state: ToastStates.ERROR,
-        );
-        await openAppSettings();
-        return;
-      }
-
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      if (position != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditAddressScreen(
-              fromMap: false,
-              address1: "",
-              city: "_city",
-              state: "_state",
-              postcode: '_postcode',
-              country: "_country",
-
-              address: Address(
-                address1: _address,
-                address2: '',
-                city: "_city",
-                state: "_state",
-                postcode: '_postcode',
-                country: "_country",
-                phone: '',
-                id: 0, firstName: '', lastName: '', company: '', notes: '',
-              ),
-            ),
-          ),
-        );
-
-      } else {
-        showToast(
-          text: 'Failed to get location!',
-          state: ToastStates.ERROR,
-        );
-      }
-    } catch (e) {
-      showToast(
-        text: 'Failed to get location!',
-        state: ToastStates.ERROR,
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
    Future<void> _fetchAddresses() async {
     setState(() {
@@ -179,6 +99,27 @@ class _LocationWidgetState extends State<LocationWidget> {
     super.initState();
     _fetchAddresses();
   }
+  void _showLocationPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.locationPermissionPermanentlyDenied),
+        content: Text(AppLocalizations.of(context)!.enableLocationFromSettings),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Geolocator.openAppSettings();
+            },
+            child: Text(
+              AppLocalizations.of(context)!.openSettings,
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,14 +135,33 @@ class _LocationWidgetState extends State<LocationWidget> {
           SizedBox(width: 2),
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddressScreen( ),
-                  ),
-                );
-              },
+                onTap: () async {
+                  // Step 1: Check if location services are enabled
+                  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+                  if (!serviceEnabled) {
+                    _showLocationServiceDialog(); // Ask user to enable GPS
+                    return;
+                  }
+
+                  // Step 2: Check permission
+                  LocationPermission permission = await Geolocator.checkPermission();
+
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                  }
+
+                  // Step 3: If permanently denied → open app settings
+                  if (permission == LocationPermission.deniedForever) {
+                    _showLocationPermissionDeniedDialog(); // custom dialog to open settings
+                    return;
+                  }
+
+                  // Step 4: If permission is granted → continue
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddressScreen()),
+                  );
+                },
               child: Text(
                 _addresses.isEmpty
                     ? AppLocalizations.of(context)!.deliveryTo

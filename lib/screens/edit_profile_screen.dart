@@ -45,8 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Function to update the profile
   void updateProfile(String firstName, String lastName, String email) async {
     if (firstName.isEmpty || lastName.isEmpty || email.isEmpty) {
-      // Show an error message if any field is empty
-      print("Error: All fields must be filled.");
+       print("Error: All fields must be filled.");
       return;
     }
 
@@ -111,7 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             TextFormField(
               initialValue: widget.userInfo !["data"]['name'] ?? 'Guest User',
               readOnly: true,
-              decoration: customInputDecoration(context,AppLocalizations.of(context)!.userName, AppLocalizations.of(context)!.userName,
+              decoration: customInputDecoration(context,AppLocalizations.of(context)!.name, AppLocalizations.of(context)!.userName,
 
               ),
             ),
@@ -119,11 +118,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             TextFormField(
                 initialValue: widget.userInfo !["data"]['phone'] ?? 'No Phone Available',
                 readOnly: true,
-                decoration: customInputDecoration(context,  AppLocalizations.of(context)!.userName, "")
+                decoration: customInputDecoration(context,  AppLocalizations.of(context)!.phoneNumber, "")
             ),
             SizedBox(height: 24),
             // Email Field (Read-Only)
-
+Center(child: Text(AppLocalizations.of(context)!.editProfile, style: TextStyle(fontWeight: FontWeight.bold))),
             SizedBox(height: 16),
              TextFormField(
               controller: firstNameController,

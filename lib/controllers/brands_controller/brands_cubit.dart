@@ -66,6 +66,7 @@ class BrandsError extends BrandsState {
 }
 
 
+
 class ProductsCubit extends Cubit<ProductsState> {
   int page = 1;
   final int count = 10;
@@ -75,22 +76,18 @@ class ProductsCubit extends Cubit<ProductsState> {
   double? maxPrice;
   int? selectedBrandId;
   int? selectedCategoryId;
-  String selectedSortOption = 'default';  // Default sorting option
+  String selectedSortOption = 'default';
 
-  List<Brand> allBrands = [];  // List to store fetched brands
-  List<Category> mainCategories = [];  // List to store fetched categories
-  bool hasMoreBrands = true;  // To check if more brands are available
-  bool hasMoreCategories = true;  // To check if more categories are available
-  int currentPageForBrands = 1;  // Pagination for brands
-  int currentPageForCategories = 1;  // Pagination for categories
+  List<Brand> allBrands = [];
+  List<Category> mainCategories = [];
+  bool hasMoreBrands = true;
+  bool hasMoreCategories = true;
+  int currentPageForBrands = 1;
+  int currentPageForCategories = 1;
 
   ProductsCubit() : super(ProductsInitial()) {
-    fetchProductss(isInitial: true); // Initial load with no filters
-    fetchBrands();  // Fetch brands on initialization
-    fetchMainCategories();  // Fetch categories on initialization
-  }
+    }
 
-  // Method to fetch products based on filters
   Future<void> fetchProductss({
     bool isInitial = false,
     int? brandId,
@@ -99,148 +96,157 @@ class ProductsCubit extends Cubit<ProductsState> {
     if (isInitial) {
       page = 1;
       hasReachedMax = false;
-      Productss = [];
+      Productss.clear();
       emit(ProductsLoading(page: page));
     }
 
     if (hasReachedMax) return;
 
     try {
-      WooCommerceService wooCommerceService = WooCommerceService();
+      final prefs = await SharedPreferences.getInstance();
+      String language = prefs.getString('locale') ?? 'ar';
 
-      String? orderByValue;
-      // Mapping sorting option to a valid API parameter
+      String? orderBy;
+      String? order;
+
       switch (selectedSortOption) {
         case 'date':
-          orderByValue = 'date'; // Order by date
+          orderBy = 'date';
           break;
         case 'popularity':
-          orderByValue = 'popularity'; // Order by popularity
+          orderBy = 'popularity';
           break;
         case 'rating':
-          orderByValue = 'rating'; // Order by rating
+          orderBy = 'rating';
           break;
         case 'price-asc':
-          orderByValue = 'price&order=asc'; // Price ascending
+          orderBy = 'price';
+          order = 'asc';
           break;
         case 'price-desc':
-          orderByValue = 'price&order=desc'; // Price descending
-          break;
-        default:
-          orderByValue = null; // Default sorting
+          orderBy = 'price';
+          order = 'desc';
           break;
       }
 
-      final newProductss = await wooCommerceService.filterProducts(
+      final query = _buildFilterQuery(
         minPrice: minPrice,
         maxPrice: maxPrice,
-        brandId: brandId,
-        categoryIdFilter: selectedCategoryId,
+        brandId: brandId ?? selectedBrandId,
+         orderBy: orderBy,
+        order: order,
+        language: language,
         page: page,
-        orderBy: orderByValue,  // Correctly passed sorting option
+      );
+      final String baseUrl = '$siteUrl/wp-json/wc/v3';
+      final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
+      final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+      final url = Uri.parse('$baseUrl/products?$query');
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Basic ' +
+              base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+        },
       );
 
-      if (newProductss.length < count) {
-        hasReachedMax = true;
-      }
+      if (response.statusCode == 200) {
+        List jsonResponse = json.decode(response.body);
+        List<Product> newProductss = jsonResponse.map((p) => Product.fromJson(p)).toList();
 
-      Productss.addAll(newProductss);
-      emit(ProductsLoaded(Productss: Productss, page: page, hasReachedMax: hasReachedMax));
-      page++;
+        if (newProductss.length < count) {
+          hasReachedMax = true;
+        }
+
+        Productss.addAll(newProductss);
+        emit(ProductsLoaded(Productss: Productss, page: page, hasReachedMax: hasReachedMax));
+        page++;
+      } else {
+        throw Exception('Failed to load products');
+      }
     } catch (error) {
       print("Error fetching products: $error");
       emit(ProductsError(message: error.toString()));
     }
   }
 
+  String _buildFilterQuery({
+    double? minPrice,
+    double? maxPrice,
+    int? brandId,
+    String? orderBy,
+    String? order,
+    required String language,
+    required int page,
+  }) {
+    final List<String> queryParams = [];
 
-  // Method to fetch brands
-  Future<void> fetchBrands() async {
-    if (!hasMoreBrands) return;
+    if (minPrice != null) queryParams.add('min_price=$minPrice');
+    if (maxPrice != null) queryParams.add('max_price=$maxPrice');
+    if (brandId != null) queryParams.add('brand=$brandId');
+    if (orderBy != null) queryParams.add('orderby=$orderBy');
+    if (order != null) queryParams.add('order=$order');
+    queryParams.add('lang=$language');
+    queryParams.add('page=$page');
 
-    emit(BrandsFilterLoading());
-    try {
-      WooCommerceService wooCommerceService = WooCommerceService();
-      List<Brand> brands = await wooCommerceService.fetchBrands(page: currentPageForBrands);
-
-      if (brands.isNotEmpty) {
-        allBrands.addAll(brands);  // Add new brands to the list
-        currentPageForBrands++;  // Increment the page for the next fetch
-      }
-
-      hasMoreBrands = brands.length == 21;  // Check if more brands are available (pagination check)
-      emit(BrandsFuilterLoaded(allBrands));  // Emit the loaded brands
-    } catch (e) {
-      emit(BrandsFilterError(e.toString()));  // Handle error while fetching brands
-    }
+    return queryParams.join('&');
   }
 
-  // Method to fetch categories
-  Future<void> fetchMainCategories() async {
-    if (!hasMoreCategories) return;
-
-    emit(CategoriesLoading());
-    try {
-      WooCommerceService wooCommerceService = WooCommerceService();
-      List<Category> categories = await wooCommerceService.fetchCategories(page: currentPageForCategories);
-
-      if (categories.isNotEmpty) {
-        mainCategories.addAll(categories);  // Add new categories to the list
-        currentPageForCategories++;  // Increment the page for the next fetch
-      }
-
-      hasMoreCategories = categories.length == 21;  // Check if more categories are available
-      emit(CategoriesLoaded(mainCategories));  // Emit the loaded categories
-    } catch (e) {
-      emit(CategoriesError(e.toString()));  // Handle error while fetching categories
-    }
-  }
-
-  // Method to apply sorting
   void applySort(String sortOption, BuildContext context) {
-    selectedSortOption = sortOption;  // Update the selected sort option
+    selectedSortOption = sortOption;
     page = 1;
     hasReachedMax = false;
-    Productss = [];
-    fetchProductss(isInitial: true, context: context);  // Re-fetch products with the new sort option
+    Productss.clear();
+    fetchProductss(isInitial: true, context: context);
   }
 
-  // Method to apply filters (including minPrice, maxPrice, brand, and category)
-  void applyFilter(double? minPrice, double? maxPrice, int? brandId, int? categoryId, BuildContext context) {
+  void applyFilter(
+      double? minPrice,
+      double? maxPrice,
+      int? brandId,
+      BuildContext context,
+      ) {
     this.minPrice = minPrice;
     this.maxPrice = maxPrice;
     this.selectedBrandId = brandId;
-    this.selectedCategoryId = categoryId;
 
     page = 1;
     hasReachedMax = false;
-    Productss = [];
-    fetchProductss(isInitial: true, context: context); // Fetch filtered products
+    Productss.clear();
+
+    fetchProductss(isInitial: true, context: context);
   }
 
-  Future<void> resetAndFetchData({
+
+  void filterProductsByBrand(int brandId, BuildContext context) {
+    selectedBrandId = brandId;
+    page = 1;
+    hasReachedMax = false;
+    Productss.clear();
+    emit(ProductsLoading(page: page));
+    fetchProductss(isInitial: true, brandId: brandId, context: context);
+  }
+
+  Future resetAndFetchData({
     bool isInitial = true,
     BuildContext? context,
   }) async {
-    // Reset all states
     page = 1;
     hasReachedMax = false;
-    Productss.clear();  // Clear the current products
-    allBrands.clear();  // Clear the current brands list
-    mainCategories.clear();  // Clear the current categories list
+    Productss.clear();
+    allBrands.clear();
+    mainCategories.clear();
 
-    // Emit loading states to indicate that the data is being refetched
-    emit(ProductsLoading(page: page));  // Loading for products
-    emit(BrandsFilterLoading());  // Loading for brands
-    emit(CategoriesLoading());  // Loading for categories
+    emit(ProductsLoading(page: page));
+    emit(BrandsFilterLoading());
+    emit(CategoriesLoading());
 
-    // Fetch the data again
     fetchProductss(isInitial: isInitial, context: context);
-    fetchBrands();
-    fetchMainCategories();
-  }
-}
+    }
 
+
+ }
 
 
 abstract class ProductsState {}
@@ -256,47 +262,35 @@ class ProductsLoaded extends ProductsState {
   final List<Product> Productss;
   final int page;
   final bool hasReachedMax;
-
-  ProductsLoaded({
-    required this.Productss,
-    required this.page,
-    required this.hasReachedMax,
-  });
+  ProductsLoaded({required this.Productss, required this.page, required this.hasReachedMax});
 }
 
 class ProductsError extends ProductsState {
   final String message;
-
   ProductsError({required this.message});
 }
 
-// States for Brands
 class BrandsFilterLoading extends ProductsState {}
 
 class BrandsFuilterLoaded extends ProductsState {
   final List<Brand> brands;
-
   BrandsFuilterLoaded(this.brands);
 }
 
 class BrandsFilterError extends ProductsState {
   final String message;
-
   BrandsFilterError(this.message);
 }
 
-// States for Categories
 class CategoriesLoading extends ProductsState {}
 
 class CategoriesLoaded extends ProductsState {
   final List<Category> categories;
-
   CategoriesLoaded(this.categories);
 }
 
 class CategoriesError extends ProductsState {
   final String message;
-
   CategoriesError(this.message);
 }
 

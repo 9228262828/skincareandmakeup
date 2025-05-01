@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:googleapis/shared.dart';
 
 
 class DioHelper {
@@ -24,11 +25,21 @@ class DioHelper {
     required String url,
     Map<String, dynamic>? query,
     String? token,
+    Map<String, String>? headers, // <-- Add this
   }) async {
     try {
+      dio!.options.headers.clear(); // Clear any previous headers
+
+      // Set Bearer token if provided
       if (token != null) {
         dio!.options.headers['Authorization'] = 'Bearer $token';
       }
+
+      // Override with custom headers if provided
+      if (headers != null) {
+        dio!.options.headers.addAll(headers);
+      }
+
       return await dio!.get(
         url,
         queryParameters: query,
@@ -36,7 +47,11 @@ class DioHelper {
     } on DioError catch (e) {
       throw Exception(e.message);
     }
-  }static Future<Response> postData({
+  }
+
+
+
+  static Future<Response> postData({
     required String url,
     dynamic data,  // Allow dynamic types like FormData or Map
     Map<String, dynamic>? query,

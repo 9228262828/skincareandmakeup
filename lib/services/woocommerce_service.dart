@@ -42,6 +42,9 @@ class WooCommerceService {
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
+      print("jsonResponse");
+      print(jsonResponse);
+      print("jsonResponse");
       return jsonResponse.map((product) => Product.fromJson(product)).toList();
     } else {
       throw Exception('Failed to load products');

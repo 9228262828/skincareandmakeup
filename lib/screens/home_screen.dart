@@ -1,5 +1,6 @@
 import 'package:Gomla/Engin/skincare.dart';
 import 'package:Gomla/contstants.dart';
+import 'package:Gomla/screens/collection_listing_screen.dart';
 import 'package:Gomla/screens/open_screen.dart';
 import 'package:Gomla/screens/orders_screen.dart';
 import 'package:flutter/material.dart';
@@ -71,12 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
             HomeBannerSlider(
               banners: widget.banners,
             ),
-
-            const SizedBox(
+             const SizedBox(
               height: 10,
             ),
             /*  CircleBrands(),*/
-            GridOffers(),
+            GridOffers(
+              id: 1,
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -113,7 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
               isLink: false,
             ),
             const SizedBox(height: 10.0),
-            GridOffers2(),
+             GridOffers(
+              id: 2,
+            ),
+
             ProductHomeWidget(
               title: AppLocalizations.of(context)!.healthAndBeauty,
               categoryId: 53,
@@ -165,13 +170,14 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8.0),
 
             CircleBrands(
-              ontap: (){
+              ontap: () {
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                         builder: (context) => MainScreen(
-                          index: 1,
-                        )) ,  (route) => false);
+                              index: 1,
+                            )),
+                    (route) => false);
               },
             ),
 
@@ -245,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 55,
             ),
             onPressed: () async {
-
               // Check for token before navigating
               final pref = await SharedPreferences.getInstance();
               final String? jwtToken = pref.getString('auth_token');
@@ -255,9 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-
-                    AdPage(
+                    builder: (context) => AdPage(
                       isbeforetest: true,
                       reports: {},
                       skinAnalysisData: {},
@@ -266,10 +269,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 );
-
               } else {
-               showToast(text:  AppLocalizations.of(context)!.pleaseLogin, state: ToastStates.ERROR);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())); // Ensure you have a named route for login
+                showToast(
+                    text: AppLocalizations.of(context)!.pleaseLogin,
+                    state: ToastStates.ERROR);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            LoginScreen())); // Ensure you have a named route for login
               }
             },
           ),

@@ -150,13 +150,13 @@ class _MapPickerState extends State<MapPicker> {
                 height: MediaQuery.of(context).size.height * 0.8,
                 child: Stack(
                   children: [
-                    GoogleMap(
+                    _selectedPosition == null
+                        ?   Center(child: CircularProgressIndicator(color:  mainColor,))
+                        : GoogleMap(
                       initialCameraPosition: CameraPosition(
-                        target: _selectedPosition ?? LatLng(23.8859, 45.0792)
-                        ,
+                        target: _selectedPosition!,
                         zoom: 15,
                       ),
-
                       onMapCreated: (controller) {
                         _mapController = controller;
                       },

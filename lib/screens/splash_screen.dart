@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../models/banner.dart';
 import '../providers/banner_repo.dart';
@@ -20,41 +21,51 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _gifImage = Image.asset('assets/logo Gomla Gif 3.gif');
     _loadSplashData();
-    _gifImage = Image.asset('assets/logo Gomla Gif 3.gif',); // Ensure the path is correct
   }
 
+   Future<void> _loadSplashData() async {
+     LocationPermission permission = await Geolocator.checkPermission();
+     print("Initial permission status: $permission");
 
-  Future<void> _loadSplashData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+     if (permission == LocationPermission.denied ||
+         permission == LocationPermission.deniedForever) {
+       permission = await Geolocator.requestPermission();
+       print("Requested permission status: $permission");
 
-    // Load saved locale or default to 'ar'
-    String savedLocale = prefs.getString("locale") ?? "ar";
-    print('Stored locale: $savedLocale');
+       if (permission == LocationPermission.denied ||
+           permission == LocationPermission.deniedForever) {
+         print("Permission denied again: $permission");
+         // Still allow the app to continue
+       }
+     } else {
+       print("Permission already granted: $permission");
+     }
 
-    // Fetch banners
+     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Wait until the GIF finishes
-    await Future.delayed(Duration(milliseconds: _gifDuration));
+     // Step 2: Load saved locale
+     String savedLocale = prefs.getString("locale") ?? "ar";
+     print('Stored locale: $savedLocale');
 
-    // Determine navigation flow
-    determineNavigation();
-  }
+     // Step 3: Wait for splash duration
+     await Future.delayed(Duration(milliseconds: _gifDuration));
 
+     // Step 4: Navigate
+     determineNavigation(); // ✅ always call it
+   }
 
   Future<void> determineNavigation() async {
     final prefs = await SharedPreferences.getInstance();
-
     final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-    print('isFirstLaunch: $isFirstLaunch');
-
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    print('isLoggedIn: $isLoggedIn');
-
     final token = prefs.getString('auth_token');
+
+    print('isFirstLaunch: $isFirstLaunch');
+    print('isLoggedIn: $isLoggedIn');
     print('auth_token: $token');
 
-    // Navigate based on first launch and logged-in status
     if (isFirstLaunch) {
       await prefs.setBool('isFirstLaunch', false);
       Navigator.pushReplacement(
@@ -63,18 +74,20 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     } else {
       Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen(banners: [], index: 0)),
-              (route) => false);
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen(banners: [], index: 0)),
+            (route) => false,
+      );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF212224),
       body: Center(
-        child: _gifImage, // Preloaded GIF
+        child: _gifImage,
       ),
     );
   }

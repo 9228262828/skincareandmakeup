@@ -489,9 +489,13 @@ class CartItemWidget extends StatelessWidget {
                                 size: 12,
                               ),
                               onPressed: () {
-                                cart.updateQuantity(
-                                    cartItem.product, cartItem.quantity + 1);
+                                if (cartItem.quantity <cartItem.product.stock_quantity && cartItem.quantity <cartItem.product.stock_quantity) { // <-- check if less than stock
+
+                                  cart.updateQuantity(cartItem.product, cartItem.quantity + 1);                                } else {
+                                  showToast(text: AppLocalizations.of(context)!.there_is_no_more_is_stock , state: ToastStates.WARNING );
+                                }
                               },
+
                             ),
                           ),
                         ),

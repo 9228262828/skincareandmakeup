@@ -1,82 +1,149 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:Gomla/shared/utils/app_values.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../contstants.dart';
+import '../screens/collection_listing_screen.dart';
 import '../screens/product_listing_screen.dart';
+class CollectionItem {
+  final int id;
+  final String name;
+  final String? image;
+
+  CollectionItem({
+    required this.id,
+    required this.name,
+    required this.image,
+  });
+
+  factory CollectionItem.fromJson(Map<String, dynamic> json) {
+    return CollectionItem(
+      id: json['id'],
+      name: json['name'],
+      image: json['image'] is String ? json['image'] : null,
+    );
+  }
+}
+
 
 class GridOffers extends StatefulWidget {
+final   int id ;
+
+  const GridOffers({super.key, required this.id});
   @override
   _GridOffersState createState() => _GridOffersState();
 }
 
 class _GridOffersState extends State<GridOffers> {
   final ScrollController _scrollController = ScrollController();
-
+  List<Map<String, String>> apiItems = [];
 
   @override
+  void initState() {
+    super.initState();
+   widget.id == 1 ? fetchCollections1() : fetchCollections();
+  }
+
+  Future<void> fetchCollections1() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale');
+    if (language == null) {
+      language = 'ar';
+    }
+    final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
+    final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+    try {
+      final response = await http.get(Uri.parse('https://gomla.sa/wp-json/custom/v1/collections/?lang=$language') ,
+        headers:  {
+          'Authorization': 'Basic ' +
+              base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+        }
+      );
+
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        print("data");
+        print(data);
+        final List<Map<String, String>> items = data
+            .take(12)
+            .map<Map<String, String>>((item) {
+          final dynamic imageField = item['image'];
+          return {
+            'image': imageField is String ? imageField : '', // fallback to empty string if it's not a string
+            'label': item['name'] ?? '',
+            'id': item['id']?.toString() ?? '',
+          };
+        }).toList();
+
+
+        setState(() {
+          apiItems = items;
+        });
+      } else {
+        print('Failed to load collections. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching collections: $e');
+    }
+  }
+  Future<void> fetchCollections() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? language = prefs.getString('locale');
+    if (language == null) {
+      language = 'ar';
+    }
+    final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
+    final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+    try {
+      final response = await http.get(Uri.parse('https://gomla.sa/wp-json/custom/v1/collections/?lang=$language') ,
+        headers:  {
+          'Authorization': 'Basic ' +
+              base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
+        }
+      );
+
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        print("data");
+        print(data);
+        final last12 = data.length >= 12 ? data.sublist(data.length - 12) : data;
+
+        final List<Map<String, String>> items = last12.map<Map<String, String>>((item) {
+          final dynamic imageField = item['image'];
+          return {
+            'image': imageField is String ? imageField : '',
+            'label': item['name'] ?? '',
+            'id': item['id']?.toString() ?? '',
+          };
+        }).toList();
+
+
+
+        setState(() {
+          apiItems = items;
+        });
+      } else {
+        print('Failed to load collections. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching collections: $e');
+    }
+  }
+
+   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> productsAr = [
-      {
-        'mainLabel': AppLocalizations.of(context)!.worldofdiscounts,
-        'items': [
-          {'image': 'assets/1.png', 'label': AppLocalizations.of(context)!.diapers, "id": "5559"},
-          {'image': 'assets/2.png', 'label': AppLocalizations.of(context)!.moisturizingtheskin, "id": "5560"},
-          {'image': 'assets/3.png', 'label': AppLocalizations.of(context)!.makeupdiscounts, "id": "5557"},
-          {'image': 'assets/4.png', 'label': AppLocalizations.of(context)!.sunscreenDiscounts, "id": "5558"},
-        ],
-      },
-      {
-        'mainLabel': AppLocalizations.of(context)!.worldofwashes,
-        'items': [
-          {'image': 'assets/5.png', 'label': AppLocalizations.of(context)!.exfoliants, "id": "5564"},
-          {'image': 'assets/6.png', 'label': AppLocalizations.of(context)!.dryskincleansers, "id": "5562"},
-          {'image': 'assets/7.png', 'label': AppLocalizations.of(context)!.sensitiveskincleansers, "id": "5563"},
-          {'image': 'assets/8.png', 'label': AppLocalizations.of(context)!.oilyskincleansers, "id": "5561"},
-        ],
-      },
-      {
-        'mainLabel': "عيشي الرومانسية في اختيارك",
-        'items': [
-          {'image': 'assets/9.png', 'label': "الشموع", "id": "5565"},
-          {'image': 'assets/10.png', 'label': "العدسات ", "id": "5568"},
-          {'image': 'assets/11.png', 'label': "المكياج", "id": "5566"},
-          {'image': 'assets/12.png', 'label': "الهدايا", "id": "5567"},
-        ],
-      },
-    ];
-    final List<Map<String, dynamic>> productsEn = [
-      {
-        'mainLabel': "Discount World",
-        'items': [
-          {'image': 'assets/1.png', 'label': "Diapering", "id": "5119"},
-          {'image': 'assets/2.png', 'label': "Skin Moisturizing", "id": "5584"},
-          {'image': 'assets/3.png', 'label': "Makeup Discounts", "id": "5581"},
-          {'image': 'assets/4.png', 'label': "Sunscreen Discounts", "id": "5582"},
-        ],
-      },
-      {
-        'mainLabel': "Cleansers World",
-        'items': [
-          {'image': 'assets/5.png', 'label': "Exfoliators", "id": "5588"},
-          {'image': 'assets/6.png', 'label': "Dry Skin Cleanser", "id": "5588"},
-          {'image': 'assets/7.png', 'label': "Sensitive Skin Cleanser", "id": "5588"},
-          {'image': 'assets/8.png', 'label': "Oily Skin Cleanser", "id": "5585"},
-        ],
-      },
-      {
-        'mainLabel': "Live the Romance",
-        'items': [
-          {'image': 'assets/9.png', 'label': "Candles", "id": "5589"},
-          {'image': 'assets/10.png', 'label': "Lenses ", "id": "5592"},
-          {'image': 'assets/11.png', 'label': "Makeup", "id": "5590"},
-          {'image': 'assets/12.png', 'label': "Gifts", "id": "5591"},
-        ],
-      },
-    ];
-    final String locale = Localizations.localeOf(context).languageCode;
-    final List<Map<String, dynamic>> products = locale == 'ar' ? productsAr : productsEn;
-    return Padding(
+     return apiItems.isEmpty
+         ? shimmerSection(context)
+
+
+         : Padding(
       padding: const EdgeInsets.all(2.0),
       child: Container(
         decoration: BoxDecoration(
@@ -88,35 +155,30 @@ class _GridOffersState extends State<GridOffers> {
           scrollDirection: Axis.horizontal,
           physics: BouncingScrollPhysics(),
           controller: _scrollController,
-          itemCount: products.length,
+          itemCount: min(3, (apiItems.length / 4).ceil()),
           itemBuilder: (context, sectionIndex) {
-            final section = products[sectionIndex];
+            final sectionLabels =  widget.id == 2? [
+              AppLocalizations.of(context)!.specialAdditions,
+              AppLocalizations.of(context)!.newLabel,
+              AppLocalizations.of(context)!.ourPicks,
 
-            return Container(
-              width: mediaQueryWidth(context) * 0.78,
-              margin: EdgeInsets.symmetric(horizontal: 5),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // **Main Label for Each Section**
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      child: Text(
-                        section['mainLabel'],
-                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold,),
-                      ),
-                    ),
-                    _buildRow(context, section['items'], 0),
-                    _buildRow(context, section['items'], 2),
-                  ],
-                ),
-              ),
+            ] :    [
+              AppLocalizations.of(context)!.artisticTouch,
+              AppLocalizations.of(context)!.unlimitedRelaxation,
+              AppLocalizations.of(context)!.funTime,
+
+            ];
+
+
+            final label = sectionIndex < sectionLabels.length
+                ? sectionLabels[sectionIndex]
+                : "قسم ${sectionIndex + 1}";
+
+            return _buildSection(
+              context,
+              mainLabel: label,
+              items: apiItems,
+              sectionIndex: sectionIndex,
             );
           },
         ),
@@ -124,14 +186,64 @@ class _GridOffersState extends State<GridOffers> {
     );
   }
 
+  Widget _buildSection(
+      BuildContext context, {
+        required String mainLabel,
+        required List<Map<String, String>> items,
+        required int sectionIndex,
+      })
+  {
+    final startIndex = sectionIndex * 4;
+    final endIndex = startIndex + 4;
+
+    // Guard: If not enough items to render this section, return empty
+    if (startIndex >= items.length) {
+      return SizedBox.shrink();
+    }
+
+    final sectionItems = items.sublist(
+      startIndex,
+      endIndex > items.length ? items.length : endIndex,
+    );
+
+    return Container(
+      width: mediaQueryWidth(context) * 0.78,
+      margin: EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Text(
+                mainLabel,
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+              ),
+            ),
+            _buildRow(context, sectionItems, 0),
+            _buildRow(context, sectionItems, 2),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   Widget _buildRow(BuildContext context, List<Map<String, String>> items, int offset) {
     return Row(
       children: List.generate(2, (subIndex) {
         int productIndex = offset + subIndex;
         if (productIndex >= items.length) {
-          return Expanded(child: Container()); // Empty container to maintain layout
+          return Expanded(child: Container());
         }
         final product = items[productIndex];
+        print(product['id']);
 
         return Expanded(
           child: GestureDetector(
@@ -139,11 +251,9 @@ class _GridOffersState extends State<GridOffers> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductListingScreen(
-                    categoryId: int.parse(product['id']!),
+                  builder: (context) => CollectionListingScreen(
+                    id: product['id']!,
                     categoryName: product['label']!,
-                    type: "id",
-                    isLink: false,
                   ),
                 ),
               );
@@ -156,20 +266,29 @@ class _GridOffersState extends State<GridOffers> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: mainColor,
+                      color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(3),
                     ),
-                    child: Image.asset(
+                    child: product['image'] != null && product['image']!.isNotEmpty
+                        ? Image.network(
                       product['image']!,
                       height: mediaQueryHeight(context) * 0.152,
+                      width: double.infinity,
                       fit: BoxFit.cover,
-                    ),
+                    )
+                        : Image.asset(
+                      'assets/placeholder.png', // Replace with your asset path
+                      height: mediaQueryHeight(context) * 0.152,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
-                      product['label']!,
-                      maxLines:   1,
+                      product['label']!.replaceAll("&#039;", "'"),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
                     ),
@@ -182,7 +301,70 @@ class _GridOffersState extends State<GridOffers> {
       }),
     );
   }
+
+  Widget shimmerSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: Container(
+        height: mediaQueryHeight(context) * 0.45,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: 3,
+          itemBuilder: (context, index) {
+            return Container(
+              width: mediaQueryWidth(context) * 0.78,
+              margin: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(3),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 20,
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      width: 100,
+                      color: Colors.grey[300],
+                    ),
+                    shimmerRow(context),
+                    shimmerRow(context),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget shimmerRow(BuildContext context) {
+    return Row(
+      children: List.generate(2, (index) {
+        return Expanded(
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              height: mediaQueryHeight(context) * 0.2,
+              margin: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
 }
+
+
 
 class GridOffers2 extends StatefulWidget {
   @override

@@ -10,13 +10,23 @@ class SkinAnalysisResponse {
   });
 
   factory SkinAnalysisResponse.fromJson(Map<String, dynamic> json) {
-    if (json['data'] == null || json['data'] is! Map<String, dynamic>) {
+    final data = json['data'];
+
+    if (data == null || data is! Map<String, dynamic>) {
       throw Exception("Invalid or missing 'data' field");
+    }
+
+     if (data['msg'] == "No Products Found") {
+      return SkinAnalysisResponse(
+        success: json['success'] ?? false,
+        data: SkinData(categories: []), // Return empty list
+        totalCount: json['total_count'] ?? 0,
+      );
     }
 
     return SkinAnalysisResponse(
       success: json['success'] ?? false,
-      data: SkinData.fromJson(json['data']),
+      data: SkinData.fromJson(data),
       totalCount: json['total_count'] ?? 0,
     );
   }
@@ -34,43 +44,18 @@ class SkinData {
       if (value is Map<String, dynamic>) {
         final details = ProductDetails.fromCategoryJson(value);
 
-        final hasValidAr = details.ar != null &&
-            details.ar!.id != null &&
-            details.ar!.name != null &&
-            details.ar!.description != null &&
-            details.ar!.price != null;
+        final hasValidAr = details.ar?.id != null && details.ar?.name != null && details.ar?.price != null;
+        final hasValidEn = details.en?.id != null && details.en?.name != null && details.en?.price != null;
 
-        final hasValidEn = details.en != null &&
-            details.en!.id != null &&
-            details.en!.name != null &&
-            details.en!.description != null &&
-            details.en!.price != null;
-
-        final isValid = hasValidAr || hasValidEn;
-
-        if (isValid) {
-          allCategories.add(ProductCategory(
-            key: key,
-            details: details,
-          ));
+        if (hasValidAr || hasValidEn) {
+          allCategories.add(ProductCategory(key: key, details: details));
         } else {
-          print("Skipping invalid category: $key -> $value");
+          print("Skipping invalid category: $key");
         }
       }
     });
 
-    if (allCategories.isEmpty) {
-      throw Exception("No valid categories found in data");
-    }
-
-    // ترتيب حسب priority
-    allCategories.sort((a, b) {
-      final aPriority = a.details.ar?.priority ?? a.details.en?.priority ?? 'Z';
-      final bPriority = b.details.ar?.priority ?? b.details.en?.priority ?? 'Z';
-      return aPriority.compareTo(bPriority);
-    });
-
-    return SkinData(categories: allCategories);
+    return SkinData(categories: allCategories); // ✅ Do NOT throw here
   }
 }
 

@@ -42,7 +42,7 @@ class _AdPageState extends State<AdPage> {
   String? _externalLink;
   String? _mediaType;
   int? _skipTime;
-   int _currentAdIndex = 0;
+  int _currentAdIndex = 0;
 
   List<Map<String, dynamic>> _ads = [];
 
@@ -60,27 +60,62 @@ class _AdPageState extends State<AdPage> {
         final data = json.decode(response.body);
         final slots = List<Map<String, dynamic>>.from(data['slots']);
 
-        if (slots.isNotEmpty) {
-          // Filter ads based on `widget.isbeforetest` condition
-          if (widget.isbeforetest) {
-            // Show only ads before the test (Ad_before == 'test')
-            _ads = slots.where((slot) => slot['Ad_before'] == 'test').toList();
-          } else {
-            // Show ads after the test (Ad_before == 'result')
-            _ads = slots.where((slot) => slot['Ad_before'] == 'result').toList();
-          }
+        final now = DateTime.now();
+        print("📦 Total slots fetched: ${slots.length}");
+        print("🕒 Current time: $now\n");
 
-          if (_ads.isNotEmpty) {
-            _loadNextAd(); // Load the first ad
-          } else {
-               _navigateToNextPage();
-          }
+        final filteredSlots = slots.where((slot) {
+          final now = DateTime.now();
+
+          final startDate = DateTime.parse(slot['start_date']);
+          final endDate = DateTime.parse(slot['end_date']);
+
+          final isDateInRange = now.isAfter(startDate) && now.isBefore(endDate.add(const Duration(days: 1)));
+
+          // Time range filtering
+          final fromTimeParts = slot['from_time'].split(':');
+          final toTimeParts = slot['to_time'].split(':');
+
+          final fromTime = TimeOfDay(hour: int.parse(fromTimeParts[0]), minute: int.parse(fromTimeParts[1]));
+          final toTime = TimeOfDay(hour: int.parse(toTimeParts[0]), minute: int.parse(toTimeParts[1]));
+          final currentTime = TimeOfDay.fromDateTime(now);
+
+          bool isTimeInRange = _isTimeInRange(currentTime, fromTime, toTime);
+
+          print('🔍 Slot: ${slot['name']}');
+          print('📅 Date OK: $isDateInRange | 🕒 Time OK: $isTimeInRange');
+
+          return isDateInRange && isTimeInRange;
+        }).toList();
+
+        _ads = widget.isbeforetest
+            ? filteredSlots.where((slot) => slot['Ad_before'] == 'test').toList()
+            : filteredSlots.where((slot) => slot['Ad_before'] == 'result').toList();
+
+        if (_ads.isNotEmpty) {
+          _loadNextAd();
+        } else {
+          print("🚫 No valid ads found — navigating...");
+          _navigateToNextPage();
         }
       } else {
-        print("Failed to fetch data: ${response.statusCode}");
+        print("❌ Failed to fetch data: ${response.statusCode}");
       }
     } catch (error) {
-      print("Error fetching data: $error");
+      print("❌ Error fetching ads: $error");
+    }
+  }
+  bool _isTimeInRange(TimeOfDay now, TimeOfDay start, TimeOfDay end) {
+    final nowMinutes = now.hour * 60 + now.minute;
+    final startMinutes = start.hour * 60 + start.minute;
+    final endMinutes = end.hour * 60 + end.minute;
+
+    if (endMinutes >= startMinutes) {
+      // Normal range (same day)
+      return nowMinutes >= startMinutes && nowMinutes <= endMinutes;
+    } else {
+      // Range that passes midnight (e.g., 23:00 - 02:00)
+      return nowMinutes >= startMinutes || nowMinutes <= endMinutes;
     }
   }
 
@@ -93,13 +128,12 @@ class _AdPageState extends State<AdPage> {
       final externalLink = ad['external_link'];
 
       setState(() {
-        // Reset and update variables for new ad
         _mediaUrl = mediaUrl;
         _mediaType = mediaType;
         _skipTime = skipTime;
         _remainingTime = skipTime;
         _externalLink = externalLink;
-        _isSkippable = false; // Reset skip flag
+        _isSkippable = false;
       });
 
       if (_mediaType == 'video') {
@@ -108,9 +142,9 @@ class _AdPageState extends State<AdPage> {
         _startTimer();
       }
 
-      _currentAdIndex++;
+      _currentAdIndex++; // Prepare for next ad
     } else {
-        _navigateToNextPage();
+      _navigateToNextPage();
     }
   }
 
@@ -133,20 +167,20 @@ class _AdPageState extends State<AdPage> {
           capturedFeatures: widget.capturedFeatures,
           reports: widget.reports,
           skinAnalysisData: widget.skinAnalysisData,
-                score: widget.scores,
-              ),
+          score: widget.scores,
+        ),
       ),
     );
   }
 
-  String _getDirectDownloadLink(String googleDriveLink) {
+  String _getDirectDownloadLink(String link) {
     final RegExp regExp = RegExp(r'/file/d/([a-zA-Z0-9_-]+)');
-    final match = regExp.firstMatch(googleDriveLink);
+    final match = regExp.firstMatch(link);
     if (match != null && match.groupCount >= 1) {
       final fileId = match.group(1);
       return 'https://drive.google.com/uc?export=download&id=$fileId';
     }
-    return googleDriveLink;
+    return link;
   }
 
   void _toggleMute() {
@@ -164,10 +198,11 @@ class _AdPageState extends State<AdPage> {
           _videoController.addListener(_handlePlaybackState);
           _videoController.play();
         }).catchError((error) {
-          print("Video initialization error: $error");
+          print("❌ Video error: $error");
           setState(() {
             _mediaType = 'image';
-            _mediaUrl = 'https://example.com/fallback-image.jpg';
+            _mediaUrl = 'https://example.com/fallback.jpg';
+            _startTimer();
           });
         });
     }
@@ -180,8 +215,8 @@ class _AdPageState extends State<AdPage> {
       _startTimer();
     }
 
-    if (_videoController.value.isInitialized &&
-        _videoController.value.position >= _videoController.value.duration) {
+    if (_videoController.value.position >= _videoController.value.duration) {
+      _videoController.removeListener(_handlePlaybackState);
       _loadNextAd();
     }
   }
@@ -195,19 +230,30 @@ class _AdPageState extends State<AdPage> {
         if (_remainingTime == 0) {
           _isSkippable = true;
           _timer?.cancel();
+          // DO NOT navigate here — let video finish naturally
         }
       });
     });
   }
 
   void _skipAd() {
-    _loadNextAd();
+    _timer?.cancel();
+    if (_mediaType == 'video' && _videoController.value.isInitialized) {
+      _videoController.pause();
+    }
+
+    // 👇 Check if more ads exist
+    if (_currentAdIndex < _ads.length) {
+      _loadNextAd(); // Show next ad
+    } else {
+      _navigateToNextPage(); // No more ads → navigate
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    if (_videoController.value.isInitialized) {
+    if (_mediaType == 'video' && _videoController.value.isInitialized) {
       _videoController.removeListener(_handlePlaybackState);
       _videoController.dispose();
     }
@@ -219,25 +265,14 @@ class _AdPageState extends State<AdPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Media content (video or image)
           if (_mediaType == 'video' && _videoController.value.isInitialized)
             GestureDetector(
-              onTap: () {
-                setState(() {
-                  _showPauseButton = !_showPauseButton;
-                });
-              },
-              child: SizedBox.expand(
-                child: VideoPlayer(_videoController),
-              ),
+              onTap: () => setState(() => _showPauseButton = !_showPauseButton),
+              child: SizedBox.expand(child: VideoPlayer(_videoController)),
             )
           else if (_mediaType == 'image' && _mediaUrl != null)
             GestureDetector(
-              onTap: () {
-                setState(() {
-                  _showPauseButton = !_showPauseButton;
-                });
-              },
+              onTap: () => setState(() => _showPauseButton = !_showPauseButton),
               child: Image.network(
                 _mediaUrl!,
                 fit: BoxFit.cover,
@@ -246,23 +281,20 @@ class _AdPageState extends State<AdPage> {
               ),
             )
           else
-             Center(
+            Center(
               child: CircularProgressIndicator(color: mainColor),
             ),
-          // Mute button
+
           if (_mediaType == 'video' && _videoController.value.isInitialized)
             Positioned(
               top: 30,
               left: 10,
               child: IconButton(
-                icon: Icon(
-                  _isMuted ? Icons.volume_off : Icons.volume_up,
-                  color: Colors.black,
-                ),
+                icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up, color: Colors.black),
                 onPressed: _toggleMute,
               ),
             ),
-          // Skip button
+
           if (_isSkippable)
             Positioned(
               top: 40,
@@ -273,10 +305,10 @@ class _AdPageState extends State<AdPage> {
                   backgroundColor: Colors.black.withOpacity(0.7),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text("Skip Ad"),
+                child:  Text(AppLocalizations.of(context)!.skipAd, style: const TextStyle(fontSize: 16)),
               ),
             ),
-          // Countdown timer
+
           if (!_isSkippable)
             Positioned(
               top: 40,
@@ -287,85 +319,40 @@ class _AdPageState extends State<AdPage> {
                   color: Colors.black.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(3),
                 ),
-                child: Text(
-                  "$_remainingTime",
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
+                child: Text("$_remainingTime",
+                    style: const TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
+
           Positioned(
             bottom: 40,
             left: 20,
             right: 20,
-
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
-                  onPressed: () => _openURL(_externalLink!),
+                  onPressed: () => _openURL(_externalLink ?? ""),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey.shade600,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 10,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   ),
                   child: Text(AppLocalizations.of(context)!.get),
                 ),
               ),
             ),
           ),
-          // Download button
-         /* Positioned(
-            bottom: 40,
-            right: 20,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(3),
-              ),
-              width: mediaQueryWidth(context) * 0.9,
-              height: mediaQueryHeight(context) * 0.15,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-
-                  Center(
-                    child: Text(
-                      AppLocalizations.of(context)!.userName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Container(
-                      width: mediaQueryWidth(context) * 0.25,
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                       ),
-                  ),
-                ],
-              ),
-            ),
-          ),*/
         ],
       ),
     );
   }
 
   Future<void> _openURL(String url) async {
-    if (await canLaunch(url)) {
+    if (url.isNotEmpty && await canLaunch(url)) {
       await launch(url);
     } else {
-      print("Could not launch $url");
+      print("❌ Could not launch $url");
     }
   }
 }

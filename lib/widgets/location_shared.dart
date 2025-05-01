@@ -60,49 +60,6 @@ class _AddressPickerFieldState extends State<AddressPickerField> {
     );
   }
 
-  Future<void> _getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showLocationServiceDialog();
-      return;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        showToast(
-          text: 'Location permission denied!',
-          state: ToastStates.WARNING,
-        );
-        await Geolocator.openAppSettings();
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      showToast(
-        text: 'Location permission permanently denied! Enable it from settings.',
-        state: ToastStates.ERROR,
-      );
-      await openAppSettings();
-      return;
-    }
-
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-
-
-    } catch (e) {
-      showToast(
-        text: 'Failed to get location!',
-        state: ToastStates.ERROR,
-      );
-    }
-  }
 
   Future<void> _loadSavedAddress() async {
     final prefs = await SharedPreferences.getInstance();
@@ -120,40 +77,44 @@ class _AddressPickerFieldState extends State<AddressPickerField> {
   }
 
   void _openMapPicker() async {
+    // Step 1: Check if location service is enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       _showLocationServiceDialog();
       return;
     }
 
+    // Step 2: Check and request permission
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        showToast(
-          text: 'Location permission denied!',
-          state: ToastStates.WARNING,
-        );
-        await Geolocator.openAppSettings();
-        return;
-      }
+    }
+
+    if (permission == LocationPermission.denied) {
+      showToast(
+        text: AppLocalizations.of(context)!.locationPermissionDenied,
+        state: ToastStates.WARNING,
+      );
+      return;
     }
 
     if (permission == LocationPermission.deniedForever) {
       showToast(
-        text: 'Location permission permanently denied! Enable it from settings.',
+        text: AppLocalizations.of(context)!.locationPermissionPermanentlyDenied,
         state: ToastStates.ERROR,
       );
-      await openAppSettings();
+      await openAppSettings(); // From permission_handler package
       return;
     }
 
-    // Permission granted, proceed to map
+    // Step 3: All good → Open map picker
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const MapPickerScreen()),
     );
 
+    // Step 4: Handle result
     if (result != null && result['address'] != null) {
       final newAddress = result['address'];
 
@@ -164,9 +125,7 @@ class _AddressPickerFieldState extends State<AddressPickerField> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_kSavedAddressKey, newAddress);
 
-      if (widget.onAddressChanged != null) {
-        widget.onAddressChanged!(newAddress);
-      }
+      widget.onAddressChanged?.call(newAddress);
     }
   }
 
@@ -330,13 +289,13 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 height: MediaQuery.of(context).size.height * 0.8,
                 child: Stack(
                   children: [
-                    GoogleMap(
+                    _selectedPosition == null
+                        ? const Center(child: CircularProgressIndicator())
+                        : GoogleMap(
                       initialCameraPosition: CameraPosition(
-                        target: _selectedPosition ?? LatLng(23.8859, 45.0792)
-                        ,
+                        target: _selectedPosition!,
                         zoom: 15,
                       ),
-
                       onMapCreated: (controller) {
                         _mapController = controller;
                       },

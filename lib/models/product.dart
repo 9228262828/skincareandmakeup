@@ -84,7 +84,7 @@ class Product {
       avrage_rating: json['average_rating']?.toString() ?? '0.0',
       howToUse: getMetaDataValue('how_to_use'),
       hazardsCautions: getMetaDataValue('hazards_cautions'),
-      shipping_taxable: json['shipping_taxable'] ?? json['shipping_taxable'] ?? true.hashCode,
+      shipping_taxable: json['shipping_taxable'] ?? json['shipping_taxable'] ??true,
       stock_status: json['stock_status'] ?? json['stock_status'] ?? "",
         brandImage: json['brand_image'] ?? '', brandName: json['brand_name'] ?? '',
         stock_quantity: json['stock_quantity'] ?? 0

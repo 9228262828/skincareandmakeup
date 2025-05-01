@@ -13,17 +13,17 @@ import '../models/category.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_shimmer_widget.dart';
-
 class BrandProductsScreen extends StatefulWidget {
   final int id;
   final String brandName;
   final bool isLink;
 
-  const BrandProductsScreen(
-      {required this.id,
-      super.key,
-      required this.brandName,
-      required this.isLink});
+  const BrandProductsScreen({
+    required this.id,
+    super.key,
+    required this.brandName,
+    required this.isLink,
+  });
 
   @override
   _BrandProductsScreenState createState() => _BrandProductsScreenState();
@@ -35,19 +35,17 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductsCubit>().fetchProductss(brandId: widget.id, isInitial: true);
-
+    context.read<ProductsCubit>().fetchProductss(
+      isInitial: true,
+      brandId: widget.id, // Fetch products for the specific brand
+      context: context,
+    );
     _scrollController.addListener(_onScroll);
-      context.read<ProductsCubit>().resetAndFetchData(context: context);
-
-
-
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-
     super.dispose();
   }
 
@@ -59,139 +57,142 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<ProductsCubit>();
+    final productsCubit = context.watch<ProductsCubit>(); // Use watch to rebuild on state changes
+
     return Scaffold(
-     backgroundColor:  Colors.grey.shade200,
-     appBar: CustomPagesAppBar(title: widget.brandName, home: false),
-     body: Padding(
-       padding: const EdgeInsets.all(8.0),
-       child: BlocBuilder<ProductsCubit, ProductsState>(
-         builder: (context, state) {
-           if (state is ProductsLoading && state.page == 1 && state is! ProductsInitial) {
-             return ProductCardWithShimmerAllScreen(count: 10); // Show shimmer during loading
-           } else if (state is ProductsLoaded) {
-             return RefreshIndicator(
-               onRefresh: () async {
-                 context.read<ProductsCubit>().fetchProductss(brandId: widget.id);
-               },
-               child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.center,
-                 children: [
-                   _buildBrandHeader(widget.brandName),
-                   Expanded(
-                     child: GridView.builder(
-                       controller: _scrollController,
-                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                         crossAxisCount: 2,
-                         childAspectRatio: 0.53,
-                         crossAxisSpacing: 8.0,
-                         mainAxisSpacing: 8.0,
-                       ),
-                       itemCount: state.hasReachedMax
-                           ? state.Productss.length
-                           : state.Productss.length + 1,
-                       itemBuilder: (context, index) {
-                         if (index < state.Productss.length) {
-                           final product = state.Productss[index];
-                           return GestureDetector(
-                             onTap: () {
-                               Navigator.push(
-                                 context,
-                                 MaterialPageRoute(
-                                   builder: (context) => ProductScreen(
-                                     productId: product.id,
-                                   ),
-                                 ),
-                               );
-                             },
-                             child: ProductCard(product: product, fakeProduct: ''),
-                           );
-                         } else {
-                           return _buildLoadMoreShimmer();
-                         }
-                       },
-                     ),
-                   ),
-                   SizedBox(
-                     height: mediaQueryHeight(context) * 0.04,
-                   )
-                 ],
-               ),
-             );
-           } else if (state is ProductsError) {
-             return Center(child: Text(state.message));
-           } else {
-             return ProductCardWithShimmerAllScreen(count: 10);
-           }
-         },
-       ),
-     ),
-     floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
-     floatingActionButton: widget.isLink == false
-         ? Padding(
-       padding: const EdgeInsets.all(25.0),
-       child: Row(
-         mainAxisAlignment: MainAxisAlignment.center,
-         children: [
-           Container(
-             width: mediaQueryWidth(context) * 0.53,
-             height: mediaQueryHeight(context) * 0.05,
-             decoration: BoxDecoration(
-               color: mainColor,
-               borderRadius: BorderRadius.circular(30),
-             ),
-             child: Row(
-               children: [
-                 Expanded(
-                   child: TextButton(
-                     onPressed: () {
-                       showSortDialog(context, cubit);
-                     },
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         Icon(Icons.sort, color: Colors.white),
-                         Text(
-                           AppLocalizations.of(context)!.sort,
-                           style: TextStyle(color: Colors.white),
-                         ),
-                       ],
-                     ),
-                   ),
-                 ),
-                 Expanded(
-                   child: TextButton(
-                     onPressed: () {
-                       _showFilterDialog(context, context.read<ProductsCubit>());
-                     },
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         Icon(
-                           Icons.filter_list_outlined,
-                           color: Colors.white,
-                         ),
-                         Text(
-                           AppLocalizations.of(context)!.filter,
-                           style: TextStyle(color: Colors.white),
-                         ),
-                       ],
-                     ),
-                   ),
-                 ),
-               ],
-             ),
-           ),
-           SizedBox(width: 10),
-           CircleAvatar(
-             backgroundColor: mainColor,
-             child: Icon(Icons.share, color: Colors.white),
-           ),
-         ],
-       ),
-     )
-         : SizedBox(height: 0),
-          );
+      backgroundColor: Colors.grey.shade200,
+      appBar: CustomPagesAppBar(title: widget.brandName, home: false),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BlocBuilder<ProductsCubit, ProductsState>(
+          builder: (context, state) {
+            final products = productsCubit.Productss;
+
+            if (state is ProductsLoading && products.isEmpty) {
+              return ProductCardWithShimmerAllScreen(count: 10);
+            } else if (state is ProductsError) {
+              return Center(child: Text(state.message));
+            } else if (products.isEmpty && state is! ProductsLoading) {
+              return Center(child: Text('No products found for this brand.'));
+            } else if (state is ProductsLoaded || products.isNotEmpty || state is ProductsLoading) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<ProductsCubit>().fetchProductss(
+                    isInitial: true,
+                    brandId: widget.id,
+                    context: context,
+                  );
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildBrandHeader(widget.brandName),
+                    Expanded(
+                      child: GridView.builder(
+                        controller: _scrollController,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.53,
+                          crossAxisSpacing: 8.0,
+                          mainAxisSpacing: 8.0,
+                        ),
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductScreen(productId: product.id),
+                                ),
+                              );
+                            },
+                            child: ProductCard(product: product, fakeProduct: ''),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: mediaQueryHeight(context) * 0.04),
+                  ],
+                ),
+              );
+            } else {
+              return ProductCardWithShimmerAllScreen(count: 10);
+            }
+          },
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+      floatingActionButton: widget.isLink == false
+          ? _buildFilterAndSortButtons(context, productsCubit)
+          : SizedBox(height: 0),
+    );
+  }
+
+  Widget _buildFilterAndSortButtons(BuildContext context, ProductsCubit cubit) {
+    return Padding(
+      padding: const EdgeInsets.all(25.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: mediaQueryWidth(context) * 0.53,
+            height: mediaQueryHeight(context) * 0.05,
+            decoration: BoxDecoration(
+              color: mainColor,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      showSortDialog(context, cubit);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.sort, color: Colors.white),
+                        Text(
+                          AppLocalizations.of(context)!.sort,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      _showFilterDialog(context, cubit);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.filter_list_outlined,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          AppLocalizations.of(context)!.filter,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 10),
+          CircleAvatar(
+            backgroundColor: mainColor,
+            child: Icon(Icons.share, color: Colors.white),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildBrandHeader(String brandName) {
@@ -207,63 +208,6 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
           ),
         ),
       ),
-    );
-  }
-  Widget _buildLoadMoreShimmer() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 2,
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              childAspectRatio: 2.3,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-            ),
-            itemCount: 10,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: mediaQueryHeight(context) * 0.02),
-                  Shimmer.fromColors(
-                    baseColor: Colors.grey[200]!,
-                    highlightColor: Colors.grey[50]!,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: Container(
-                        height: mediaQueryHeight(context) * 0.35,
-                        width: double.infinity,
-                        color: Colors.grey[200],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Shimmer.fromColors(
-                          baseColor: Colors.grey[200]!,
-                          highlightColor: Colors.grey[50]!,
-                          child: Container(
-                            width: double.infinity,
-                            height: 50,
-                            color: Colors.grey[200],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
@@ -371,8 +315,7 @@ void _showFilterDialog(BuildContext context, ProductsCubit cubit) {
                             cubit.minPrice,
                             cubit.maxPrice,
                             cubit.selectedBrandId,
-                            cubit.selectedCategoryId,
-                            context,
+                             context,
                           );
                           Navigator.of(context).pop(); // Close the filter dialog
                         },

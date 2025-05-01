@@ -150,12 +150,13 @@ class AuthService {
         // If successful, return the JSON response
         return json.decode(response.body);
       } else {
-        // If the request fails, throw an exception
-        throw Exception('Failed to update profile: ${response.body}');
+final errorResponse = json.decode(response.body);
+print(errorResponse);
+showToast(text: errorResponse['message'], state: ToastStates.ERROR);
+throw Exception('Failed to update profile: ${response.body}');
       }
     } catch (e) {
-      // Handle any errors (e.g., network, parsing)
-      throw Exception('Error updating profile: $e');
+       throw Exception('Error updating profile: $e');
     }
   }
 }

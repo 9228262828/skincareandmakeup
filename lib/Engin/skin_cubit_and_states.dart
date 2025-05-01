@@ -37,7 +37,8 @@ class SkinAnalysisCubit extends Cubit<SkinAnalysisState> {
       String darkcircles,
       String radiance,
       String skinage,
-      String overallscore) async {
+      String overallscore) async
+  {
 
     if (isClosed) return;  // Check before emit
     emit(SkinAnalysisLoading());

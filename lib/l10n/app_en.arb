@@ -373,6 +373,7 @@
       "categoryOfProducts":"Product Category",
       "hazards_cautions":"Hazards & Cautions",
          "reviews":"Reviews",
+         "collections":"Collections",
                "rate_us":"Rate Us",
                "review":"Review",
                    "add_new_address":"Add New Address",
@@ -386,7 +387,23 @@
                         "pleaseEnterPhoneNumber" : "Please enter phone number",
                         "billingAddress":"Billing Address",
                         "your_order":"Your Order",
-                        "pleaseEnterPlaceNotes":"Please enter place notes"
+                        "pleaseEnterPlaceNotes":"Please enter place notes",
+
+
+
+                          "artisticTouch": "Artistic Touch",
+                          "unlimitedRelaxation": "Unlimited Relaxation",
+                          "funTime": "Fun Time",
+                          "specialAdditions": "Special Additions",
+                          "newLabel": "New",
+                          "ourPicks": "Our Picks",
+                          "skipAd": "Skip Ad",
+                          "editProfile": "Edit Profile",
+                          "name": "Name",
+                          "enableLocationFromSettings": "Please enable location from settings"
+
+
+
 
 
 

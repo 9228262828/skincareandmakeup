@@ -383,11 +383,28 @@
          "edit":"تعديل",
          "work":"العمل",
          "house":"المنزل",
+         "collections":"مجموعات",
          "there_is_no_more_is_stock":"لم يعد هناك مخزون",
          "name_of_address":"تسمية العنوان",
          "addressInformation":"معلومات العنوان",
          "productBrand":"ماركة المنتج",
-         "addressAddedSuccessfully":"تم اضافة العنوان بنجاح"
+         "addressAddedSuccessfully":"تم اضافة العنوان بنجاح",
+
+
+  "artisticTouch": "لمسة فنية",
+  "unlimitedRelaxation": "إسترخاء بلا حدود",
+  "funTime": "وقت المرح",
+  "specialAdditions": "إضافات مميزة",
+  "newLabel": "جديد",
+  "ourPicks": "مختاراتنا",
+  "skipAd": "تخطي الاعلان",
+  "editProfile": "تعديل الملف الشخصي",
+  "name": "الاسم",
+  "enableLocationFromSettings": "يرجى تفعيل الموقع من الاعدادات"
+
+
+
+
 
 
 

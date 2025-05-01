@@ -45,8 +45,7 @@ void main() async {
       providers: [
         BlocProvider(create: (_) => ProductsCubit()),
         BlocProvider(create: (_) => SkinAnalysisCubit()),
-        BlocProvider(create: (_) => BrandsCubit(WooCommerceService())),
-        BlocProvider(create: (_) => BrandsCubit(WooCommerceService())),
+         BlocProvider(create: (_) => BrandsCubit(WooCommerceService())),
         BlocProvider(create: (_) => ProfileCubit()),
          ChangeNotifierProvider(create: (_) => Cart()),
         ChangeNotifierProvider(create: (_) => Fav()),
