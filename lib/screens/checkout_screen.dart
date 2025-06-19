@@ -89,7 +89,7 @@ print("totalAmount: $_totalAmount");
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
     final response = await http.get(
-      Uri.parse('https://gomla.sa/wp-json/multi-shipping/v1/addresses'),
+      Uri.parse('https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses'),
       headers: {"gomlaauth": 'Bearer $token'},
     );
 
@@ -430,7 +430,7 @@ print("totalAmount: $_totalAmount");
   bool _isAddressSelected = false;
 
   Future<void> generateLoginLink() async {
-    final String apiUrl = 'https://gomla.sa/wp-json/custom-auth/v1/generate-login-link'; // Replace with your actual URL
+    final String apiUrl = 'https://gomla.egymetrix.net/wp-json/custom-auth/v1/generate-login-link'; // Replace with your actual URL
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 

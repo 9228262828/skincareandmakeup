@@ -17,8 +17,8 @@ import 'auth_service.dart';
 
 class WooCommerceService {
   final String baseUrl = '$siteUrl/wp-json/wc/v3';
-  final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
-  final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+  final String consumerKey = 'ck_d0150d53b03646e0d5695e37739777049dda22aa';
+  final String consumerSecret = 'cs_bdb53e06ca06f8fcdb6510efbbbfaca708bbb3c7';
 
   Future<List<Product>> fetchProducts(
       int categoryId, int page, BuildContext context) async {
@@ -319,7 +319,7 @@ class WooCommerceService {
     try {
       final response = await http.get(
         Uri.parse(
-            'https://gomla.sa/wp-json/wc/v3/products/brands?lang=$language&page=$page&per_page=$perPage'),
+            'https://gomla.egymetrix.net/wp-json/wc/v3/products/brands?lang=$language&page=$page&per_page=$perPage'),
         headers: {
           'Authorization': 'Basic ' +
               base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -556,7 +556,7 @@ class WooCommerceService {
     String? language = prefs.getString('locale');
     language ??= 'ar';
     final url = Uri.parse(
-        'https://gomla.sa/wp-json/wc/v3/products?search=$query&lang=$language&page=1&per_page=20',
+        'https://gomla.egymetrix.net/wp-json/wc/v3/products?search=$query&lang=$language&page=1&per_page=20',
 
 
     );

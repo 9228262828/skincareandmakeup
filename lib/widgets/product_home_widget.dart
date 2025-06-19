@@ -38,29 +38,29 @@ class ProductHomeWidget extends StatelessWidget {
         if (bestSellers) {
           print("bestSellers");
 
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=popularity");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=popularity");
         } else if (bestRatings) {
           print("bestRatings");
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=rating&order=desc");
         } else if (specialProducts) {
           print("specialProducts");
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=rating&order=desc");
           return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
         } else if (allNeedsGrooming) {
           print("allNeedsGrooming");
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=rating&order=desc");
           return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
         } else if (nearlyArrived) {
           print("nearlyArrived");
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=date&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=date&order=desc");
         } else if (exclusiveDeals) {
           print("exclusiveDeals");
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=rating&order=desc");
           return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
         }
         else if (type == "healthAndBeauty") {
           print("healthAndBeauty");
-          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.sa/wp-json/wc/v3/products?orderby=rating&order=desc");
+          return BestDealsCubit(WooCommerceService())..fetchBestDeals1(context, "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=rating&order=desc");
           return BestDealsCubit(WooCommerceService())..fetchBestDeals(context, categoryId);
         }
 

@@ -213,12 +213,12 @@ class UnauthWidget extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/shipping-policies-and-rates/',title:   AppLocalizations.of(context)!.shipping_policies_and_pricing,)),
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.egymetrix.net/shipping-policies-and-rates/',title:   AppLocalizations.of(context)!.shipping_policies_and_pricing,)),
                           ):
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/shipping-policies-and-rates/",title:  AppLocalizations.of(context)!.shipping_policies_and_pricing,)),
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.egymetrix.net/en/shipping-policies-and-rates/",title:  AppLocalizations.of(context)!.shipping_policies_and_pricing,)),
                           );
                         },
                         child: Text(AppLocalizations.of(context)!.shipping_policies_and_pricing,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
@@ -233,12 +233,12 @@ class UnauthWidget extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/privacy-policy/',title:  AppLocalizations.of(context)!.privacyPolicy,)),
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.egymetrix.net/privacy-policy/',title:  AppLocalizations.of(context)!.privacyPolicy,)),
                           ):
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/privacy-policy/", title:  AppLocalizations.of(context)!.privacyPolicy,)),
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.egymetrix.net/en/privacy-policy/", title:  AppLocalizations.of(context)!.privacyPolicy,)),
                           );
                         },
                         child: Text(AppLocalizations.of(context)!.privacyPolicy,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
@@ -253,12 +253,12 @@ class UnauthWidget extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/return-and-exchange-policy/',title:  AppLocalizations.of(context)!.return_and_exchange_policy,)),
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.egymetrix.net/return-and-exchange-policy/',title:  AppLocalizations.of(context)!.return_and_exchange_policy,)),
                           ):
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/return-and-exchange-policy/",title:   AppLocalizations.of(context)!.return_and_exchange_policy,)),
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.egymetrix.net/en/return-and-exchange-policy/",title:   AppLocalizations.of(context)!.return_and_exchange_policy,)),
                           );
                         },
                         child: Text(AppLocalizations.of(context)!.return_and_exchange_policy,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),
@@ -274,12 +274,12 @@ class UnauthWidget extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.sa/customer-service-policy/', title:   AppLocalizations.of(context)!.technical_support_and_customer_service_policy,)),
+                                builder: (context) => PrivacyPolicyScreen(url: 'https://gomla.egymetrix.net/customer-service-policy/', title:   AppLocalizations.of(context)!.technical_support_and_customer_service_policy,)),
                           ):
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.sa/en/customer-service-policy/",  title:   AppLocalizations.of(context)!.technical_support_and_customer_service_policy,)),
+                                builder: (context) => PrivacyPolicyScreen(url: "https://gomla.egymetrix.net/en/customer-service-policy/",  title:   AppLocalizations.of(context)!.technical_support_and_customer_service_policy,)),
                           );
                         },
                         child: Text(AppLocalizations.of(context)!.technical_support_and_customer_service_policy,style: TextStyle(fontSize: 12, color: Colors.grey.shade500),)),

@@ -57,10 +57,10 @@ class _GridOffersState extends State<GridOffers> {
     if (language == null) {
       language = 'ar';
     }
-    final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
-    final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+    final String consumerKey = 'ck_d0150d53b03646e0d5695e37739777049dda22aa';
+    final String consumerSecret = 'cs_bdb53e06ca06f8fcdb6510efbbbfaca708bbb3c7';
     try {
-      final response = await http.get(Uri.parse('https://gomla.sa/wp-json/custom/v1/collections/?lang=$language') ,
+      final response = await http.get(Uri.parse('https://gomla.egymetrix.net/wp-json/custom/v1/collections/?lang=$language') ,
         headers:  {
           'Authorization': 'Basic ' +
               base64Encode(utf8.encode('$consumerKey:$consumerSecret')),
@@ -99,10 +99,10 @@ class _GridOffersState extends State<GridOffers> {
     if (language == null) {
       language = 'ar';
     }
-    final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
-    final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+    final String consumerKey = 'ck_d0150d53b03646e0d5695e37739777049dda22aa';
+    final String consumerSecret = 'cs_bdb53e06ca06f8fcdb6510efbbbfaca708bbb3c7';
     try {
-      final response = await http.get(Uri.parse('https://gomla.sa/wp-json/custom/v1/collections/?lang=$language') ,
+      final response = await http.get(Uri.parse('https://gomla.egymetrix.net/wp-json/custom/v1/collections/?lang=$language') ,
         headers:  {
           'Authorization': 'Basic ' +
               base64Encode(utf8.encode('$consumerKey:$consumerSecret')),

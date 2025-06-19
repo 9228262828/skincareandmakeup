@@ -205,7 +205,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     try {
       final response = await http.put(
         Uri.parse(
-            'https://gomla.sa/wp-json/multi-shipping/v1/addresses/${widget.address.id}'),
+            'https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses/${widget.address.id}'),
         headers: {
           "gomlaauth": 'Bearer $token',
           "Content-Type":

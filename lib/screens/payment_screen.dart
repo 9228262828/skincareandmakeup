@@ -47,7 +47,7 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
     final paymentUrl =
-        'https://gomla.sa/checkout/order-pay/${widget.id}/?pay_for_order=true&key=${widget.orderKey}';
+        'https://gomla.egymetrix.net/checkout/order-pay/${widget.id}/?pay_for_order=true&key=${widget.orderKey}';
 
     return Scaffold(
       appBar: CustomPagesAppBar(

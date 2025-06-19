@@ -8,7 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> deleteAddress(BuildContext context, int addressId) async {
-  final String url = 'https://gomla.sa/wp-json/multi-shipping/v1/addresses/$addressId';
+  final String url = 'https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses/$addressId';
 
   // Confirm deletion before making the request
   bool confirmDelete = await _showDeleteConfirmationDialog(context);

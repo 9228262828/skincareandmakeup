@@ -53,7 +53,7 @@ class _AdPageState extends State<AdPage> {
   }
 
   Future<void> _fetchAdData() async {
-    final url = Uri.parse('https://gomla.sa/wp-json/skinad/v1/slots');
+    final url = Uri.parse('https://gomla.egymetrix.net/wp-json/skinad/v1/slots');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

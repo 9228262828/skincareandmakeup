@@ -84,7 +84,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString(_tokenKey);
     final response = await http.post(
-      Uri.parse('https://gomla.sa/wp-json/multi-shipping/v1/addresses'),
+      Uri.parse('https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses'),
       headers: {
         'Content-Type': 'application/json',
         "gomlaauth": 'Bearer $token',

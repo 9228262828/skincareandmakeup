@@ -1254,4 +1254,5 @@ print(product?.stock_quantity  );
         );
       },
     );
-  }}
+  }
+}

@@ -55,7 +55,7 @@ class _LocationWidgetState extends State<LocationWidget> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://gomla.sa/wp-json/multi-shipping/v1/addresses'),
+        Uri.parse('https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses'),
         headers: {
           "gomlaauth": 'Bearer $token',
         },

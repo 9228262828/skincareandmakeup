@@ -22,7 +22,7 @@ class AddressCubit extends Cubit<AddressState> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://gomla.sa/wp-json/multi-shipping/v1/addresses'),
+        Uri.parse('https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses'),
         headers: {
           "gomlaauth": 'Bearer $token',
         },
@@ -45,7 +45,7 @@ class AddressCubit extends Cubit<AddressState> {
   }
 
   Future<void> deleteAddress(BuildContext context, int addressId) async {
-    final String url = 'https://gomla.sa/wp-json/multi-shipping/v1/addresses/$addressId';
+    final String url = 'https://gomla.egymetrix.net/wp-json/multi-shipping/v1/addresses/$addressId';
 
     bool confirmDelete = await _showDeleteConfirmationDialog(context);
     final prefs = await SharedPreferences.getInstance();

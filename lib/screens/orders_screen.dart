@@ -27,8 +27,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   Future<List<Order>> fetchOrdersForLocale(String locale, BuildContext context) async {
-    final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
-    final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+    final String consumerKey = 'ck_d0150d53b03646e0d5695e37739777049dda22aa';
+    final String consumerSecret = 'cs_bdb53e06ca06f8fcdb6510efbbbfaca708bbb3c7';
 
     try {
       final pref = await SharedPreferences.getInstance();
@@ -40,7 +40,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       String auth = 'Basic ' + base64Encode(utf8.encode('$consumerKey:$consumerSecret'));
 
       final response = await http.get(
-        Uri.parse('https://gomla.sa/wp-json/wc/v3/orders?customer=$userId&lang=$locale'),
+        Uri.parse('https://gomla.egymetrix.net/wp-json/wc/v3/orders?customer=$userId&lang=$locale'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': auth,

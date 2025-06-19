@@ -42,7 +42,7 @@ class _RegisterPhoneScreenState extends State<RegisterPhoneScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/check-phone'),
+          Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/check-phone'),
           body: {
             'phone':
             "${_phoneController.text}" // Corrected line to send the phone as a string

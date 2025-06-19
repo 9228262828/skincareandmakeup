@@ -58,7 +58,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/register'),
+        Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/register'),
         body: data,
       );
 

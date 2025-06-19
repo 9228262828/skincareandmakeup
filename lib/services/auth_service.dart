@@ -16,7 +16,7 @@ class AuthService {
 
   static Future<String> login(String username, String password) async {
     final response = await http.post(
-      Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/login'),
+      Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/login'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {
         'email_or_phone': username,
@@ -101,9 +101,9 @@ class AuthService {
     if (token == null) {
       throw Exception('Please login first');
     }
-    print(  Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/profile'));
+    print(  Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/profile'));
     final responseUser = await http.get(
-      Uri.parse("https://gomla.sa/wp-json/custom-auth/v1/profile"),
+      Uri.parse("https://gomla.egymetrix.net/wp-json/custom-auth/v1/profile"),
       headers: {
         "gomlaauth": 'Bearer $token',
       },
@@ -134,7 +134,7 @@ class AuthService {
       final token = prefs.getString('auth_token'); // Retrieve the auth token
 
       final response = await http.post(
-        Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/edit-profile'), // Endpoint for updating the profile
+        Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/edit-profile'), // Endpoint for updating the profile
         headers: {
           'gomlaauth': 'Bearer $token',
           'Content-Type': 'application/x-www-form-urlencoded', // Form-data encoding

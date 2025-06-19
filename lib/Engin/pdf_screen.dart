@@ -34,9 +34,9 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
 
       String pdfUrl;
       if (language == 'ar') {
-        pdfUrl = 'https://gomla.sa/wp-content/uploads/2025/04/gomla-skin-analysis-disclaimer-ar.pdf';
+        pdfUrl = 'https://gomla.egymetrix.net/wp-content/uploads/2025/04/gomla-skin-analysis-disclaimer-ar.pdf';
       } else {
-        pdfUrl = 'https://gomla.sa/wp-content/uploads/2025/04/gomla-skin-analysis-disclaimer-en.pdf'; // Example for non-Arabic language (change URL as needed)
+        pdfUrl = 'https://gomla.egymetrix.net/wp-content/uploads/2025/04/gomla-skin-analysis-disclaimer-en.pdf'; // Example for non-Arabic language (change URL as needed)
       }
 
       final response = await http.get(Uri.parse(pdfUrl));

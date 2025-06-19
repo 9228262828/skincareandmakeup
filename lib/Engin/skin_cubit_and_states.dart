@@ -69,7 +69,7 @@ class SkinAnalysisCubit extends Cubit<SkinAnalysisState> {
       print("Request data: $requestData");
 
       final response = await Dio().post(
-        'https://gomla.sa/wp-json/skin-analysis/v1/skinscoretest',
+        'https://gomla.egymetrix.net/wp-json/skin-analysis/v1/skinscoretest',
         options: Options(
           headers: {
             'Content-Type': 'application/json',

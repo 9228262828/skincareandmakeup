@@ -204,7 +204,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/check-phone'),
+          Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/check-phone'),
           body: {'phone': widget.phone},
         );
 
@@ -240,7 +240,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/verify-otp'),
+          Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/verify-otp'),
           body: {'phone': widget.phone,
             'otp': _otpController.text},
         );

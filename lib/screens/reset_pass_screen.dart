@@ -43,7 +43,7 @@ class _ResetPassScreenState extends State<ResetPassScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/request-password-reset'),
+          Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/request-password-reset'),
           body: {
             'phone': "${_phoneController.text}" // Corrected line to send the phone as a string
           },
@@ -218,7 +218,7 @@ class _VerifyPhoneRestScreenState extends State<VerifyPhoneRestScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/reset-password'),
+        Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/reset-password'),
         body: data,
       );
 
@@ -307,7 +307,7 @@ setState(() {
 
     try {
       final response = await http.post(
-        Uri.parse('https://gomla.sa/wp-json/custom-auth/v1/request-password-reset'),
+        Uri.parse('https://gomla.egymetrix.net/wp-json/custom-auth/v1/request-password-reset'),
         body: {
           'phone': "${widget.phone}" // Corrected line to send the phone as a string
         },

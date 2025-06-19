@@ -132,7 +132,7 @@ class DeleteAccount extends StatelessWidget {
     String _tokenKey = 'auth_token';
     String _userIdKey = 'user_id';
 
-    final String url = "https://gomla.sa/wp-json/custom-auth/v1/delete-account";
+    final String url = "https://gomla.egymetrix.net/wp-json/custom-auth/v1/delete-account";
     var prefs = await SharedPreferences.getInstance();
 
     String? token = prefs.getString(_tokenKey);

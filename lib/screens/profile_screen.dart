@@ -390,7 +390,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      'https://gomla.sa/shipping-policy-app-ar/',
+                                                      'https://gomla.egymetrix.net/shipping-policy-app-ar/',
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .shipping_policies_and_pricing,
@@ -402,7 +402,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      "https://gomla.sa/en/shipping-policies-and-rates-app-en/",
+                                                      "https://gomla.egymetrix.net/en/shipping-policies-and-rates-app-en/",
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .shipping_policies_and_pricing,
@@ -432,7 +432,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      'https://gomla.sa/privacy-policy-app-ar/',
+                                                      'https://gomla.egymetrix.net/privacy-policy-app-ar/',
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .privacyPolicy,
@@ -444,7 +444,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      "https://gomla.sa/en/privacy-policy-app-en/",
+                                                      "https://gomla.egymetrix.net/en/privacy-policy-app-en/",
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .privacyPolicy,
@@ -473,7 +473,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      'https://gomla.sa/exchange-policy-app-ar/',
+                                                      'https://gomla.egymetrix.net/exchange-policy-app-ar/',
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .return_and_exchange_policy,
@@ -485,7 +485,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      "https://gomla.sa/en/return-and-exchange-policy-app-en/",
+                                                      "https://gomla.egymetrix.net/en/return-and-exchange-policy-app-en/",
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .return_and_exchange_policy,
@@ -515,7 +515,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      'https://gomla.sa/support-policy-app-ar/',
+                                                      'https://gomla.egymetrix.net/support-policy-app-ar/',
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .technical_support_and_customer_service_policy,
@@ -527,7 +527,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainS
                                             builder: (context) =>
                                                 PrivacyPolicyScreen(
                                                   url:
-                                                      "https://gomla.sa/en/customer-service-policy-app-en/",
+                                                      "https://gomla.egymetrix.net/en/customer-service-policy-app-en/",
                                                   title: AppLocalizations.of(
                                                           context)!
                                                       .technical_support_and_customer_service_policy,

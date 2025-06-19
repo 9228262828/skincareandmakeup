@@ -29,7 +29,7 @@ class _TermsAndConditionsPageState extends State<TermsAndConditionsPage> {
     String? token = prefs.getString(_tokenKey);
 
     print(prefs.getString(_tokenKey));
-    final url = Uri.parse('https://gomla.sa/wp-json/wp/v2/pages/1877',);
+    final url = Uri.parse('https://gomla.egymetrix.net/wp-json/wp/v2/pages/1877',);
     final response = await http.get(url,
         headers: {
 

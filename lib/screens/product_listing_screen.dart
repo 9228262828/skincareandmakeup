@@ -101,10 +101,10 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
   Future<void> fetchInitialData() async {
     !widget.isLink ? await fetchProducts() : await fetchProductsType(context,
         widget.type == "bestSellers"
-            ? "https://gomla.sa/wp-json/wc/v3/products?orderby=popularity":
+            ? "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=popularity":
         widget.type == "nearlyArrived"
-            ? "https://gomla.sa/wp-json/wc/v3/products?orderby=date&order=desc" :
-        "https://gomla.sa/wp-json/wc/v3/products?orderby=popularity&order=asc"
+            ? "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=date&order=desc" :
+        "https://gomla.egymetrix.net/wp-json/wc/v3/products?orderby=popularity&order=asc"
     );
     print(widget.type);
     print("fetchInitialData");
@@ -573,7 +573,8 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation
           .miniCenterDocked,
-      floatingActionButton: widget.isLink == false ? Padding(
+      floatingActionButton: widget.isLink == false ?
+      Padding(
         padding: const EdgeInsets.all(25.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -631,7 +632,8 @@ class _ProductListingScreenState extends State<ProductListingScreen> {
             )
           ],
         ),
-      ) : SizedBox(height: 0,),
+      )
+          : SizedBox(height: 0,),
 
     );
   }

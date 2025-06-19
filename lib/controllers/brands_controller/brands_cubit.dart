@@ -139,8 +139,8 @@ class ProductsCubit extends Cubit<ProductsState> {
         page: page,
       );
       final String baseUrl = '$siteUrl/wp-json/wc/v3';
-      final String consumerKey = 'ck_1c63c710561ce560194698e6f676fe67ee2ed927';
-      final String consumerSecret = 'cs_a8ba1ef8b549189d415618ba993a4a0c6f2f7166';
+      final String consumerKey = 'ck_d0150d53b03646e0d5695e37739777049dda22aa';
+      final String consumerSecret = 'cs_bdb53e06ca06f8fcdb6510efbbbfaca708bbb3c7';
       final url = Uri.parse('$baseUrl/products?$query');
 
       final response = await http.get(
